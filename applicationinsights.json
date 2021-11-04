@@ -1,6 +1,6 @@
 {
   "role": {
-    "name": "hmpps-template-kotlin"
+    "name": "send-legal-mail-to-prisons-api"
   },
   "customDimensions": {
     "service.version": "${BUILD_NUMBER}"
