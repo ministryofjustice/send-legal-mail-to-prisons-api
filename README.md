@@ -1,40 +1,93 @@
-# hmpps-template-kotlin
+# send-legal-mail-to-prisons-api
 
-This is a skeleton project from which to create new kotlin projects from.
+## About
+A Kotlin application providing APIs to support a UI application for creating and scanning barcodes for legal mail (aka rule39 mail).
 
-# Instructions
+### Team
+This application is in development by the Farsight Consulting team `Send legal mail to prisons`. They can be contacted on MOJ Slack channel `#prisoner_transactions_team`.
 
-If this is a HMPPS project then the project will be created as part of bootstrapping - 
-see https://github.com/ministryofjustice/dps-project-bootstrap.
+### Health
+The application has a health endpoint found at `/health` which indicates if the app is running and is healthy.
 
-## Creating a CloudPlatform namespace
+### Ping
+The application has a ping endpoint found at `/ping` which indicates that the app is responding to requests.
 
-When deploying to a new namespace, you may wish to use this template kotlin project namespace as the basis for your new namespace:
+### Build
+<em>Requires membership of Github team `farsight-devs`</em>
 
-<https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-template-kotlin>
+The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
 
-Copy this folder, update all the existing namespace references, and submit a PR to the CloudPlatform team. Further instructions from the CloudPlatform team can be found here: <https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide>
+### Versions
+The application version currently running can be found on the `/health` endpoint at node `build.buildNumber`. The format of the version number is `YYY-MM-DD.ccc.gggggg` where `ccc` is the Circle job number and `gggggg` is the git commit reference.
 
-## Renaming from HMPPS Template Kotlin - github Actions
+### Rolling back the application
 
-Once the new repository is deployed. Navigate to the repository in github, and select the `Actions` tab.
-Click the link to `Enable Actions on this repository`.
+* <em>Requires CLI tools `kubectl` and `helm`</em>
+* <em>Requires access to Cloud Platform Kubernetes `live` cluster</em>
+* <em>Requires membership of Github team `farsight-devs`</em>
 
-Find the Action workflow named: `rename-project-create-pr` and click `Run workflow`.  This workflow will
-execute the `rename-project.bash` and create Pull Request for you to review.  Review the PR and merge.
+For example in the dev environment:
+1. Set the Kube context with command `kubectl config use-context live.cloud-platform.service.justice.gov.uk`
+2. Set the Kube namespace with command `kubectl config set-context --current --namespace send-legal-mail-to-prisons-dev`
+3. List the charts deployed by helm with command `helm list`
+4. List the deployments for this application with command `helm history send-legal-mail-to-prisons-api`
+5. Given the application version you wish to rollback to, find the related revision number
+6. Rollback to that version with command `helm rollback <revision-number>` replacing `<revision-number>` as appropriate
 
-Note: ideally this workflow would run automatically however due to a recent change github Actions are not
-enabled by default on newly created repos. There is no way to enable Actions other then to click the button in the UI.
-If this situation changes we will update this project so that the workflow is triggered during the bootstrap project.
-Further reading: <https://github.community/t/workflow-isnt-enabled-in-repos-generated-from-template/136421>
+## Configuring the project
 
-## Manually renaming from HMPPS Template Kotlin
+### Ktlint formatting
+Ktlint is used to format the source code and a task runs in the Circle build to check the formatting.
 
-Run the `rename-project.bash` and create a PR.
+You should run the following commands to make sure that the source code is formatted locally before it breaks the Circle build.
 
-The `rename-project.bash` script takes a single argument - the name of the project and calculates from it:
-* The main class name (project name converted to pascal case) 
-* The project description (class name with spaces between the words)
-* The main package name (project name with hyphens removed)
+#### Apply ktlint formatting rules to Intellij
+`./gradlew ktlintApplyToIdea`
 
-It then performs a search and replace and directory renames so the project is ready to be used.
+Or to apply to all Intellij projects:
+
+`./gradlew ktlintApplyToIdeaGlobally`
+
+#### Run ktlint formatter on git commit
+`./gradlew addKtlintFormatGitPreCommitHook`
+
+## Running the app
+The easiest way to run the app is to use docker compose to create the service and all dependencies.
+
+`docker-compose pull`
+
+`docker-compose up`
+
+### Running the app for development - Intellij
+In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
+
+Run the configuration and the app should start. Check `http://localhost:8080/health` to check the app is running.
+
+### Running the app for development - Gradle
+Run the following command:
+
+`./gradlew bootRun --args='--spring.profiles.active=dev,stdout'`
+
+### Running the tests - Intellij
+Right click on the `test` source directory and select `Run`.
+
+### Running the tests - Gradle
+Run the following command:
+
+`./gradlew test`
+
+Or to run all checks including ktlintCheck run command:
+
+`./gradlew check`
+
+## Dependency checks
+
+### Vulnerable dependencies
+To find any dependencies with vulnerabilities run command:
+
+`./gradlew dependencyCheckAnalyze`
+
+### Update dependencies
+To update all dependencies to their latest stable versions run command:
+
+`./gradlew useLatestVersions`
