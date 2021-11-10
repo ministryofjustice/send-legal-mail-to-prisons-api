@@ -5,7 +5,7 @@ generic-service:
   replicaCount: 2
 
   ingress:
-    host: send-legal-mail-api-preprod.hmpps.service.justice.gov.uk
+    host: send-legal-mail-api-preprod.prison.service.justice.gov.uk
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
