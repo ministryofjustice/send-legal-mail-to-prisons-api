@@ -12,7 +12,7 @@ generic-service:
   ingress:
     enabled: true
     host: app-hostname.local    # override per environment
-    tlsSecretName: send-legal-mail-to-prisons-api-cert
+    tlsSecretName: send-legal-mail-api-cert
 
   # Environment variables to load into the deployment
   env:
