@@ -17,6 +17,24 @@ spring:
     group:
       test:
         - "stdout"
+        - "postgres"
+      dev:
+        - "stdout"
+        - "postgres"
+
+  datasource:
+    url: 'jdbc:postgresql://${DB_SERVER}/${DB_NAME}?sslmode=verify-full'
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    hikari:
+      pool-name: SendLegalMail-DB-CP
+      connectionTimeout: 1000
+      validationTimeout: 500
+
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
 
 server:
   port: 8080

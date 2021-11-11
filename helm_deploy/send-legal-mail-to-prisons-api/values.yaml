@@ -12,7 +12,7 @@ generic-service:
   ingress:
     enabled: true
     host: app-hostname.local    # override per environment
-    tlsSecretName: send-legal-mail-to-prisons-api-cert
+    tlsSecretName: send-legal-mail-api-cert
 
   # Environment variables to load into the deployment
   env:
@@ -21,6 +21,7 @@ generic-service:
     SPRING_PROFILES_ACTIVE: "logstash"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    SPRING_REDIS_SSL: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
@@ -30,6 +31,11 @@ generic-service:
   namespace_secrets:
     send-legal-mail-to-prisons-api:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+    rds-instance-output:
+      DB_SERVER: "rds_instance_address"
+      DB_NAME: "database_name"
+      DB_USER: "database_username"
+      DB_PASS: "database_password"
 
   allowlist:
     office: "217.33.148.210/32"

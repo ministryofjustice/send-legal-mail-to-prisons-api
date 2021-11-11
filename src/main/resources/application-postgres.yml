@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/send_legal_mail_api_db
+    username: admin
+    password: admin_password

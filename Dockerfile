@@ -1,4 +1,4 @@
-FROM openjdk:17-slim AS builder
+FROM openjdk:16-slim AS builder
 
 ARG BUILD_NUMBER
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
@@ -7,7 +7,7 @@ WORKDIR /app
 ADD . .
 RUN ./gradlew assemble -Dorg.gradle.daemon=false
 
-FROM openjdk:17-slim
+FROM openjdk:16-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ARG BUILD_NUMBER
@@ -23,6 +23,11 @@ RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezo
 
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000
+
+# Install AWS RDS Root cert into Java truststore
+RUN mkdir /home/appuser/.postgresql \
+  && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
+    > /home/appuser/.postgresql/root.crt
 
 WORKDIR /app
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/send-legal-mail-to-prisons-api*.jar /app/app.jar

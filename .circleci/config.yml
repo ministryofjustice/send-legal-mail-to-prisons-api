@@ -6,16 +6,27 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: dps_alerts_security
+    default: farsight_alerts
   releases-slack-channel:
     type: string
-    default: dps-releases
+    default: farsight_alerts
+
+executors:
+  validator:
+    docker:
+      - image: cimg/openjdk:16.0
+      - image: circleci/postgres:13.2
+        environment:
+          - POSTGRES_PASSWORD=admin_password
+          - POSTGRES_USER=admin
+          - POSTGRES_DB=send_legal_mail_api_db
+    environment:
+      _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
+    working_directory: ~/app
 
 jobs:
   validate:
-    executor:
-      name: hmpps/java
-      tag: "17.0"
+    executor: validator
     steps:
       - checkout
       - restore_cache:
@@ -61,18 +72,18 @@ workflows:
             - validate
             - build_docker
             - helm_lint
-#      - request-preprod-approval:
-#          type: approval
-#          requires:
-#            - deploy_dev
-#      - hmpps/deploy_env:
-#          name: deploy_preprod
-#          env: "preprod"
-#          context:
-#            - hmpps-common-vars
-#            - send-legal-mail-to-prisons-api-preprod
-#          requires:
-#            - request-preprod-approval
+      - request-preprod-approval:
+          type: approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-api-preprod
+          requires:
+            - request-preprod-approval
 #      - request-prod-approval:
 #          type: approval
 #          requires:
