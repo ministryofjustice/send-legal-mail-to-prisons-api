@@ -8,7 +8,15 @@ configurations {
 }
 
 dependencies {
+  annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+  runtimeOnly("org.flywaydb:flyway-core")
+  runtimeOnly("org.postgresql:postgresql:42.3.1")
+
+  testImplementation("org.testcontainers:postgresql:1.16.2")
 }
 
 java {
