@@ -12,12 +12,12 @@ services:
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
-      -
+
   send-legal-mail-api-db:
     image: postgres:13.2
     networks:
       - hmpps
-    container_name: prisoner-transactions-api-db
+    container_name: send-legal-mail-api-db
     restart: always
     ports:
       - "5432:5432"
@@ -25,6 +25,6 @@ services:
       - POSTGRES_PASSWORD=admin_password
       - POSTGRES_USER=admin
       - POSTGRES_DB=send_legal_mail_api_db
-      -
+
 networks:
   hmpps:

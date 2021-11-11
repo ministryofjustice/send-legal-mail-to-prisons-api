@@ -59,16 +59,37 @@ The easiest way to run the app is to use docker compose to create the service an
 `docker-compose up`
 
 ### Running the app for development - Intellij
+First start the Postgres container with command:
+
+`docker-compose up send-legal-mail-api-db`
+
 In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
 
 Run the configuration and the app should start. Check `http://localhost:8080/health` to check the app is running.
 
 ### Running the app for development - Gradle
-Run the following command:
+    First start the Postgres container with command:
+
+`docker-compose up send-legal-mail-api-db`
+
+Then run the following command:
 
 `./gradlew bootRun --args='--spring.profiles.active=dev,stdout'`
 
-### Running the tests - Intellij
+## Running the tests
+
+### Postgres for integration tests
+The integration tests rely on a Postgres container running on port 5432.
+
+By default if post 5432 is not in use the tests will use Testcontainers to start a Postgres instance.
+
+To speed up the test you can start the Postgres instance with command:
+
+`docker-compose up send-legal-mail-api-db`
+
+This will remove the need to start a new Postgres instance each time you run the tests.
+
+### Intellij
 Right click on the `test` source directory and select `Run`.
 
 ### Running the tests - Gradle
