@@ -60,7 +60,7 @@ workflows:
             branches:
               only:
                 - main
-                - mh-43-simple-db
+                - mh-403-simple-db
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -69,7 +69,7 @@ workflows:
             branches:
               only:
                 - main
-                - mh-43-simple-db
+                - mh-403-simple-db
           requires:
             - validate
             - build_docker
