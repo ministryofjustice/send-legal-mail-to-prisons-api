@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface MagicLinkSecretRepository : CrudRepository<MagicLinkSecret, String>
 
-@RedisHash(value = "magicLinkSecrets")
+@RedisHash(value = "magiclinkSecrets")
 data class MagicLinkSecret(
   @Id
   val secretValue: String,
