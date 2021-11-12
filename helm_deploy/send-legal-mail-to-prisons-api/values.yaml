@@ -36,6 +36,9 @@ generic-service:
       DB_NAME: "database_name"
       DB_USER: "database_username"
       DB_PASS: "database_password"
+    slmtp-api-elasticache-redis:
+      SPRING_REDIS_HOST: "primary_endpoint_address"
+      SPRING_REDIS_PASSWORD: "auth_token"
 
   allowlist:
     office: "217.33.148.210/32"
