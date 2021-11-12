@@ -8,9 +8,9 @@ class MagicLinkSecretRepositoryTest : IntegrationTest() {
 
   @Test
   fun `can create and retrieve a magic link secret`() {
-    val secret = magicLinkSecretRepository.save(MagicLinkSecret(email = "someone@somewhere.com", secretValue = "some-secret"))
+    val secret = magicLinkSecretRepository.save(MagicLinkSecret(secretValue = "some-secret", email = "someone@somewhere.com"))
 
-    val savedSecret = magicLinkSecretRepository.findById("someone@somewhere.com").orElseThrow()
+    val savedSecret = magicLinkSecretRepository.findById("some-secret").orElseThrow()
 
     assertThat(savedSecret).isEqualTo(secret)
   }
