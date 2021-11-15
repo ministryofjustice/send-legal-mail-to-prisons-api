@@ -12,6 +12,6 @@ class BarcodeRepositoryTest : IntegrationTest() {
 
     val savedBarcode = barcodeRepository.findById("SOME_BARCODE").orElseThrow()
 
-    assertThat(barcode).isEqualTo(savedBarcode)
+    assertThat(savedBarcode).isEqualTo(barcode)
   }
 }
