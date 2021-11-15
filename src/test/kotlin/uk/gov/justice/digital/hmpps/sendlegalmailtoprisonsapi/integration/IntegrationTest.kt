@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
 
 import io.lettuce.core.ClientOptions
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,13 +13,14 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.extensions.RedisExtension
+import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.MagicLinkSecretRepository
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@ExtendWith(RedisExtension::class)
 @Import(IntegrationTest.RedisConfig::class)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
@@ -42,6 +42,18 @@ abstract class IntegrationTest {
 
   @TestConfiguration
   class RedisConfig {
+    private val redisServer: RedisServer = RedisServer(6380)
+
+    @PostConstruct
+    fun postConstruct() {
+      redisServer.start()
+    }
+
+    @PreDestroy
+    fun preDestroy() {
+      redisServer.stop()
+    }
+
     @Bean
     fun lettuceClientConfigurationBuilderCustomizer(): LettuceClientConfigurationBuilderCustomizer =
       LettuceClientConfigurationBuilderCustomizer {
