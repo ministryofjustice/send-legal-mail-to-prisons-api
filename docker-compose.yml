@@ -26,5 +26,15 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_DB=send_legal_mail_api_db
 
+  send-legal-mail-api-cache:
+    image: redis
+    networks:
+      - hmpps
+    container_name: send-legal-mail-api-cache
+    restart: always
+    ports:
+      - '6378:6378'
+    command: --port 6378
+
 networks:
   hmpps:

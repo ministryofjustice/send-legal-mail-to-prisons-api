@@ -67,3 +67,7 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+app:
+  magiclink:
+    secret-expiry: 10m

@@ -1,10 +1,14 @@
 server:
   shutdown: immediate
 
-management.endpoint:
-  health.cache.time-to-live: 0
-  info.cache.time-to-live: 0
+management:
+  endpoint:
+    health.cache.time-to-live: 0
+    info.cache.time-to-live: 0
+  health.redis.enabled: false
 
 spring:
   jpa:
     show-sql: true
+
+  redis.port: 6380

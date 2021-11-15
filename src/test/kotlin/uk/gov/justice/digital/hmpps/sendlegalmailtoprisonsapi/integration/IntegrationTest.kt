@@ -1,17 +1,27 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
 
+import io.lettuce.core.ClientOptions
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.extensions.RedisExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.BarcodeRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.MagicLinkSecretRepository
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ExtendWith(RedisExtension::class)
+@Import(IntegrationTest.RedisConfig::class)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
 
@@ -22,9 +32,25 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var barcodeRepository: BarcodeRepository
 
+  @Autowired
+  protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
+
   @AfterEach
   fun `clear database`() {
     barcodeRepository.deleteAll()
+  }
+
+  @TestConfiguration
+  class RedisConfig {
+    @Bean
+    fun lettuceClientConfigurationBuilderCustomizer(): LettuceClientConfigurationBuilderCustomizer =
+      LettuceClientConfigurationBuilderCustomizer {
+        it.clientOptions(
+          ClientOptions.builder()
+            .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+            .build()
+        )
+      }
   }
 
   companion object {

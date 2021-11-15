@@ -12,11 +12,13 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
   testImplementation("org.testcontainers:postgresql:1.16.2")
+  testImplementation("it.ozimov:embedded-redis:0.7.3")
 }
 
 java {

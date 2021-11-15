@@ -1,0 +1,6 @@
+standalone-redis:
+  # enable keyspace notifications when running in standalone redis (unsupported for elasticache)
+  keyspace-notifications: 'Ex'
+
+spring:
+  redis.port: 6378
