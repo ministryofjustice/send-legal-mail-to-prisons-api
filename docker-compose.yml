@@ -14,7 +14,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
 
   send-legal-mail-api-db:
-    image: postgres:13.3
+    image: postgres:13.2
     networks:
       - hmpps
     container_name: send-legal-mail-api-db
