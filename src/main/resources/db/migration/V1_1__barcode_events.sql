@@ -3,5 +3,5 @@ CREATE TABLE barcode_events (
   barcode varchar(12) references barcodes(code),
   user_id varchar(320),
   status varchar(10),
-  date_time timestamp with time zone default CURRENT_TIMESTAMP
+  date_time timestamp
 );
