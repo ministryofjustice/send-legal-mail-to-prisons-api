@@ -4,3 +4,13 @@ standalone-redis:
 
 spring:
   redis.port: 6378
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub
+
+hmpps:
+  auth:
+    url: http://localhost:9090/auth
