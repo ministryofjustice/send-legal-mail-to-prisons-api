@@ -12,3 +12,9 @@ spring:
     show-sql: true
 
   redis.port: 6380
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8090/.well-known/jwks.json

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository

@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.MagicLinkSecret
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
 
 class MagicLinkSecretRepositoryTest : IntegrationTest() {
 

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash

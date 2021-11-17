@@ -36,6 +36,12 @@ spring:
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
+
 server:
   port: 8080
   servlet:

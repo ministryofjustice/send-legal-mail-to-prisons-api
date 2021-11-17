@@ -15,7 +15,7 @@ executors:
   validator:
     docker:
       - image: cimg/openjdk:16.0
-      - image: circleci/postgres:13.2
+      - image: circleci/postgres:13.3
         environment:
           - POSTGRES_PASSWORD=admin_password
           - POSTGRES_USER=admin
