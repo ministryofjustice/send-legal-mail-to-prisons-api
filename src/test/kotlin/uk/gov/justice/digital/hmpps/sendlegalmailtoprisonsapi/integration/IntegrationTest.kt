@@ -7,16 +7,20 @@ import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurat
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import redis.embedded.RedisServer
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.BarcodeRepository
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.jpa.MagicLinkSecretRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -30,15 +34,32 @@ abstract class IntegrationTest {
   lateinit var webTestClient: WebTestClient
 
   @Autowired
+  protected lateinit var jwtAuthHelper: JwtAuthHelper
+
+  @Autowired
   protected lateinit var barcodeRepository: BarcodeRepository
+
+  @Autowired
+  protected lateinit var barcodeEventRepository: BarcodeEventRepository
+
+  @SpyBean
+  protected lateinit var barcodeGeneratorService: BarcodeGeneratorService
 
   @Autowired
   protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
 
   @AfterEach
   fun `clear database`() {
+    barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
+    magicLinkSecretRepository.deleteAll()
   }
+
+  internal fun setAuthorisation(
+    user: String = "send-legal-mail-client",
+    roles: List<String> = listOf(),
+    scopes: List<String> = listOf()
+  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
 
   @TestConfiguration
   class RedisConfig {
