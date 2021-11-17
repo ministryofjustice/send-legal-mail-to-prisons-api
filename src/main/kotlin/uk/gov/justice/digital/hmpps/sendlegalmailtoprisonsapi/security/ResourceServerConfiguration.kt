@@ -28,7 +28,6 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
           "/v3/api-docs/**",
           "/swagger-ui/**",
           "/swagger-ui.html",
-          "/h2-console/**",
         ).permitAll().anyRequest().authenticated()
       }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
   }
