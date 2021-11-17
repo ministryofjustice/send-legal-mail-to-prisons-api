@@ -60,7 +60,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .headers(setAuthorisation())
         .body(BodyInserters.fromValue("""{ "userId": "some.user@domain.com" }"""))
         .exchange()
-        .expectStatus().isOk
+        .expectStatus().isCreated
         .expectBody()
         .jsonPath("$").isEqualTo("SOME_CODE")
 
@@ -86,7 +86,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .headers(setAuthorisation())
         .body(BodyInserters.fromValue("""{ "userId": "some.user@domain.com" }"""))
         .exchange()
-        .expectStatus().isOk
+        .expectStatus().isCreated
         .expectBody()
         .jsonPath("$").isEqualTo("ANOTHER_CODE")
 

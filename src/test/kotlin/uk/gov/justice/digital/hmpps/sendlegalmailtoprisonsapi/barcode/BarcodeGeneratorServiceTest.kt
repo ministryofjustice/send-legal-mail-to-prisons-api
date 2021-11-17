@@ -20,8 +20,7 @@ class BarcodeGeneratorServiceTest {
 
     barcodes.forEach { barcode ->
       barcode.toCharArray().forEach { char ->
-        assertThat(char).isGreaterThanOrEqualTo('0')
-        assertThat(char).isLessThanOrEqualTo('9')
+        assertThat(char.isDigit()).isTrue
       }
     }
   }
