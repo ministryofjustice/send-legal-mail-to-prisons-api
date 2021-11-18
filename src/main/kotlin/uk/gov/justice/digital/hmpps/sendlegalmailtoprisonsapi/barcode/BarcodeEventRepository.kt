@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -37,20 +37,20 @@ data class BarcodeEvent(
   @Enumerated(EnumType.STRING)
   val status: BarcodeStatus = BarcodeStatus.CREATED,
   @NotNull
-  val dateTime: LocalDateTime = LocalDateTime.now(),
+  val createdDateTime: Instant = Instant.now(),
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
     other as BarcodeEvent
 
-    return barcode == other.barcode && dateTime == other.dateTime
+    return barcode == other.barcode && createdDateTime == other.createdDateTime
   }
 
-  override fun hashCode(): Int = barcode.hashCode() * dateTime.hashCode()
+  override fun hashCode(): Int = barcode.hashCode() * createdDateTime.hashCode()
 
   override fun toString(): String {
-    return "BarcodeEvent(barcode=$barcode, userId='$userId', status=$status, dateTime=$dateTime)"
+    return "BarcodeEvent(barcode=$barcode, userId='$userId', status=$status, dateTime=$createdDateTime)"
   }
 }
 
