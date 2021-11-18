@@ -22,6 +22,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.5.12")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
+  implementation("io.github.microutils:kotlin-logging:1.12.5")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")

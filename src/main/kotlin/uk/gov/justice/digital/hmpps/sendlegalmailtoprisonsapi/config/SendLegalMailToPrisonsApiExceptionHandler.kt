@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.FORBIDDEN
@@ -17,6 +17,8 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
+
+private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class SendLegalMailToPrisonsApiExceptionHandler {
@@ -131,10 +133,6 @@ class SendLegalMailToPrisonsApiExceptionHandler {
           developerMessage = e.message
         )
       )
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
 
