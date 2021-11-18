@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.FORBIDDEN
@@ -18,6 +18,8 @@ import org.springframework.web.client.RestClientResponseException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
 
+private val log = KotlinLogging.logger {}
+
 @RestControllerAdvice
 class SendLegalMailToPrisonsApiExceptionHandler {
 
@@ -29,7 +31,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = BAD_REQUEST.value(),
-          userMessage = "Failed to read the payload - ${e.message}",
+          userMessage = "Failed to read the payload.",
           developerMessage = e.message
         )
       )
@@ -43,21 +45,21 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = FORBIDDEN.value(),
-          userMessage = "Authentication problem. Check token and roles - ${e.message}",
+          userMessage = "Authentication problem. Check token.",
           developerMessage = e.message
         )
       )
   }
 
   @ExceptionHandler(AuthorizationServiceException::class)
-  fun handleAuthorizationServiceException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
+  fun handleAuthorizationServiceException(e: AuthorizationServiceException): ResponseEntity<ErrorResponse> {
     log.info("Auth service exception: {}", e.message)
     return ResponseEntity
       .status(UNAUTHORIZED)
       .body(
         ErrorResponse(
           status = UNAUTHORIZED.value(),
-          userMessage = "Authentication problem. Check token and roles - ${e.message}",
+          userMessage = "Authorization problem. Check roles.",
           developerMessage = e.message
         )
       )
@@ -71,7 +73,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = e.rawStatusCode,
-          userMessage = "Rest client exception ${e.message}",
+          userMessage = "Error calling downstream service.",
           developerMessage = e.message
         )
       )
@@ -85,7 +87,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR.value(),
-          userMessage = "Rest client exception ${e.message}",
+          userMessage = "Error calling downstream service.",
           developerMessage = e.message
         )
       )
@@ -99,21 +101,21 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = NOT_FOUND.value(),
-          userMessage = "Not found: ${e.message}",
+          userMessage = "Not found.",
           developerMessage = e.message
         )
       )
   }
 
   @ExceptionHandler(ValidationException::class)
-  fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
+  fun handleValidationException(e: ValidationException): ResponseEntity<ErrorResponse> {
     log.info("Validation exception: {}", e.message)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(
         ErrorResponse(
           status = BAD_REQUEST,
-          userMessage = "Validation failure: ${e.message}",
+          userMessage = "Validation failure.",
           developerMessage = e.message
         )
       )
@@ -131,10 +133,6 @@ class SendLegalMailToPrisonsApiExceptionHandler {
           developerMessage = e.message
         )
       )
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
 

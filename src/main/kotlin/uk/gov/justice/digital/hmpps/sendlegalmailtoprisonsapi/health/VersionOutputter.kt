@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.health
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
+
+private val log = KotlinLogging.logger {}
 
 @Configuration
 class VersionOutputter(buildProperties: BuildProperties) {
@@ -13,9 +15,5 @@ class VersionOutputter(buildProperties: BuildProperties) {
   @EventListener(ApplicationReadyEvent::class)
   fun logVersionOnStartup() {
     log.info("Version {} started", version)
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
