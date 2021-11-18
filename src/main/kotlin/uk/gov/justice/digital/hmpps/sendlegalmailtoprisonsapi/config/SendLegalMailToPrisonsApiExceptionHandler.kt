@@ -31,7 +31,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = BAD_REQUEST.value(),
-          userMessage = "Failed to read the payload}",
+          userMessage = "Failed to read the payload.",
           developerMessage = e.message
         )
       )
@@ -101,7 +101,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(
         ErrorResponse(
           status = NOT_FOUND.value(),
-          userMessage = "Not found.}",
+          userMessage = "Not found.",
           developerMessage = e.message
         )
       )
