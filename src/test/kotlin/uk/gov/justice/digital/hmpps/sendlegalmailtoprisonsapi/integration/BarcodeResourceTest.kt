@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEvent
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus
@@ -20,33 +19,19 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue("""{ "userId": "some.user@domain.com" }"""))
         .exchange()
         .expectStatus().isUnauthorized
     }
 
     @Test
-    fun `bad request with unknown request parameter`() {
+    fun `forbidden without a valid role`() {
       webTestClient.post()
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "unknown-request-property": "some.user@domain.com" }"""))
+        .headers(setAuthorisation(user = "some.user@domain.com"))
         .exchange()
-        .expectStatus().isBadRequest
-    }
-
-    @Test
-    fun `bad request with malformed request object`() {
-      webTestClient.post()
-        .uri("/barcode")
-        .accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "this is bad json": }"""))
-        .exchange()
-        .expectStatus().isBadRequest
+        .expectStatus().isForbidden
     }
 
     @Test
@@ -57,8 +42,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "userId": "some.user@domain.com" }"""))
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_CREATE_BARCODE")))
         .exchange()
         .expectStatus().isCreated
         .expectBody()
@@ -83,8 +67,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "userId": "some.user@domain.com" }"""))
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_CREATE_BARCODE")))
         .exchange()
         .expectStatus().isCreated
         .expectBody()
