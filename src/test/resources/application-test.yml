@@ -6,6 +6,7 @@ management:
     health.cache.time-to-live: 0
     info.cache.time-to-live: 0
   health.redis.enabled: false
+  health.mail.enabled: false
 
 spring:
   jpa:
