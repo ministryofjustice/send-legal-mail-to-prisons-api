@@ -6,4 +6,7 @@ import java.time.Duration
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "app.magiclink")
-data class MagicLinkConfig(val secretExpiry: Duration)
+data class MagicLinkConfig(
+  val secretExpiry: Duration,
+  val url: String,
+)

@@ -31,6 +31,8 @@ generic-service:
   namespace_secrets:
     send-legal-mail-to-prisons-api:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      SPRING_MAIL_USERNAME: "EMAIL_USERNAME"
+      SPRING_MAIL_PASSWORD: "EMAIL_PASSWORD"
     rds-instance-output:
       DB_SERVER: "rds_instance_address"
       DB_NAME: "database_name"
