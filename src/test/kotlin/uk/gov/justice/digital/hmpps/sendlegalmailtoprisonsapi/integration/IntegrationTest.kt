@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGen
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -47,6 +48,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
+
+  @SpyBean
+  protected lateinit var magicLinkService: MagicLinkService
 
   @AfterEach
   fun `clear database`() {
