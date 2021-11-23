@@ -19,6 +19,8 @@ import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MagicLinkConfig
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import javax.annotation.PostConstruct
@@ -47,6 +49,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
+
+  @Autowired
+  protected lateinit var magicLinkConfig: MagicLinkConfig
 
   @AfterEach
   fun `clear database`() {
@@ -88,6 +93,7 @@ abstract class IntegrationTest {
 
   companion object {
     private val pgContainer = PostgresContainer.instance
+    private val mailcatcherContainer = MailcatcherContainer.instance
 
     @JvmStatic
     @DynamicPropertySource
@@ -101,6 +107,10 @@ abstract class IntegrationTest {
         registry.add("spring.flyway.url", pgContainer::getJdbcUrl)
         registry.add("spring.flyway.user", pgContainer::getUsername)
         registry.add("spring.flyway.password", pgContainer::getPassword)
+      }
+      mailcatcherContainer?.run {
+        registry.add("spring.mail.port") { getMappedPort(1025) }
+        registry.add("mailcatcher.api.port") { getMappedPort(1080) }
       }
     }
   }
