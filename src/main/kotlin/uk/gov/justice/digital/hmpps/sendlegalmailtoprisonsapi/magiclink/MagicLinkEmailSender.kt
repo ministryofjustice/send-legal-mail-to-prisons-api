@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MagicLinkConfig
 
+@Service
 class MagicLinkEmailSender(
   private val magicLinkConfig: MagicLinkConfig,
   private val javaMailSender: JavaMailSender,
