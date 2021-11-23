@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
 
 class MagicLinkResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -29,7 +31,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com" }"""))
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -43,6 +45,7 @@ class MagicLinkResourceTest(
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
     }
 
     @Test
@@ -52,9 +55,40 @@ class MagicLinkResourceTest(
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com" }"""))
+        .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+    }
+
+    @Test
+    fun `bad request with missing email`() {
+      webTestClient.post()
+        .uri("/link/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "email": "" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode").isEqualTo(ErrorCode.EMAIL_MANDATORY.name)
+        .jsonPath("$.userMessage").isEqualTo("The email address must be entered")
+    }
+
+    @Test
+    fun `bad request with non CJSM email`() {
+      webTestClient.post()
+        .uri("/link/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_CJSM_EMAIL.name)
+        .jsonPath("$.userMessage").isEqualTo("The email is not a recognised CJSM email address")
     }
 
     @Test
@@ -64,7 +98,7 @@ class MagicLinkResourceTest(
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation())
-        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com" }"""))
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isCreated
 
@@ -76,7 +110,7 @@ class MagicLinkResourceTest(
         .bodyToMono(Message::class.java)
         .block()
 
-      assertThat(message?.recipients).containsExactly("<some.email@company.com>")
+      assertThat(message?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
       assertThat(message?.source).contains("${magicLinkConfig.url}?secret=${savedSecret?.secretValue}")
     }
   }

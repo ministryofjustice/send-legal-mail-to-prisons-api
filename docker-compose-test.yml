@@ -1,0 +1,26 @@
+version: "3"
+services:
+  send-legal-mail-api-db:
+    image: postgres:13.3
+    networks:
+      - hmpps
+    container_name: send-legal-mail-api-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=admin_password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=send_legal_mail_api_db
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    networks:
+      - hmpps
+    restart: always
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+
+networks:
+  hmpps:

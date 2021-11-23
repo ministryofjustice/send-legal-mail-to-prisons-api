@@ -36,5 +36,13 @@ services:
       - '6378:6378'
     command: --port 6378
 
+  mailcatcher:
+    image: schickling/mailcatcher
+    networks:
+      - hmpps
+    restart: always
+    ports:
+      - '1080:1080'
+      - '1025:1025'
 networks:
   hmpps:
