@@ -6,17 +6,21 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import javax.servlet.http.HttpServletRequest
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 @RestController
-class MagicLinkResource(private val magicLinkService: MagicLinkService) {
+class MagicLinkResource(
+  private val magicLinkService: MagicLinkService,
+  private val magicLinkRequestValidator: MagicLinkRequestValidator,
+) {
 
   @PostMapping(value = ["/link/email"])
   @ResponseStatus(HttpStatus.CREATED)
@@ -40,13 +44,30 @@ class MagicLinkResource(private val magicLinkService: MagicLinkService) {
       ),
     ]
   )
-  fun createMagicLink(@RequestBody @NotEmpty request: MagicLinkRequest, httpReq: HttpServletRequest) {
+  fun createMagicLink(@RequestBody request: MagicLinkRequest, httpReq: HttpServletRequest) {
+    magicLinkRequestValidator.validate(request)
     magicLinkService.createAndSendMagicLink(request.email)
   }
 
   data class MagicLinkRequest(
-    @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com")
-    @NotNull
+    @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com", required = true)
     val email: String,
   )
+}
+
+@Service
+class MagicLinkRequestValidator {
+  private val emailRegex = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
+
+  fun validate(magicLinkRequest: MagicLinkResource.MagicLinkRequest) {
+    if (magicLinkRequest.email.isEmpty()) {
+      throw ValidationException(ErrorCode.EMAIL_MANDATORY)
+    }
+    if (emailRegex.matches(magicLinkRequest.email).not()) {
+      throw ValidationException(ErrorCode.INVALID_CJSM_EMAIL)
+    }
+    if (magicLinkRequest.email.endsWith(".cjsm.net").not()) {
+      throw ValidationException(ErrorCode.INVALID_CJSM_EMAIL)
+    }
+  }
 }

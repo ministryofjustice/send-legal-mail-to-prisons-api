@@ -52,25 +52,25 @@ Or to apply to all Intellij projects:
 `./gradlew addKtlintFormatGitPreCommitHook`
 
 ## Running the app
-The easiest way to run the app is to use docker compose to create the service and all dependencies.
+The easiest (and slowest) way to run the app is to use docker compose to create the service and all dependencies.
 
 `docker-compose pull`
 
 `docker-compose up`
 
 ### Running the app for development - Intellij
-First start the Postgres container with command:
+First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db`
+`docker-compose up --scale send-legal-mail-to-prisons-api=0`
 
 In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
 
 Run the configuration and the app should start. Check `http://localhost:8080/health` to check the app is running.
 
 ### Running the app for development - Gradle
-    First start the Postgres container with command:
+First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db`
+`docker-compose up --scale send-legal-mail-to-prisons-api=0`
 
 Then run the following command:
 
@@ -78,21 +78,19 @@ Then run the following command:
 
 ## Running the tests
 
-### Postgres for integration tests
-The integration tests rely on a Postgres container running on port 5432.
+### Dependent containers for integration tests
+The integration tests rely on a Postgres container running on port 5432 and a mailcatcher container running on port 1080. 
 
-By default if post 5432 is not in use the tests will use Testcontainers to start a Postgres instance.
+By default Testcontainers will notice the dependent containers are not running and start an instance of each.
 
-To speed up the test you can start the Postgres instance with command:
+To speed up the tests you can start the dependent containers with the command:
 
-`docker-compose up send-legal-mail-api-db`
-
-This will remove the need to start a new Postgres instance each time you run the tests.
+`docker-compose -f docker-compose-test.yml up`
 
 ### Intellij
 Right click on the `test` source directory and select `Run`.
 
-### Running the tests - Gradle
+### Gradle
 Run the following command:
 
 `./gradlew test`
