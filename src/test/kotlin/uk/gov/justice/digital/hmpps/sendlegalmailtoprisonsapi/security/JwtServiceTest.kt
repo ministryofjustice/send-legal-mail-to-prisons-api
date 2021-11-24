@@ -32,6 +32,14 @@ class JwtServiceTest {
   }
 
   @Test
+  fun `the generated JWT should have the create barcode role`() {
+    val jwtService = jwtService()
+    val jwt = jwtService.generateToken("some.email@company.com")
+
+    assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
+  }
+
+  @Test
   fun `an expired JWT should be invalid`() {
     val jwtService = jwtService(Duration.of(-1, ChronoUnit.MINUTES))
     val jwt = jwtService.generateToken("some.email@company.com")

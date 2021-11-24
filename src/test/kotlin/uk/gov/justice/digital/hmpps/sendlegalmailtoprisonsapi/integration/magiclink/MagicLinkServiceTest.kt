@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.Integr
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
 import javax.persistence.EntityNotFoundException
 
+// TODO SLM-12 Move this to an integration over the verify link endpoint when it is available
 class MagicLinkServiceTest : IntegrationTest() {
 
   @Nested
@@ -22,6 +23,7 @@ class MagicLinkServiceTest : IntegrationTest() {
       assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
       assertThat(jwtService.validateToken(jwt)).isTrue
       assertThat(jwtService.subject(jwt)).isEqualTo("some.email@company.com.cjsm.net")
+      assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
     }
 
     @Test

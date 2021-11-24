@@ -40,6 +40,7 @@ class JwtService(jwtConfig: JwtConfig) {
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
       .setExpiration(Date.from(Instant.now().plus(expiry.toMillis(), ChronoUnit.MILLIS)))
+      .addClaims(mapOf("authorities" to arrayOf("ROLE_SLM_CREATE_BARCODE")))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
 
@@ -54,4 +55,8 @@ class JwtService(jwtConfig: JwtConfig) {
 
   fun subject(jwt: String): String =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.subject
+
+  @Suppress("UNCHECKED_CAST")
+  fun authorities(jwt: String): List<String>? =
+    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["authorities"] as? List<String>
 }
