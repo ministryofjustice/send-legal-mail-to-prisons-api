@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
 
 class MagicLinkResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -127,6 +128,97 @@ class MagicLinkResourceTest(
 
       assertThat(message?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
       assertThat(message?.source).contains("${magicLinkConfig.url}?secret=${savedSecret?.secretValue}")
+    }
+  }
+
+  @Nested
+  inner class VerifyMagicLink {
+
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue("""{ "secret": "some-secret-value" }"""))
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `bad request without body`() {
+      webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+    }
+
+    @Test
+    fun `bad request with malformed body`() {
+      webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some-secret-value" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+    }
+
+    @Test
+    fun `not found with missing secret value`() {
+      webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "secret": "" }"""))
+        .exchange()
+        .expectStatus().isNotFound
+    }
+
+    @Test
+    fun `generates a valid JWT for a magic link secret and deletes the secret`() {
+      magicLinkSecretRepository.save(MagicLinkSecret("some-secret", "some.email@company.com.cjsm.net"))
+
+      val jwt = webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
+        .exchange()
+        .expectStatus().isCreated
+        .returnResult(String::class.java)
+        .responseBody
+        .blockFirst()
+        .orEmpty()
+
+      assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
+      assertThat(jwtService.validateToken(jwt)).isTrue
+      assertThat(jwtService.subject(jwt)).isEqualTo("some.email@company.com.cjsm.net")
+      assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
+    }
+
+    @Test
+    fun `not found if the secret doesn't exist`() {
+      assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
+
+      webTestClient.post()
+        .uri("/link/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
+        .exchange()
+        .expectStatus().isNotFound
+
+      assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
     }
   }
 }
