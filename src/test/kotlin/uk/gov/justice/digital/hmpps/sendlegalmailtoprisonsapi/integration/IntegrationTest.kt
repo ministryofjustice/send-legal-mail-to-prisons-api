@@ -23,6 +23,8 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MagicLinkCo
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -52,6 +54,12 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var magicLinkConfig: MagicLinkConfig
+
+  @Autowired
+  protected lateinit var magicLinkService: MagicLinkService
+
+  @Autowired
+  protected lateinit var jwtService: JwtService
 
   @AfterEach
   fun `clear database`() {

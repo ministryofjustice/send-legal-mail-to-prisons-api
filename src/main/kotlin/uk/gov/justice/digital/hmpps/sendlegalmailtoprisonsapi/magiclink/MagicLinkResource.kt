@@ -64,7 +64,7 @@ class MagicLinkRequestValidator {
       throw ValidationException(ErrorCode.EMAIL_MANDATORY)
     }
     if (emailRegex.matches(magicLinkRequest.email).not()) {
-      throw ValidationException(ErrorCode.INVALID_CJSM_EMAIL)
+      throw ValidationException(ErrorCode.INVALID_EMAIL)
     }
     if (magicLinkRequest.email.endsWith(".cjsm.net").not()) {
       throw ValidationException(ErrorCode.INVALID_CJSM_EMAIL)
