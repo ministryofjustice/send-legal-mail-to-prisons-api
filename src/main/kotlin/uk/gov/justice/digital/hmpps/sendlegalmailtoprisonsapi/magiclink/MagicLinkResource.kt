@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 class MagicLinkResource(
@@ -81,7 +80,7 @@ class MagicLinkResource(
       ),
     ]
   )
-  fun verifyMagicLink(@RequestBody request: VerifyLinkRequest, httpReq: HttpServletRequest) =
+  fun verifyMagicLink(@RequestBody request: VerifyLinkRequest) =
     magicLinkService.verifyMagicLinkSecret(request.secret)
 
   data class VerifyLinkRequest(
