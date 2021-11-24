@@ -13,8 +13,6 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Base64
 import java.util.Date
@@ -41,22 +39,16 @@ class JwtService(jwtConfig: JwtConfig) {
     Jwts.builder()
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
-      .setExpiration(
-        Date.from(
-          LocalDateTime.now().plus(expiry.toMillis(), ChronoUnit.MILLIS).toInstant(zoneOffset())
-        )
-      )
+      .setExpiration(Date.from(Instant.now().plus(expiry.toMillis(), ChronoUnit.MILLIS)))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
-
-  private fun zoneOffset() = ZoneId.systemDefault().rules.getOffset(Instant.now())
 
   fun validateToken(jwt: String): Boolean =
     runCatching {
       Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt)
     }.onFailure {
       if ((it is ExpiredJwtException).not()) {
-        log.warn("Found an invalid JWT: jwt", it)
+        log.warn("Found an invalid JWT: $jwt", it)
       }
     }.isSuccess
 

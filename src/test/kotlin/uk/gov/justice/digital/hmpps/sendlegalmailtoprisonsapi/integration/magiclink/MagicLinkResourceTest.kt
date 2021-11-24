@@ -73,7 +73,7 @@ class MagicLinkResourceTest(
         .expectStatus().isBadRequest
         .expectBody()
         .jsonPath("$.errorCode").isEqualTo(ErrorCode.EMAIL_MANDATORY.name)
-        .jsonPath("$.userMessage").isEqualTo("The email address must be entered")
+        .jsonPath("$.userMessage").value<String> { it.contains("email address") }
     }
 
     @Test
@@ -88,7 +88,7 @@ class MagicLinkResourceTest(
         .expectStatus().isBadRequest
         .expectBody()
         .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_CJSM_EMAIL.name)
-        .jsonPath("$.userMessage").isEqualTo("The email is not a recognised CJSM email address")
+        .jsonPath("$.userMessage").value<String> { it.contains("CJSM email address") }
     }
 
     @Test
