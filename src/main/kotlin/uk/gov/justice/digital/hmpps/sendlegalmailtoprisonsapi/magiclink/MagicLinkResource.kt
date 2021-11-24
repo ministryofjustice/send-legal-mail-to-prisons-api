@@ -44,7 +44,7 @@ class MagicLinkResource(
       ),
     ]
   )
-  fun createMagicLink(@RequestBody request: MagicLinkRequest, httpReq: HttpServletRequest) {
+  fun createMagicLink(@RequestBody request: MagicLinkRequest) {
     magicLinkRequestValidator.validate(request)
     magicLinkService.createAndSendMagicLink(request.email)
   }
