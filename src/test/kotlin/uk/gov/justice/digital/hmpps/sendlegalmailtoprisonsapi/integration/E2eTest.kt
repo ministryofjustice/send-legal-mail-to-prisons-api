@@ -28,7 +28,7 @@ class E2eTest(
     val jwt = verifySecret(secretValue)
 
     checkJwt(jwt, email)
-    verifySecretNotFound(secretValue)
+    verifySecretFails(secretValue)
 
     // TODO SLM-12 instead of checking the JWT use it to call the create barcode endpoint
   }
@@ -69,7 +69,7 @@ class E2eTest(
       .blockFirst()
       .orEmpty()
 
-  private fun verifySecretNotFound(secretValue: String) =
+  private fun verifySecretFails(secretValue: String) =
     webTestClient.post()
       .uri("/link/verify")
       .accept(MediaType.APPLICATION_JSON)
