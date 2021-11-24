@@ -87,3 +87,5 @@ app:
   magiclink:
     secret-expiry: 10m
     url: "http://localhost:3000/link/verify-link"
+  jwt:
+    expiry: 7d
