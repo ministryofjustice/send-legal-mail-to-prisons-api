@@ -77,6 +77,21 @@ class MagicLinkResourceTest(
     }
 
     @Test
+    fun `bad request with invalid email`() {
+      webTestClient.post()
+        .uri("/link/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .body(BodyInserters.fromValue("""{ "email": "invalid@email" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_EMAIL.name)
+        .jsonPath("$.userMessage").value<String> { it.contains("email address") }
+    }
+
+    @Test
     fun `bad request with non CJSM email`() {
       webTestClient.post()
         .uri("/link/email")
@@ -88,7 +103,7 @@ class MagicLinkResourceTest(
         .expectStatus().isBadRequest
         .expectBody()
         .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_CJSM_EMAIL.name)
-        .jsonPath("$.userMessage").value<String> { it.contains("CJSM email address") }
+        .jsonPath("$.userMessage").value<String> { it.contains("cjsm.net") }
     }
 
     @Test
