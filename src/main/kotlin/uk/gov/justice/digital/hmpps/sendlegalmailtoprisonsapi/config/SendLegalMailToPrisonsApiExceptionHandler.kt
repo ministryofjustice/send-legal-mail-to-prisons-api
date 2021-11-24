@@ -95,5 +95,6 @@ enum class ErrorCode(val userMessage: String) {
   NOT_FOUND("Not found"),
   // Custom errors
   EMAIL_MANDATORY("The email address must be entered"),
-  INVALID_CJSM_EMAIL("The email is not a recognised CJSM email address"),
+  INVALID_EMAIL("Enter an email address in the correct format"),
+  INVALID_CJSM_EMAIL("Enter an email address which ends with 'cjsm.net'"),
 }
