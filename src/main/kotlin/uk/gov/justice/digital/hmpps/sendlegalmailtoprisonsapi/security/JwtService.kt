@@ -40,7 +40,7 @@ class JwtService(jwtConfig: JwtConfig) {
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
       .setExpiration(Date.from(Instant.now().plus(expiry.toMillis(), ChronoUnit.MILLIS)))
-      .addClaims(mapOf("authorities" to arrayOf("ROLE_SLM_CREATE_BARCODE")))
+      .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE")))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
 
