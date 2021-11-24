@@ -53,6 +53,41 @@ class MagicLinkResource(
     @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com", required = true)
     val email: String,
   )
+
+  @PostMapping(value = ["/link/verify"])
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(
+    summary = "Verify a magic link secret",
+    description = "Verifies a magic link secret and swaps it for an authentication token if valid.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Authentication token created",
+        content = [
+          Content(mediaType = "application/json")
+        ],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Not found, unable to verify the magic link",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun verifyMagicLink(@RequestBody request: VerifyLinkRequest, httpReq: HttpServletRequest) =
+    magicLinkService.verifyMagicLinkSecret(request.secret)
+
+  data class VerifyLinkRequest(
+    @Schema(description = "The secret to verify", required = true)
+    val secret: String,
+  )
 }
 
 @Service
