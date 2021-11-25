@@ -11,7 +11,7 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-    APP_MAGICLINK_URL: https://send-legal-mail-preprod.hmpps.service.justice.gov.uk/link/verify-link
+    APP_MAGICLINK_URL: https://send-legal-mail-preprod.prison.service.justice.gov.uk/link/verify-link
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
