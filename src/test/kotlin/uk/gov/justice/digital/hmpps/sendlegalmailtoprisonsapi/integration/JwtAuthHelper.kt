@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPublicKey
@@ -15,7 +16,7 @@ import java.util.Date
 import java.util.UUID
 
 @Component
-class JwtAuthHelper {
+class JwtAuthHelper(private val jwtService: JwtService) {
   private val keyPair: KeyPair
 
   init {
@@ -39,6 +40,11 @@ class JwtAuthHelper {
       roles = roles
     )
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
+  }
+
+  fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit {
+    val token = jwtService.generateToken(email)
+    return { it.set("Create-Barcode-Token", token) }
   }
 
   internal fun createJwt(
