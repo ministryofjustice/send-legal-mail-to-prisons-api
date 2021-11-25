@@ -27,12 +27,12 @@ class E2eTest(
     val email = "some.email@company.com.cjsm.net"
     requestMagicLink(email)
     val secretValue = getSecretFromReceivedEmail()
-    val jwt = verifySecret(secretValue) ?: fail("Unable to retrieve a JWT token")
+    val jwt = requestVerifySecret(secretValue)
+    val barcode = requestCreateBarcode(jwt)
 
-    checkJwt(jwt, email)
-    verifySecretFails(secretValue)
-
-    // TODO SLM-12 instead of checking the JWT use it to call the create barcode endpoint
+    assertThat(barcode.length).isEqualTo(12)
+    assertThat(barcode).containsOnlyDigits()
+    requestVerifySecretFails(secretValue)
   }
 
   private fun requestMagicLink(email: String) {
@@ -57,7 +57,7 @@ class E2eTest(
     return secretValue
   }
 
-  private fun verifySecret(secretValue: String) =
+  private fun requestVerifySecret(secretValue: String) =
     webTestClient.post()
       .uri("/link/verify")
       .accept(MediaType.APPLICATION_JSON)
@@ -70,8 +70,9 @@ class E2eTest(
       .responseBody
       .blockFirst()
       ?.token
+      ?: fail("Did not receive a response from /link/verify")
 
-  private fun verifySecretFails(secretValue: String) =
+  private fun requestVerifySecretFails(secretValue: String) =
     webTestClient.post()
       .uri("/link/verify")
       .accept(MediaType.APPLICATION_JSON)
@@ -81,9 +82,16 @@ class E2eTest(
       .exchange()
       .expectStatus().isNotFound
 
-  private fun checkJwt(jwt: String, email: String) {
-    assertThat(jwtService.validateToken(jwt)).isTrue
-    assertThat(jwtService.subject(jwt)).isEqualTo(email)
-    assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
-  }
+  private fun requestCreateBarcode(jwt: String): String =
+    webTestClient.post()
+      .uri("/barcode")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .header("Create-Barcode-Token", jwt)
+      .exchange()
+      .expectStatus().isCreated
+      .returnResult(String::class.java)
+      .responseBody
+      .blockFirst()
+      ?: fail("Did not receive a response from /barcode")
 }

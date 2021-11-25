@@ -74,6 +74,9 @@ abstract class IntegrationTest {
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
 
+  internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit =
+    jwtAuthHelper.setCreateBarcodeAuthorisation(email)
+
   @TestConfiguration
   class RedisConfig {
     private val redisServer: RedisServer = RedisServer(6380)

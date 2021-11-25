@@ -43,7 +43,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_CREATE_BARCODE")))
+        .headers(setCreateBarcodeAuthorisation())
         .exchange()
         .expectStatus().isCreated
         .expectBody()
@@ -52,7 +52,7 @@ class BarcodeResourceTest : IntegrationTest() {
       val savedBarcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
       val savedBarcodeEvents = barcodeEventRepository.findByBarcode(savedBarcode)
       assertThat(savedBarcodeEvents).extracting<String> { it.barcode.code }.containsExactly("SOME_CODE")
-      assertThat(savedBarcodeEvents).extracting<String>(BarcodeEvent::userId).containsExactly("some.user@domain.com")
+      assertThat(savedBarcodeEvents).extracting<String>(BarcodeEvent::userId).containsExactly("some.user@company.com.cjsm.net")
       assertThat(savedBarcodeEvents).extracting<BarcodeStatus>(BarcodeEvent::status)
         .containsExactly(BarcodeStatus.CREATED)
     }
@@ -68,7 +68,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_CREATE_BARCODE")))
+        .headers(setCreateBarcodeAuthorisation())
         .exchange()
         .expectStatus().isCreated
         .expectBody()
