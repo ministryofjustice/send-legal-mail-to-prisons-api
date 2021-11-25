@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkResource
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
 
 class MagicLinkResourceTest(
@@ -194,15 +195,14 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
         .exchange()
         .expectStatus().isCreated
-        .returnResult(String::class.java)
+        .returnResult(MagicLinkResource.VerifyLinkResponse::class.java)
         .responseBody
         .blockFirst()
-        .orEmpty()
 
       assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
-      assertThat(jwtService.validateToken(jwt)).isTrue
-      assertThat(jwtService.subject(jwt)).isEqualTo("some.email@company.com.cjsm.net")
-      assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
+      assertThat(jwtService.validateToken(jwt.token)).isTrue
+      assertThat(jwtService.subject(jwt.token)).isEqualTo("some.email@company.com.cjsm.net")
+      assertThat(jwtService.authorities(jwt.token)).containsExactly("ROLE_SLM_CREATE_BARCODE")
     }
 
     @Test
