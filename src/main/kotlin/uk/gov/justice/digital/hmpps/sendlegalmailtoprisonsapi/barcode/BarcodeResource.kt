@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -53,6 +54,6 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       )
     ]
   )
-  fun createBarcode(@AuthenticationPrincipal userId: String): String =
-    barcodeService.createBarcode(userId)
+  fun createBarcode(@AuthenticationPrincipal userDetails: UserDetails): String =
+    barcodeService.createBarcode(userDetails.username)
 }
