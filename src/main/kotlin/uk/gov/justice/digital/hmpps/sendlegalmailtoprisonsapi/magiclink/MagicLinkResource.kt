@@ -81,11 +81,16 @@ class MagicLinkResource(
     ]
   )
   fun verifyMagicLink(@RequestBody request: VerifyLinkRequest) =
-    magicLinkService.verifyMagicLinkSecret(request.secret)
+    VerifyLinkResponse(magicLinkService.verifyMagicLinkSecret(request.secret))
 
   data class VerifyLinkRequest(
     @Schema(description = "The secret to verify", required = true)
     val secret: String,
+  )
+
+  data class VerifyLinkResponse(
+    @Schema(description = "The JWT")
+    val token: String,
   )
 }
 

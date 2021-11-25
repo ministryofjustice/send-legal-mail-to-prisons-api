@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
@@ -8,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink.Message
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkResource
 
 class E2eTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -25,7 +27,7 @@ class E2eTest(
     val email = "some.email@company.com.cjsm.net"
     requestMagicLink(email)
     val secretValue = getSecretFromReceivedEmail()
-    val jwt = verifySecret(secretValue)
+    val jwt = verifySecret(secretValue) ?: fail("Unable to retrieve a JWT token")
 
     checkJwt(jwt, email)
     verifySecretFails(secretValue)
@@ -64,10 +66,10 @@ class E2eTest(
       .body(BodyInserters.fromValue("""{ "secret": "$secretValue" }"""))
       .exchange()
       .expectStatus().isCreated
-      .returnResult(String::class.java)
+      .returnResult(MagicLinkResource.VerifyLinkResponse::class.java)
       .responseBody
       .blockFirst()
-      .orEmpty()
+      ?.token
 
   private fun verifySecretFails(secretValue: String) =
     webTestClient.post()
