@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -198,6 +199,7 @@ class MagicLinkResourceTest(
         .returnResult(MagicLinkResource.VerifyLinkResponse::class.java)
         .responseBody
         .blockFirst()
+        ?: fail("Did not receive a response from /link/verify")
 
       assertThat(magicLinkSecretRepository.findById("some-secret")).isEmpty
       assertThat(jwtService.validateToken(jwt.token)).isTrue
