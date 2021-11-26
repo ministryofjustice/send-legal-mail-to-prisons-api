@@ -11,6 +11,7 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -21,7 +22,7 @@ import java.util.UUID
 private val log = KotlinLogging.logger {}
 
 @Service
-class JwtService(jwtConfig: JwtConfig) {
+class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   private val privateKey: PrivateKey = readPrivateKey(jwtConfig.privateKey)
   private val publicKey: PublicKey = readPublicKey(jwtConfig.publicKey)
@@ -45,7 +46,7 @@ class JwtService(jwtConfig: JwtConfig) {
       .compact()
 
   private fun calculateExpiryAtMidnight(expiry: Duration) =
-    Instant.now()
+    Instant.now(clock)
       .plus(expiry.toMillis(), ChronoUnit.MILLIS)
       .plus(1, ChronoUnit.DAYS)
       .truncatedTo(ChronoUnit.DAYS)
