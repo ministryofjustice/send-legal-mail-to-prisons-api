@@ -39,10 +39,16 @@ class JwtService(jwtConfig: JwtConfig) {
     Jwts.builder()
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
-      .setExpiration(Date.from(Instant.now().plus(expiry.toMillis(), ChronoUnit.MILLIS)))
+      .setExpiration(Date.from(calculateExpiryAtMidnight(expiry)))
       .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE")))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
+
+  private fun calculateExpiryAtMidnight(expiry: Duration) =
+    Instant.now()
+      .plus(expiry.toMillis(), ChronoUnit.MILLIS)
+      .plus(1, ChronoUnit.DAYS)
+      .truncatedTo(ChronoUnit.DAYS)
 
   fun validateToken(jwt: String): Boolean =
     runCatching {
@@ -59,4 +65,7 @@ class JwtService(jwtConfig: JwtConfig) {
   @Suppress("UNCHECKED_CAST")
   fun authorities(jwt: String): List<String>? =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["authorities"] as? List<String>
+
+  fun expiresAt(jwt: String): Instant =
+    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
 }

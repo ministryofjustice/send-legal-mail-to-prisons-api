@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.JwtConfig
 import java.time.Duration
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class JwtServiceTest {
@@ -40,8 +41,19 @@ class JwtServiceTest {
   }
 
   @Test
+  fun `the generated JWT should expire at midnight`() {
+    val jwtService = jwtService()
+    val jwt = jwtService.generateToken("some.email@company.com")
+
+    val expiresAt = jwtService.expiresAt(jwt)
+    assertThat(expiresAt).isEqualTo(midnight())
+  }
+
+  private fun midnight() = Instant.now().plus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS)
+
+  @Test
   fun `an expired JWT should be invalid`() {
-    val jwtService = jwtService(Duration.of(-1, ChronoUnit.MINUTES))
+    val jwtService = jwtService(Duration.of(-1, ChronoUnit.DAYS))
     val jwt = jwtService.generateToken("some.email@company.com")
 
     assertThat(jwtService.validateToken(jwt)).isFalse
