@@ -11,6 +11,7 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -21,7 +22,7 @@ import java.util.UUID
 private val log = KotlinLogging.logger {}
 
 @Service
-class JwtService(jwtConfig: JwtConfig) {
+class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   private val privateKey: PrivateKey = readPrivateKey(jwtConfig.privateKey)
   private val publicKey: PublicKey = readPublicKey(jwtConfig.publicKey)
@@ -39,10 +40,16 @@ class JwtService(jwtConfig: JwtConfig) {
     Jwts.builder()
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
-      .setExpiration(Date.from(Instant.now().plus(expiry.toMillis(), ChronoUnit.MILLIS)))
+      .setExpiration(Date.from(calculateExpiryAtMidnight(expiry)))
       .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE")))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
+
+  private fun calculateExpiryAtMidnight(expiry: Duration) =
+    Instant.now(clock)
+      .plus(expiry.toMillis(), ChronoUnit.MILLIS)
+      .plus(1, ChronoUnit.DAYS)
+      .truncatedTo(ChronoUnit.DAYS)
 
   fun validateToken(jwt: String): Boolean =
     runCatching {
@@ -59,4 +66,7 @@ class JwtService(jwtConfig: JwtConfig) {
   @Suppress("UNCHECKED_CAST")
   fun authorities(jwt: String): List<String>? =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["authorities"] as? List<String>
+
+  fun expiresAt(jwt: String): Instant =
+    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
 }
