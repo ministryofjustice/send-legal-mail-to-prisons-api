@@ -48,11 +48,6 @@ class MagicLinkResource(
     magicLinkService.createAndSendMagicLink(request.email)
   }
 
-  data class MagicLinkRequest(
-    @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com", required = true)
-    val email: String,
-  )
-
   @PostMapping(value = ["/link/verify"])
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
@@ -82,25 +77,35 @@ class MagicLinkResource(
   )
   fun verifyMagicLink(@RequestBody request: VerifyLinkRequest) =
     VerifyLinkResponse(magicLinkService.verifyMagicLinkSecret(request.secret))
-
-  data class VerifyLinkRequest(
-    @Schema(description = "The secret to verify", required = true)
-    val secret: String,
-  )
-
-  data class VerifyLinkResponse(
-    @Schema(description = "The JWT")
-    val token: String,
-  )
 }
+
+data class MagicLinkRequest(
+  @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com", required = true)
+  val email: String,
+)
+
+data class VerifyLinkRequest(
+  @Schema(description = "The secret to verify", required = true)
+  val secret: String,
+)
+
+data class VerifyLinkResponse(
+  @Schema(description = "The JWT")
+  val token: String,
+)
+
+const val MAX_EMAIL_LENGTH = 254
 
 @Service
 class MagicLinkRequestValidator {
   private val emailRegex = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
 
-  fun validate(magicLinkRequest: MagicLinkResource.MagicLinkRequest) {
+  fun validate(magicLinkRequest: MagicLinkRequest) {
     if (magicLinkRequest.email.isEmpty()) {
       throw ValidationException(ErrorCode.EMAIL_MANDATORY)
+    }
+    if (magicLinkRequest.email.length > MAX_EMAIL_LENGTH) {
+      throw ValidationException(ErrorCode.EMAIL_TOO_LONG)
     }
     if (emailRegex.matches(magicLinkRequest.email).not()) {
       throw ValidationException(ErrorCode.INVALID_EMAIL)

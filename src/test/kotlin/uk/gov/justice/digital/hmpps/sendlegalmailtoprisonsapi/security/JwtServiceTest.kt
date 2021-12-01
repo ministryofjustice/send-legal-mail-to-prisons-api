@@ -47,12 +47,12 @@ class JwtServiceTest {
   fun `the generated JWT should expire at midnight on the day of expiry`() {
     val jwtService = jwtService(
       expiry = Duration.of(1, ChronoUnit.DAYS),
-      clock = Clock.fixed(Instant.parse("2021-11-26T12:18:05Z"), ZoneId.of("Europe/London"))
+      clock = Clock.fixed(Instant.parse("2100-11-26T12:18:05Z"), ZoneId.of("Europe/London"))
     )
     val jwt = jwtService.generateToken("some.email@company.com")
 
     val expiresAt = jwtService.expiresAt(jwt)
-    assertThat(expiresAt).isEqualTo(Instant.parse("2021-11-28T00:00:00Z"))
+    assertThat(expiresAt).isEqualTo(Instant.parse("2100-11-28T00:00:00Z"))
   }
 
   @Test

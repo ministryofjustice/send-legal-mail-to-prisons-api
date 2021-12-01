@@ -9,7 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink.Message
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkResource
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 
 class E2eTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -66,7 +66,7 @@ class E2eTest(
       .body(BodyInserters.fromValue("""{ "secret": "$secretValue" }"""))
       .exchange()
       .expectStatus().isCreated
-      .returnResult(MagicLinkResource.VerifyLinkResponse::class.java)
+      .returnResult(VerifyLinkResponse::class.java)
       .responseBody
       .blockFirst()
       ?.token

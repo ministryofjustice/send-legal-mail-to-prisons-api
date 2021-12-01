@@ -11,8 +11,8 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkResource
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 
 class MagicLinkResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -196,7 +196,7 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
         .exchange()
         .expectStatus().isCreated
-        .returnResult(MagicLinkResource.VerifyLinkResponse::class.java)
+        .returnResult(VerifyLinkResponse::class.java)
         .responseBody
         .blockFirst()
         ?: fail("Did not receive a response from /link/verify")
