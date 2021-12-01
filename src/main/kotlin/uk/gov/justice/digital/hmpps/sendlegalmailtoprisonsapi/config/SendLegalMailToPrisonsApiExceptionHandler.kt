@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MAX_EMAIL_LENGTH
 import javax.persistence.EntityNotFoundException
 
 private val log = KotlinLogging.logger {}
@@ -95,6 +96,7 @@ enum class ErrorCode(val userMessage: String) {
   NOT_FOUND("Not found"),
   // Custom errors
   EMAIL_MANDATORY("The email address must be entered"),
+  EMAIL_TOO_LONG("The email address can have a maximum length of $MAX_EMAIL_LENGTH"),
   INVALID_EMAIL("Enter an email address in the correct format"),
   INVALID_CJSM_EMAIL("Enter an email address which ends with 'cjsm.net'"),
 }
