@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -27,6 +29,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Creates a one time barcode for the prisoner",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
   )
   @ApiResponses(
     value = [
@@ -54,6 +57,6 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       )
     ]
   )
-  fun createBarcode(@AuthenticationPrincipal userDetails: UserDetails): String =
+  fun createBarcode(@Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails): String =
     barcodeService.createBarcode(userDetails.username)
 }
