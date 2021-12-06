@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailTooLong
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 
 class MagicLinkRequestValidatorTest {
@@ -20,6 +20,6 @@ class MagicLinkRequestValidatorTest {
     assertThatThrownBy {
       magicLinkRequestValidator.validate(MagicLinkRequest("a$emailOfMaxLength"))
     }.isInstanceOf(ValidationException::class.java)
-      .extracting("errorCode").isEqualTo(ErrorCode.EMAIL_TOO_LONG)
+      .extracting("errorCode").isEqualTo(EmailTooLong)
   }
 }

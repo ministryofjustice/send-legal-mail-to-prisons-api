@@ -26,7 +26,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.info("Request message unreadable exception: {}", e.message)
     return ResponseEntity
       .status(BAD_REQUEST)
-      .body(ErrorResponse(status = BAD_REQUEST, errorCode = ErrorCode.MALFORMED_REQUEST))
+      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
   @ExceptionHandler(AccessDeniedException::class)
@@ -34,7 +34,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.info("Access denied exception: {}", e.message)
     return ResponseEntity
       .status(FORBIDDEN)
-      .body(ErrorResponse(status = FORBIDDEN, errorCode = ErrorCode.AUTH))
+      .body(ErrorResponse(status = FORBIDDEN, errorCode = AuthenticationError))
   }
 
   @ExceptionHandler(RestClientResponseException::class)
@@ -42,7 +42,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.error("RestClientResponseException: {}", e.message)
     return ResponseEntity
       .status(e.rawStatusCode)
-      .body(ErrorResponse(status = e.rawStatusCode, errorCode = ErrorCode.DOWNSTREAM))
+      .body(ErrorResponse(status = e.rawStatusCode, errorCode = DownstreamError))
   }
 
   @ExceptionHandler(RestClientException::class)
@@ -50,7 +50,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.error("RestClientException: {}", e.message)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = INTERNAL_SERVER_ERROR, errorCode = ErrorCode.DOWNSTREAM))
+      .body(ErrorResponse(status = INTERNAL_SERVER_ERROR, errorCode = DownstreamError))
   }
 
   @ExceptionHandler(EntityNotFoundException::class)
@@ -58,7 +58,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.info("Entity not found exception: {}", e.message)
     return ResponseEntity
       .status(NOT_FOUND)
-      .body(ErrorResponse(status = NOT_FOUND, errorCode = ErrorCode.NOT_FOUND))
+      .body(ErrorResponse(status = NOT_FOUND, errorCode = NotFound))
   }
 
   @ExceptionHandler(ValidationException::class)
@@ -74,7 +74,7 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     log.error("Unexpected exception", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = INTERNAL_SERVER_ERROR, errorCode = ErrorCode.INTERNAL_ERROR))
+      .body(ErrorResponse(status = INTERNAL_SERVER_ERROR, errorCode = InternalError))
   }
 }
 
@@ -83,20 +83,21 @@ class ValidationException(val errorCode: ErrorCode) : RuntimeException()
 class ErrorResponse(val status: Int, errorCode: ErrorCode) {
   constructor(status: HttpStatus, errorCode: ErrorCode) : this(status.value(), errorCode)
 
-  val errorCode = errorCode.name
+  val errorCode = errorCode.code
   val userMessage = errorCode.userMessage
 }
 
-enum class ErrorCode(val userMessage: String) {
-  // Standard errors
-  AUTH("Authentication failure"),
-  DOWNSTREAM("An error occurred calling a downstream service"),
-  INTERNAL_ERROR("An unexpected error occurred"),
-  MALFORMED_REQUEST("Failed to read the payload"),
-  NOT_FOUND("Not found"),
-  // Custom errors
-  EMAIL_MANDATORY("The email address must be entered"),
-  EMAIL_TOO_LONG("The email address can have a maximum length of $MAX_EMAIL_LENGTH"),
-  INVALID_EMAIL("Enter an email address in the correct format"),
-  INVALID_CJSM_EMAIL("Enter an email address which ends with 'cjsm.net'"),
-}
+sealed class ErrorCode(val code: String, val userMessage: String)
+
+sealed class StandardErrorCodes(code: String, userMessage: String) : ErrorCode(code, userMessage)
+object AuthenticationError : StandardErrorCodes("AUTH", "Authentication failure")
+object DownstreamError : StandardErrorCodes("DOWNSTREAM", "An error occurred calling a downstream service")
+object InternalError : StandardErrorCodes("INTERNAL_ERROR", "An unexpected error occurred")
+object MalformedRequest : StandardErrorCodes("MALFORMED_REQUEST", "Failed to read the payload")
+object NotFound : StandardErrorCodes("NOT_FOUND", "Not found")
+
+sealed class MagicLinkRequestErrorCodes(code: String, userMessage: String) : StandardErrorCodes(code, userMessage)
+object EmailMandatory : MagicLinkRequestErrorCodes("EMAIL_MANDATORY", "The email address must be entered")
+object EmailTooLong : MagicLinkRequestErrorCodes("EMAIL_TOO_LONG", "The email address can have a maximum length of $MAX_EMAIL_LENGTH")
+object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
+object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")

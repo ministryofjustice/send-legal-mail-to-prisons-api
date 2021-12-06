@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalid
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalidCjsm
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailMandatory
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailTooLong
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 
@@ -102,16 +105,16 @@ class MagicLinkRequestValidator {
 
   fun validate(magicLinkRequest: MagicLinkRequest) {
     if (magicLinkRequest.email.isEmpty()) {
-      throw ValidationException(ErrorCode.EMAIL_MANDATORY)
+      throw ValidationException(EmailMandatory)
     }
     if (magicLinkRequest.email.length > MAX_EMAIL_LENGTH) {
-      throw ValidationException(ErrorCode.EMAIL_TOO_LONG)
+      throw ValidationException(EmailTooLong)
     }
     if (emailRegex.matches(magicLinkRequest.email).not()) {
-      throw ValidationException(ErrorCode.INVALID_EMAIL)
+      throw ValidationException(EmailInvalid)
     }
     if (magicLinkRequest.email.endsWith(".cjsm.net").not()) {
-      throw ValidationException(ErrorCode.INVALID_CJSM_EMAIL)
+      throw ValidationException(EmailInvalidCjsm)
     }
   }
 }
