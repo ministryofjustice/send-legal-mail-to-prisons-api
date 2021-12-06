@@ -41,7 +41,7 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
       .setExpiration(Date.from(calculateExpiryAtMidnight(expiry)))
-      .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE")))
+      .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE"), "client_id" to "send-legal-mail"))
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
 
@@ -66,6 +66,10 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
   @Suppress("UNCHECKED_CAST")
   fun authorities(jwt: String): List<String>? =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["authorities"] as? List<String>
+
+  @Suppress("UNCHECKED_CAST")
+  fun clientId(jwt: String): String? =
+    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["client_id"] as? String
 
   fun expiresAt(jwt: String): Instant =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()

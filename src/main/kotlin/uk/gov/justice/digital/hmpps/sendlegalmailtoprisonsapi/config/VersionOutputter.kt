@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.health
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
