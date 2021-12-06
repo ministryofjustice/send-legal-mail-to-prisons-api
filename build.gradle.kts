@@ -1,7 +1,7 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.13"
-  kotlin("plugin.spring") version "1.5.31"
-  kotlin("plugin.jpa") version "1.5.31"
+  kotlin("plugin.spring") version "1.6.0"
+  kotlin("plugin.jpa") version "1.6.0"
 }
 
 configurations {
@@ -18,12 +18,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.12")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.12")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.12")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.13")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.5.13")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.5.13")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.5.13")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
-  implementation("io.github.microutils:kotlin-logging:1.12.5")
+  implementation("io.github.microutils:kotlin-logging:2.1.14")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
