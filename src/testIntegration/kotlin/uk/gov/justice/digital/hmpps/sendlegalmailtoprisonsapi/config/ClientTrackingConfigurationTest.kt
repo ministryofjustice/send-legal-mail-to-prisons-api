@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.config
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
 import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext
 import com.microsoft.applicationinsights.web.internal.ThreadContext
@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ClientTrackingInterceptor
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 class ClientTrackingConfigurationTest : IntegrationTest() {
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")

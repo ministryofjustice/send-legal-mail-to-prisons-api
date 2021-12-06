@@ -12,7 +12,7 @@ parameters:
     default: farsight_alerts
 
 executors:
-  validator:
+  integration-test-validator:
     docker:
       - image: cimg/openjdk:16.0
       - image: circleci/postgres:13.3
@@ -27,7 +27,9 @@ executors:
 
 jobs:
   validate:
-    executor: validator
+    executor:
+      name: hmpps/java
+      tag: "16.0"
     steps:
       - checkout
       - restore_cache:
@@ -44,12 +46,34 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+  test-integration:
+    executor: integration-test-validator
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          command: ./gradlew testIntegration
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
 
 workflows:
   version: 2
   build-test-and-deploy:
     jobs:
       - validate:
+          filters:
+            tags:
+              ignore: /.*/
+      - test-integration:
           filters:
             tags:
               ignore: /.*/
@@ -70,9 +94,10 @@ workflows:
               only:
                 - main
           requires:
-            - validate
-            - build_docker
             - helm_lint
+            - validate
+            - test-integration
+            - build_docker
       - request-preprod-approval:
           type: approval
           requires:
