@@ -26,36 +26,21 @@ class BarcodeService(
 
   fun checkBarcode(userId: String, code: String) {
     barcodeRepository.findById(code).toNullable()
-      ?.also { barcode -> createCheckedEventFromCreatedEvent(userId, barcode) }
+      ?.also { barcode -> createCheckedEvent(userId, barcode) }
       ?: also {
-        createCheckedEventForInvalidBarcode(userId, code)
+        val barcode = barcodeRepository.save(Barcode(code = code))
+        createCheckedEvent(userId, barcode)
         throw EntityNotFoundException("The barcode is not found")
       }
   }
 
-  private fun createCheckedEventFromCreatedEvent(userId: String, barcode: Barcode) {
-    barcodeEventRepository.findByBarcodeAndStatus(barcode, BarcodeStatus.CREATED).firstOrNull()
-      ?.also {
-        barcodeEventRepository.save(
-          BarcodeEvent(
-            barcode = barcode,
-            userId = userId,
-            status = BarcodeStatus.CHECKED,
-          )
-        )
-      }
-  }
-
-  private fun createCheckedEventForInvalidBarcode(userId: String, code: String) {
-    barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code = code)) }
-      .also { barcode ->
-        barcodeEventRepository.save(
-          BarcodeEvent(
-            barcode = barcode,
-            userId = userId,
-            status = BarcodeStatus.CHECKED,
-          )
-        )
-      }
+  private fun createCheckedEvent(userId: String, barcode: Barcode) {
+    barcodeEventRepository.save(
+      BarcodeEvent(
+        barcode = barcode,
+        userId = userId,
+        status = BarcodeStatus.CHECKED,
+      )
+    )
   }
 }
