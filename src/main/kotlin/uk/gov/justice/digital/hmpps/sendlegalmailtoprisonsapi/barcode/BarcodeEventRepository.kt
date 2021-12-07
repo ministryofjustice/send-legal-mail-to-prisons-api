@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
   fun findByBarcode(barcode: Barcode): List<BarcodeEvent>
+  fun findByBarcodeAndStatus(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
 }
 
 @Entity
@@ -54,4 +55,4 @@ data class BarcodeEvent(
   }
 }
 
-enum class BarcodeStatus { CREATED, SCANNED }
+enum class BarcodeStatus { CREATED, CHECKED }

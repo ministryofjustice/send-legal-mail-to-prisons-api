@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 
 class BarcodeResourceTest : IntegrationTest() {
 
@@ -46,12 +47,8 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectBody()
         .jsonPath("$").isEqualTo("SOME_CODE")
 
-      val savedBarcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-      val savedBarcodeEvents = barcodeEventRepository.findByBarcode(savedBarcode)
-      assertThat(savedBarcodeEvents).extracting<String> { it.barcode.code }.containsExactly("SOME_CODE")
-      assertThat(savedBarcodeEvents).extracting<String>(BarcodeEvent::userId).containsExactly("some.user@company.com.cjsm.net")
-      assertThat(savedBarcodeEvents).extracting<BarcodeStatus>(BarcodeEvent::status)
-        .containsExactly(BarcodeStatus.CREATED)
+      val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
+      barcodeEventRepository.findByBarcodeAndStatus(barcode, BarcodeStatus.CREATED).firstOrNull()
     }
 
     @Test
@@ -70,10 +67,91 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectStatus().isCreated
         .expectBody()
         .jsonPath("$").isEqualTo("ANOTHER_CODE")
+    }
+  }
 
-      val savedBarcode = barcodeRepository.findById("ANOTHER_CODE").orElseThrow()
-      val savedBarcodeEvents = barcodeEventRepository.findByBarcode(savedBarcode)
-      assertThat(savedBarcodeEvents).extracting<String> { it.barcode.code }.containsExactly("ANOTHER_CODE")
+  @Nested
+  inner class CheckBarcode {
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue("""{ "barcode": "any-barcode" }"""))
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `forbidden without a valid role`() {
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "any.user@domain.com"))
+        .body(BodyInserters.fromValue("""{ "barcode": "any-barcode" }"""))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `bad request with malformed body`() {
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "any.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "not-expecting-this": "missing-barcode" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `bad request with missing body`() {
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "any.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `not found if barcode does not exist`() {
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "doesnt-exist" }"""))
+        .exchange()
+        .expectStatus().isNotFound
+    }
+
+    @Test
+    fun `OK if barcode exists`() {
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isOk
     }
   }
 }

@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -50,6 +51,37 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
         description = "Unauthorised, requires a valid magic link token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
+    ]
+  )
+  fun createBarcode(@Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails): String =
+    barcodeService.createBarcode(userDetails.username)
+
+  @PostMapping(value = ["/barcode/check"])
+  @ResponseBody
+  @PreAuthorize("hasRole('ROLE_SLM_SCAN_BARCODE')")
+  @Operation(
+    summary = "Checks the status of a barcode received on Rule 39 mail",
+    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Barcode is OK and no further checks are required",
+        content = [
+          Content(mediaType = "application/json")
+        ],
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid magic link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
       ApiResponse(
         responseCode = "404",
         description = "Not found",
@@ -57,6 +89,13 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       )
     ]
   )
-  fun createBarcode(@Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails): String =
-    barcodeService.createBarcode(userDetails.username)
+  fun checkBarcode(
+    @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
+    @RequestBody request: CheckBarcodeRequest,
+  ) = barcodeService.checkBarcode(userId, request.barcode)
 }
+
+data class CheckBarcodeRequest(
+  @Schema(description = "The barcode being checked", example = "123456789012", required = true)
+  val barcode: String,
+)
