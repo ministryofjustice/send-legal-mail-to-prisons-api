@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
-import java.util.Optional
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.toNullable
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -25,5 +25,3 @@ class MagicLinkService(
       ?.let { savedSecret -> jwtService.generateToken(savedSecret.email) }
       ?: throw EntityNotFoundException("Not found")
 }
-
-fun <T> Optional<T>.toNullable(): T? = orElse(null)

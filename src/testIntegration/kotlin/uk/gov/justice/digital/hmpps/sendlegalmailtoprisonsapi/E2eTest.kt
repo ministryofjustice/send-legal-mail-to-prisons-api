@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
+import org.springframework.test.web.reactive.server.StatusAssertions
+import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
@@ -23,16 +25,15 @@ class E2eTest(
   }
 
   @Test
-  fun `can request and verify a magic link to receive an auth token`() {
-    val email = "some.email@company.com.cjsm.net"
-    requestMagicLink(email)
+  fun `can sign in with magic link then create and check a barcode`() {
+    requestMagicLink("some.email@company.com.cjsm.net")
     val secretValue = getSecretFromReceivedEmail()
     val jwt = requestVerifySecret(secretValue)
+    requestVerifySecretFails(secretValue)
     val barcode = requestCreateBarcode(jwt)
 
-    assertThat(barcode.length).isEqualTo(12)
-    assertThat(barcode).containsOnlyDigits()
-    requestVerifySecretFails(secretValue)
+    requestCheckBarcode(barcode) { status -> status.isOk }
+    requestCheckBarcode(barcode) { status -> status.isOk } // TODO SLM-12 This should be an error
   }
 
   private fun requestMagicLink(email: String) {
@@ -93,5 +94,22 @@ class E2eTest(
       .returnResult(String::class.java)
       .responseBody
       .blockFirst()
+      ?.also { barcode ->
+        assertThat(barcode.length).isEqualTo(12)
+        assertThat(barcode).containsOnlyDigits()
+      }
       ?: fail("Did not receive a response from /barcode")
+
+  private fun requestCheckBarcode(
+    barcode: String,
+    statusCheck: (StatusAssertions) -> WebTestClient.ResponseSpec,
+  ) =
+    webTestClient.post()
+      .uri("/barcode/check")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
+      .exchange()
+      .expectStatus().apply { statusCheck(this) }
 }
