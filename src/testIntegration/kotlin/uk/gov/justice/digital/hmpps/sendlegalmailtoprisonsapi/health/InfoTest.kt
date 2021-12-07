@@ -1,8 +1,8 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.health
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.health
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

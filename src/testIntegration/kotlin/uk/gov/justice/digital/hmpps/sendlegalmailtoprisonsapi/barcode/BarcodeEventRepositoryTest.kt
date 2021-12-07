@@ -1,10 +1,8 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.barcode
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEvent
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 class BarcodeEventRepositoryTest : IntegrationTest() {
 

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm

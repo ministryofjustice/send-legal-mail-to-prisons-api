@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import io.lettuce.core.ClientOptions
 import org.junit.jupiter.api.AfterEach
@@ -20,11 +20,11 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEve
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MagicLinkConfig
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.MailcatcherContainer
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 

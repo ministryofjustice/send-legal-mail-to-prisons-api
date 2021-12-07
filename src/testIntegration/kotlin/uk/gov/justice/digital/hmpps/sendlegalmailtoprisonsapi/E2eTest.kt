@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink.Message
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 
 class E2eTest(
