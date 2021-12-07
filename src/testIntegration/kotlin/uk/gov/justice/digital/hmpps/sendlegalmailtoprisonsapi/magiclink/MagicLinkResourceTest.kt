@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.magiclink
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorCode
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalid
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalidCjsm
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailMandatory
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 
 class MagicLinkResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -48,7 +49,7 @@ class MagicLinkResourceTest(
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -61,7 +62,7 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -75,7 +76,7 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(ErrorCode.EMAIL_MANDATORY.name)
+        .jsonPath("$.errorCode").isEqualTo(EmailMandatory.code)
         .jsonPath("$.userMessage").value<String> { it.contains("email address") }
     }
 
@@ -90,7 +91,7 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_EMAIL.name)
+        .jsonPath("$.errorCode").isEqualTo(EmailInvalid.code)
         .jsonPath("$.userMessage").value<String> { it.contains("email address") }
     }
 
@@ -105,7 +106,7 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(ErrorCode.INVALID_CJSM_EMAIL.name)
+        .jsonPath("$.errorCode").isEqualTo(EmailInvalidCjsm.code)
         .jsonPath("$.userMessage").value<String> { it.contains("cjsm.net") }
     }
 
@@ -156,7 +157,7 @@ class MagicLinkResourceTest(
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -169,7 +170,7 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some-secret-value" }"""))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(ErrorCode.MALFORMED_REQUEST.name)
+        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
     }
 
     @Test

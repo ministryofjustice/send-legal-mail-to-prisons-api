@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.testcontainers
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers
 
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait

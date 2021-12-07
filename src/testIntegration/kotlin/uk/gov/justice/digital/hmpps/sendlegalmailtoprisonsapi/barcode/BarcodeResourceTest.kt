@@ -1,14 +1,11 @@
-package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.barcode
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEvent
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.integration.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 class BarcodeResourceTest : IntegrationTest() {
 
