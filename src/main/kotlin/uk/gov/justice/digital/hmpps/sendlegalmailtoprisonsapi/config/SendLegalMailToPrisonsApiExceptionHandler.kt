@@ -108,5 +108,5 @@ class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBa
 private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault())
 private fun Instant.format(): String {
-  return """at ${timeFormatter.format(this)} on ${dateFormatter.format(this)}"""
+  return """at ${timeFormatter.format(this).lowercase()} on ${dateFormatter.format(this)}"""
 }
