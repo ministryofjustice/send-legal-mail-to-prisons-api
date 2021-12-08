@@ -38,9 +38,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       ApiResponse(
         responseCode = "201",
         description = "Barcode created",
-        content = [
-          Content(mediaType = "application/json")
-        ],
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = String::class))],
       ),
       ApiResponse(
         responseCode = "400",
@@ -69,9 +67,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       ApiResponse(
         responseCode = "200",
         description = "Barcode is OK and no further checks are required",
-        content = [
-          Content(mediaType = "application/json")
-        ],
+        content = [Content(mediaType = "application/json")],
       ),
       ApiResponse(
         responseCode = "400",
