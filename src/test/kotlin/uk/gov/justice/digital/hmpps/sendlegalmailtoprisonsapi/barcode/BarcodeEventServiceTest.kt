@@ -83,7 +83,7 @@ class BarcodeEventServiceTest {
         )
 
       assertThatThrownBy {
-        barcodeEventService.checkForDuplicate(Barcode("SOME_BARCODE"), "some_user", "some_location")
+        barcodeEventService.checkForDuplicate(Barcode("SOME_BARCODE"), "some_user", "second_location")
       }.isInstanceOf(ValidationException::class.java)
         .extracting {
           val error = (it as ValidationException).errorCode as Duplicate
@@ -94,7 +94,7 @@ class BarcodeEventServiceTest {
       verify(barcodeEventRepository).save(
         check {
           assertThat(it).extracting("barcode", "status", "location", "userId")
-            .isEqualTo(listOf(Barcode("SOME_BARCODE"), BarcodeStatus.DUPLICATE, "some_location", "some_user"))
+            .isEqualTo(listOf(Barcode("SOME_BARCODE"), BarcodeStatus.DUPLICATE, "second_location", "some_user"))
         }
       )
     }
