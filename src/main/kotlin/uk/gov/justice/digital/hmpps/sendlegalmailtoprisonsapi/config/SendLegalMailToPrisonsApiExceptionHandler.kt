@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MAX_EMAIL_LENGTH
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.persistence.EntityNotFoundException
 
 private val log = KotlinLogging.logger {}
@@ -80,11 +83,8 @@ class SendLegalMailToPrisonsApiExceptionHandler {
 
 class ValidationException(val errorCode: ErrorCode) : RuntimeException()
 
-class ErrorResponse(val status: Int, errorCode: ErrorCode) {
+class ErrorResponse(val status: Int, val errorCode: ErrorCode) {
   constructor(status: HttpStatus, errorCode: ErrorCode) : this(status.value(), errorCode)
-
-  val errorCode = errorCode.code
-  val userMessage = errorCode.userMessage
 }
 
 sealed class ErrorCode(val code: String, val userMessage: String)
@@ -101,3 +101,12 @@ object EmailMandatory : MagicLinkRequestErrorCodes("EMAIL_MANDATORY", "The email
 object EmailTooLong : MagicLinkRequestErrorCodes("EMAIL_TOO_LONG", "The email address can have a maximum length of $MAX_EMAIL_LENGTH")
 object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
 object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
+
+sealed class CheckBarcodeErrorCodes(code: String, userMessage: String) : StandardErrorCodes(code, userMessage)
+class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.format()} at $scannedLocation. It may be an illegal copy.")
+
+private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault())
+private fun Instant.format(): String {
+  return """at ${timeFormatter.format(this)} on ${dateFormatter.format(this)}"""
+}

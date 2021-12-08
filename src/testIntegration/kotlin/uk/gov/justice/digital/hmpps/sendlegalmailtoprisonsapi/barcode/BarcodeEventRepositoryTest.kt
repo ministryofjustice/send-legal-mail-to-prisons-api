@@ -9,7 +9,7 @@ class BarcodeEventRepositoryTest : IntegrationTest() {
   @Test
   fun `can create and retrieve a barcode event`() {
     val barcode = barcodeRepository.save(Barcode("SOME_BARCODE"))
-    val barcodeEvent = barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "SOME_USER"))
+    val barcodeEvent = barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "SOME_USER", status = BarcodeStatus.CREATED))
 
     val savedBarcodeEvent = barcodeEventRepository.findById(barcodeEvent.id).orElseThrow()
 
