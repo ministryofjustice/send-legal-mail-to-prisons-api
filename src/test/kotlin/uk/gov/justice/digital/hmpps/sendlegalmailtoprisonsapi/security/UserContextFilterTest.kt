@@ -27,7 +27,7 @@ class UserContextFilterTest {
   fun `should save the auth token and caseload if there is an Authorization header`() {
     whenever(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("some_token")
     whenever(hmppsAuthClient.getUserDetails()).thenReturn(UserDetails("some_caseload"))
-    whenever(jwtService.isHmppsUserToken("some_token")).thenReturn(true)
+    whenever(jwtService.isNomisUserToken("some_token")).thenReturn(true)
 
     userContextFilter.doFilter(servletRequest, servletResponse, filterChain)
 
@@ -41,7 +41,7 @@ class UserContextFilterTest {
   @Test
   fun `should not save the auth token or caseload if no Auth header`() {
     whenever(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null)
-    whenever(jwtService.isHmppsUserToken("some_token")).thenReturn(false)
+    whenever(jwtService.isNomisUserToken("some_token")).thenReturn(false)
 
     userContextFilter.doFilter(servletRequest, servletResponse, filterChain)
 

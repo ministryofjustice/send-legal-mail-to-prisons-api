@@ -77,9 +77,9 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
   fun expiresAt(jwt: String): Instant =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
 
-  fun isHmppsUserToken(authToken: String?) =
+  fun isNomisUserToken(authToken: String?) =
     authToken?.isNotBlank()
-      ?.and((getClaimsFromJWT(authToken).getClaim("grant_type") as String?) === "password")
+      ?.and((getClaimsFromJWT(authToken).getClaim("auth_source") as String?) == "nomis")
       ?: false
 
   @Throws(ParseException::class)
