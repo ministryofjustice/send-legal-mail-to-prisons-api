@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserConte
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-class BarcodeResource(private val barcodeService: BarcodeService) {
+class BarcodeResource(private val barcodeService: BarcodeService, private val userContext: UserContext) {
 
   @PostMapping(value = ["/barcode"])
   @ResponseBody
@@ -89,7 +89,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
   fun checkBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
     @RequestBody request: CheckBarcodeRequest,
-  ) = barcodeService.checkBarcode(userId, request.barcode, UserContext.getCaseload())
+  ) = barcodeService.checkBarcode(userId, request.barcode, userContext.caseload)
 }
 
 data class CheckBarcodeRequest(

@@ -8,11 +8,12 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext.getAuthToken
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
 
 @Configuration
 class WebClientConfiguration(
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
+  private val userContext: UserContext,
 ) {
 
   @Bean
@@ -26,7 +27,7 @@ class WebClientConfiguration(
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
     return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
       val filtered = ClientRequest.from(request)
-        .header(HttpHeaders.AUTHORIZATION, getAuthToken())
+        .header(HttpHeaders.AUTHORIZATION, userContext.authToken)
         .build()
       next.exchange(filtered)
     }

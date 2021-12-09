@@ -15,14 +15,14 @@ import javax.servlet.http.HttpServletRequest
 
 @Component
 @Order(1)
-class UserContextFilter(private val hmppsAuthClient: HmppsAuthClient) : Filter {
+class UserContextFilter(private val hmppsAuthClient: HmppsAuthClient, private val userContext: UserContext) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val httpServletRequest = servletRequest as HttpServletRequest
     val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
     if (!authToken.isNullOrBlank()) {
-      UserContext.setAuthToken(authToken)
-      UserContext.setCaseload(hmppsAuthClient.getUserDetails().activeCaseLoadId)
+      userContext.authToken = authToken
+      userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
     }
     filterChain.doFilter(httpServletRequest, servletResponse)
   }
