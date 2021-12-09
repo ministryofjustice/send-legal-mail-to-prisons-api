@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import com.nhaarman.mockitokotlin2.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class BarcodeResourceTest : IntegrationTest() {
 
@@ -31,6 +37,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .headers(setAuthorisation(user = "some.user@domain.com"))
         .exchange()
         .expectStatus().isForbidden
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
     }
 
     @Test
@@ -48,7 +55,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$").isEqualTo("SOME_CODE")
 
       val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-      barcodeEventRepository.findByBarcodeAndStatus(barcode, BarcodeStatus.CREATED).firstOrNull()
+      barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED).firstOrNull()
     }
 
     @Test
@@ -93,6 +100,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .body(BodyInserters.fromValue("""{ "barcode": "any-barcode" }"""))
         .exchange()
         .expectStatus().isForbidden
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
     }
 
     @Test
@@ -105,7 +113,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .body(BodyInserters.fromValue("""{ "not-expecting-this": "missing-barcode" }"""))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -117,7 +125,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .headers(setAuthorisation(user = "any.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -130,6 +138,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .body(BodyInserters.fromValue("""{ "barcode": "doesnt-exist" }"""))
         .exchange()
         .expectStatus().isNotFound
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
     }
 
     @Test
@@ -152,6 +161,42 @@ class BarcodeResourceTest : IntegrationTest() {
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isOk
+    }
+
+    @Test
+    fun `Bad request duplicate if barcode already checked`() {
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isOk
+
+      val today = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(Instant.now()).removeSuffix("Z")
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
+        .jsonPath("$.errorCode.scannedDate").value<String> { assertThat(it).contains(today) }
+        .jsonPath("$.errorCode.scannedLocation").isEqualTo("LEI")
     }
   }
 }

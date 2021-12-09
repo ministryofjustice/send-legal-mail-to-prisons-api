@@ -62,9 +62,7 @@ class MagicLinkResource(
       ApiResponse(
         responseCode = "201",
         description = "Authentication token created",
-        content = [
-          Content(mediaType = "application/json")
-        ],
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = VerifyLinkResponse::class))],
       ),
       ApiResponse(
         responseCode = "401",
