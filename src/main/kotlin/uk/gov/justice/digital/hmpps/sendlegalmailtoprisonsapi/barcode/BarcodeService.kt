@@ -24,8 +24,12 @@ class BarcodeService(
 
   fun checkBarcode(userId: String, code: String, location: String) {
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
-      .also { barcode -> barcodeEventService.createEvent(barcode, userId, BarcodeStatus.CHECKED, location) }
-      .also { barcode -> barcodeEventService.checkForCreated(barcode) }
-      .also { barcode -> barcodeEventService.checkForDuplicate(barcode, userId, location) }
+      .also { barcode ->
+        with(barcodeEventService) {
+          createEvent(barcode, userId, BarcodeStatus.CHECKED, location)
+          checkForCreated(barcode)
+          checkForDuplicate(barcode, userId, location)
+        }
+      }
   }
 }
