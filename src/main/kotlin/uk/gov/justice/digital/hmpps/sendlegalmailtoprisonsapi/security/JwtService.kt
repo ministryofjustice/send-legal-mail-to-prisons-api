@@ -79,7 +79,7 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   fun isNomisUserToken(authToken: String?) =
     authToken?.isNotBlank()
-      ?.and((getClaimsFromJWT(authToken).getClaim("auth_source") as String?) == "nomis")
+      ?.and((getClaimsFromJWT(authToken).getClaim("user_name") as String?).isNullOrBlank().not())
       ?: false
 
   @Throws(ParseException::class)
