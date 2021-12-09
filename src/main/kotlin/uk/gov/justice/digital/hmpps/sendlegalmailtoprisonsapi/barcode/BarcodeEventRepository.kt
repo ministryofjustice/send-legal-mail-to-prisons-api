@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
   fun findByBarcode(barcode: Barcode): List<BarcodeEvent>
-  fun findByBarcodeAndStatus(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
+  fun findByBarcodeAndStatusOrderByCreatedDateTime(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
 }
 
 @Entity
@@ -36,9 +36,11 @@ data class BarcodeEvent(
   val userId: String,
   @NotNull
   @Enumerated(EnumType.STRING)
-  val status: BarcodeStatus = BarcodeStatus.CREATED,
+  val status: BarcodeStatus,
   @NotNull
   val createdDateTime: Instant = Instant.now(),
+  @NotNull
+  val location: String = "",
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -51,8 +53,8 @@ data class BarcodeEvent(
   override fun hashCode(): Int = barcode.hashCode() * createdDateTime.hashCode()
 
   override fun toString(): String {
-    return "BarcodeEvent(barcode=$barcode, userId='$userId', status=$status, dateTime=$createdDateTime)"
+    return "BarcodeEvent(barcode=$barcode, userId='$userId', status=$status, dateTime=$createdDateTime, location=$location)"
   }
 }
 
-enum class BarcodeStatus { CREATED, CHECKED }
+enum class BarcodeStatus { CREATED, CHECKED, DUPLICATE }

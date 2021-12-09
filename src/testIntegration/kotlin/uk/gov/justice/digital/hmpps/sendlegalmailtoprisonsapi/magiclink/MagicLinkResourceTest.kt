@@ -49,7 +49,7 @@ class MagicLinkResourceTest(
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -62,7 +62,7 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -76,8 +76,8 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(EmailMandatory.code)
-        .jsonPath("$.userMessage").value<String> { it.contains("email address") }
+        .jsonPath("$.errorCode.code").isEqualTo(EmailMandatory.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("email address") }
     }
 
     @Test
@@ -91,8 +91,8 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(EmailInvalid.code)
-        .jsonPath("$.userMessage").value<String> { it.contains("email address") }
+        .jsonPath("$.errorCode.code").isEqualTo(EmailInvalid.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("email address") }
     }
 
     @Test
@@ -106,8 +106,8 @@ class MagicLinkResourceTest(
         .exchange()
         .expectStatus().isBadRequest
         .expectBody()
-        .jsonPath("$.errorCode").isEqualTo(EmailInvalidCjsm.code)
-        .jsonPath("$.userMessage").value<String> { it.contains("cjsm.net") }
+        .jsonPath("$.errorCode.code").isEqualTo(EmailInvalidCjsm.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("cjsm.net") }
     }
 
     @Test
@@ -157,7 +157,7 @@ class MagicLinkResourceTest(
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
@@ -170,7 +170,7 @@ class MagicLinkResourceTest(
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some-secret-value" }"""))
         .exchange()
         .expectStatus().isBadRequest
-        .expectBody().jsonPath("$.errorCode").isEqualTo(MalformedRequest.code)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
-import org.springframework.test.web.reactive.server.StatusAssertions
-import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
@@ -32,8 +30,8 @@ class E2eTest(
     requestVerifySecretFails(secretValue)
     val barcode = requestCreateBarcode(jwt)
 
-    requestCheckBarcode(barcode) { status -> status.isOk }
-    requestCheckBarcode(barcode) { status -> status.isOk } // TODO SLM-12 This should be an error
+    requestCheckBarcodeOk(barcode)
+    requestCheckBarcodeDuplicate(barcode)
   }
 
   private fun requestMagicLink(email: String) {
@@ -100,10 +98,7 @@ class E2eTest(
       }
       ?: fail("Did not receive a response from /barcode")
 
-  private fun requestCheckBarcode(
-    barcode: String,
-    statusCheck: (StatusAssertions) -> WebTestClient.ResponseSpec,
-  ) =
+  private fun requestCheckBarcodeOk(barcode: String) =
     webTestClient.post()
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
@@ -111,5 +106,16 @@ class E2eTest(
       .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
       .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
       .exchange()
-      .expectStatus().apply { statusCheck(this) }
+      .expectStatus().isOk
+
+  private fun requestCheckBarcodeDuplicate(barcode: String) =
+    webTestClient.post()
+      .uri("/barcode/check")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
+      .exchange()
+      .expectStatus().isBadRequest
+      .expectBody().jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
 }

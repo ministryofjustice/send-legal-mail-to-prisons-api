@@ -37,7 +37,8 @@ class JwtAuthHelper(private val jwtService: JwtService) {
       subject = user,
       scope = scopes,
       expiryTime = Duration.ofHours(1L),
-      roles = roles
+      roles = roles,
+      authSource = "nomis",
     )
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }
@@ -52,13 +53,15 @@ class JwtAuthHelper(private val jwtService: JwtService) {
     scope: List<String>? = listOf(),
     roles: List<String>? = listOf(),
     expiryTime: Duration = Duration.ofHours(1),
-    jwtId: String = UUID.randomUUID().toString()
+    jwtId: String = UUID.randomUUID().toString(),
+    authSource: String? = null,
   ): String =
     mutableMapOf<String, Any>()
       .also { subject?.let { subject -> it["user_name"] = subject } }
       .also { it["client_id"] = "send-legal-mail-client" }
       .also { roles?.let { roles -> it["authorities"] = roles } }
       .also { scope?.let { scope -> it["scope"] = scope } }
+      .also { authSource?.let { authSource -> it["auth_source"] = authSource } }
       .let {
         Jwts.builder()
           .setId(jwtId)

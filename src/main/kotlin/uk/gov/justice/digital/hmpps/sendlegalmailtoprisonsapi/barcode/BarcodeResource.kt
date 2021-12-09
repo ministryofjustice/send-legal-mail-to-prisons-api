@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-class BarcodeResource(private val barcodeService: BarcodeService) {
+class BarcodeResource(private val barcodeService: BarcodeService, private val userContext: UserContext) {
 
   @PostMapping(value = ["/barcode"])
   @ResponseBody
@@ -37,9 +38,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       ApiResponse(
         responseCode = "201",
         description = "Barcode created",
-        content = [
-          Content(mediaType = "application/json")
-        ],
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = String::class))],
       ),
       ApiResponse(
         responseCode = "400",
@@ -68,9 +67,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
       ApiResponse(
         responseCode = "200",
         description = "Barcode is OK and no further checks are required",
-        content = [
-          Content(mediaType = "application/json")
-        ],
+        content = [Content(mediaType = "application/json")],
       ),
       ApiResponse(
         responseCode = "400",
@@ -92,7 +89,7 @@ class BarcodeResource(private val barcodeService: BarcodeService) {
   fun checkBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
     @RequestBody request: CheckBarcodeRequest,
-  ) = barcodeService.checkBarcode(userId, request.barcode)
+  ) = barcodeService.checkBarcode(userId, request.barcode, userContext.caseload)
 }
 
 data class CheckBarcodeRequest(
