@@ -15,12 +15,16 @@ import javax.servlet.http.HttpServletRequest
 
 @Component
 @Order(1)
-class UserContextFilter(private val hmppsAuthClient: HmppsAuthClient, private val userContext: UserContext) : Filter {
+class UserContextFilter(
+  private val hmppsAuthClient: HmppsAuthClient,
+  private val userContext: UserContext,
+  private val jwtService: JwtService
+) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val httpServletRequest = servletRequest as HttpServletRequest
     val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
-    if (!authToken.isNullOrBlank()) {
+    if (jwtService.isHmppsUserToken(authToken)) {
       userContext.authToken = authToken
       userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
     }

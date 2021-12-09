@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.SignedJWT
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -11,6 +13,7 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
+import java.text.ParseException
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -73,4 +76,13 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   fun expiresAt(jwt: String): Instant =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
+
+  fun isHmppsUserToken(authToken: String?) =
+    authToken?.isNotBlank()
+      ?.and((getClaimsFromJWT(authToken).getClaim("grant_type") as String?) === "password")
+      ?: false
+
+  @Throws(ParseException::class)
+  private fun getClaimsFromJWT(token: String): JWTClaimsSet =
+    SignedJWT.parse(token.replace("Bearer ", "")).jwtClaimsSet
 }
