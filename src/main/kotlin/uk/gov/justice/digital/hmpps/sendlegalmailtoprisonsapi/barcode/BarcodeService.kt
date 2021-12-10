@@ -29,6 +29,7 @@ class BarcodeService(
           createEvent(barcode, userId, BarcodeStatus.CHECKED, location)
           checkForCreated(barcode)
           checkForDuplicate(barcode, userId, location)
+          checkForExpired(barcode, userId, location)
         }
       }
   }

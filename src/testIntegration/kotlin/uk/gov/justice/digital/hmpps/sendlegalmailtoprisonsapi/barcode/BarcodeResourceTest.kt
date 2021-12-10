@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CREATED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -55,7 +57,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$").isEqualTo("SOME_CODE")
 
       val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-      barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED).firstOrNull()
+      barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, CREATED).firstOrNull()
     }
 
     @Test
@@ -197,6 +199,34 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
         .jsonPath("$.errorCode.scannedDate").value<String> { assertThat(it).contains(today) }
         .jsonPath("$.errorCode.scannedLocation").isEqualTo("LEI")
+    }
+
+    @Test
+    fun `Bad request expired if barcode created before expiry period`() {
+      whenever(barcodeConfig.expiry).thenReturn(Duration.ZERO)
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      val expiredDayString = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(Instant.now()).removeSuffix("Z")
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo("EXPIRED")
+        .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
+        .jsonPath("$.errorCode.createdDate").value<String> { assertThat(it).contains(expiredDayString) }
     }
   }
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.ArgumentMatchers.anyString
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -83,6 +84,26 @@ class BarcodeServiceTest {
       val expectedException = ValidationException(Duplicate(yesterday, "previous_location"))
       mockFindBarcode()
       whenever(barcodeEventService.checkForDuplicate(aBarcode(), "current_user", "current_location"))
+        .thenThrow(expectedException)
+
+      assertThatThrownBy { barcodeService.checkBarcode("current_user", "SOME_BARCODE", "current_location") }
+        .isEqualTo(expectedException)
+
+      verify(barcodeEventService)
+        .createEvent(aBarcode(), "current_user", BarcodeStatus.CHECKED, "current_location")
+    }
+  }
+
+  @Nested
+  inner class CheckBarcodeExpired {
+    private val barcodeExpiryDays = 28L
+
+    @Test
+    fun `should throw validation exception and create checked event if duplicate`() {
+      val expired = Instant.now().minus(barcodeExpiryDays + 1, ChronoUnit.DAYS)
+      val expectedException = ValidationException(Expired(expired, barcodeExpiryDays))
+      mockFindBarcode()
+      whenever(barcodeEventService.checkForExpired(aBarcode(), "current_user", "current_location"))
         .thenThrow(expectedException)
 
       assertThatThrownBy { barcodeService.checkBarcode("current_user", "SOME_BARCODE", "current_location") }
