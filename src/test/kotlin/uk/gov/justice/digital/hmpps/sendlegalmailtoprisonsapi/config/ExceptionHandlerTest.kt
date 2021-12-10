@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -22,7 +21,7 @@ class ExceptionHandlerTest {
   fun `should create an expired validation exception`() {
     val createdTime = Instant.now().minus(55, ChronoUnit.DAYS)
     val createdTimeString = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault()).format(createdTime)
-    val ex = Expired(createdTime, Duration.ofDays(28))
+    val ex = Expired(createdTime, 28)
 
     assertThat(ex.code).isEqualTo("EXPIRED")
     assertThat(ex.userMessage).contains("55 days ago")

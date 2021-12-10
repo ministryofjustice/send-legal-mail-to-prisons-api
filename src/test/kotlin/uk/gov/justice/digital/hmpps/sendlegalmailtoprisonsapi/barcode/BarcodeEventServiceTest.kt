@@ -106,7 +106,8 @@ class BarcodeEventServiceTest {
   @Nested
   inner class CheckForExpired {
 
-    private val expiryDuration = Duration.ofDays(28L)
+    private val expiryDays = 28L
+    private val expiryDuration = Duration.ofDays(expiryDays)
     private val expiredTime = Instant.now().minus(expiryDuration).minus(1, ChronoUnit.DAYS)
     private val notExpiredTime = Instant.now().minus(expiryDuration).plus(1, ChronoUnit.DAYS)
 
@@ -135,7 +136,7 @@ class BarcodeEventServiceTest {
       }.isInstanceOf(ValidationException::class.java)
         .extracting {
           val error = (it as ValidationException).errorCode as Expired
-          assertThat(error.barcodeExpiry).isEqualTo(expiryDuration)
+          assertThat(error.barcodeExpiryDays).isEqualTo(expiryDays)
           assertThat(error.createdDate).isEqualTo(expiredTime)
         }
 
