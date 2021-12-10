@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MagicLinkConfig
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 

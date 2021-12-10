@@ -37,6 +37,7 @@ dependencies {
   testImplementation("org.testcontainers:postgresql:1.16.2")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
+  testImplementation("org.mockito:mockito-inline:4.0.0")
 }
 
 java {
