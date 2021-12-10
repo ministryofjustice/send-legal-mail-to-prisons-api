@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.JwtConfig
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey

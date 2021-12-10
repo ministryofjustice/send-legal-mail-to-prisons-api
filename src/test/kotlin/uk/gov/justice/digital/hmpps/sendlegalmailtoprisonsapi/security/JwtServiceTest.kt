@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.JwtConfig
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
