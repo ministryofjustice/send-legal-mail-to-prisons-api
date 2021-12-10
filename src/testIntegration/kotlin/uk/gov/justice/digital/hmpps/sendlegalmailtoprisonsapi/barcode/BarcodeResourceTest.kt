@@ -11,10 +11,10 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeSta
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class BarcodeResourceTest : IntegrationTest() {
 
@@ -203,21 +203,18 @@ class BarcodeResourceTest : IntegrationTest() {
 
     @Test
     fun `Bad request expired if barcode created before expiry period`() {
-      val expiredTime = Instant.now().minus(28, ChronoUnit.DAYS).minus(1, ChronoUnit.DAYS)
-      val expiredDayString = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(expiredTime).removeSuffix("Z")
+      whenever(barcodeConfig.expiry).thenReturn(Duration.ZERO)
       whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
-      barcodeRepository.save(Barcode("SOME_BARCODE"))
-      barcodeEventRepository.save(
-        BarcodeEvent(
-          barcode = Barcode("SOME_BARCODE"),
-          userId = "some_user",
-          status = CREATED,
-          createdDateTime = expiredTime,
-          location = "some_location"
-        )
-      )
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
 
+      val expiredDayString = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(Instant.now()).removeSuffix("Z")
       webTestClient.post()
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
@@ -228,7 +225,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectStatus().isBadRequest
         .expectBody()
         .jsonPath("$.errorCode.code").isEqualTo("EXPIRED")
-        .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("28")
+        .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
         .jsonPath("$.errorCode.createdDate").value<String> { assertThat(it).contains(expiredDayString) }
     }
   }
