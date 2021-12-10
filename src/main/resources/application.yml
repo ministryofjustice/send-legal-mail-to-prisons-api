@@ -89,3 +89,5 @@ app:
     url: "http://localhost:3000/link/verify-link"
   jwt:
     expiry: 7d
+  barcode:
+    expiry: 28d

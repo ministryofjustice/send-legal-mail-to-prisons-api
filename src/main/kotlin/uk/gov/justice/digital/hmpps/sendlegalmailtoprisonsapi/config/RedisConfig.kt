@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisKeyValueAdapter
 import org.springframework.data.redis.core.convert.KeyspaceConfiguration
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecret
 
 // we want keyspace notifications, but have to empty the config parameter (default Ex) since elasticache doesn't support
