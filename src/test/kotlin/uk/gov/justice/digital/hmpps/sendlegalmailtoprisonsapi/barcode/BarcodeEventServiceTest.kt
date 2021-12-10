@@ -24,7 +24,6 @@ import javax.persistence.EntityNotFoundException
 
 class BarcodeEventServiceTest {
 
-  private val barcodeExpiryDuration = Duration.ofDays(28L)
   private val barcodeEventRepository = mock<BarcodeEventRepository>()
   private val barcodeConfig = mock<BarcodeConfig>()
   private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig)
@@ -106,15 +105,19 @@ class BarcodeEventServiceTest {
 
   @Nested
   inner class CheckForExpired {
+
+    private val expiryDuration = Duration.ofDays(28L)
+    private val expiredTime = Instant.now().minus(expiryDuration).minus(1, ChronoUnit.DAYS)
+    private val notExpiredTime = Instant.now().minus(expiryDuration).plus(1, ChronoUnit.DAYS)
+
     @BeforeEach
     fun `mock barcode expiry`() {
-      whenever(barcodeConfig.expiry).thenReturn(barcodeExpiryDuration)
+      whenever(barcodeConfig.expiry).thenReturn(expiryDuration)
     }
 
     @Test
     fun `should do nothing if the barcode has not expired`() {
-      val createdTime = Instant.now().minus(1, ChronoUnit.DAYS)
-      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = createdTime)))
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = notExpiredTime)))
       mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
 
       assertDoesNotThrow {
@@ -124,8 +127,7 @@ class BarcodeEventServiceTest {
 
     @Test
     fun `should throw and create expired event if the barcode has expired`() {
-      val expectedCreatedTime = Instant.now().minus(barcodeExpiryDuration).minus(1, ChronoUnit.DAYS)
-      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = expectedCreatedTime)))
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = expiredTime)))
       mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
 
       assertThatThrownBy {
@@ -133,8 +135,8 @@ class BarcodeEventServiceTest {
       }.isInstanceOf(ValidationException::class.java)
         .extracting {
           val error = (it as ValidationException).errorCode as Expired
-          assertThat(error.barcodeExpiry).isEqualTo(barcodeExpiryDuration)
-          assertThat(error.createdDate).isEqualTo(expectedCreatedTime)
+          assertThat(error.barcodeExpiry).isEqualTo(expiryDuration)
+          assertThat(error.createdDate).isEqualTo(expiredTime)
         }
 
       verify(barcodeEventRepository).save(
