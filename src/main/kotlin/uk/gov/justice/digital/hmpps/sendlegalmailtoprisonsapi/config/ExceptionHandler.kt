@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MAX_EMAIL_LENGTH
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -103,10 +104,11 @@ object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an emai
 object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
 sealed class CheckBarcodeErrorCodes(code: String, userMessage: String) : StandardErrorCodes(code, userMessage)
-class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.format()} at $scannedLocation. It may be an illegal copy.")
+class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It may be an illegal copy.")
+class Expired(val createdDate: Instant, val barcodeExpiry: Duration) : CheckBarcodeErrorCodes("EXPIRED", "This barcode was created ${createdDate.ageInDays()}, ${createdDate.formatOnDate()}.")
 
 private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault())
-private fun Instant.format(): String {
-  return """at ${timeFormatter.format(this).lowercase()} on ${dateFormatter.format(this)}"""
-}
+private fun Instant.formatAtTimeOnDate() = """at ${timeFormatter.format(this).lowercase()} ${this.formatOnDate()}"""
+private fun Instant.formatOnDate() = """on ${dateFormatter.format(this)}"""
+private fun Instant.ageInDays() = """${Duration.between(this, Instant.now()).toDays()} days ago"""
