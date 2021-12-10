@@ -56,6 +56,6 @@ class BarcodeEventService(
             location = location,
           )
         )
-        throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry))
+        throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays()))
       }
 }

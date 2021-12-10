@@ -17,6 +17,7 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import redis.embedded.RedisServer
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
@@ -63,6 +64,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var jwtService: JwtService
+
+  @SpyBean
+  protected lateinit var barcodeConfig: BarcodeConfig
 
   @AfterEach
   fun `clear database`() {
