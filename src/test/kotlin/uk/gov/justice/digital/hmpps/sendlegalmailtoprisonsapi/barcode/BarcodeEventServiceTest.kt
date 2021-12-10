@@ -8,8 +8,12 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CHECKED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CREATED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
@@ -29,17 +33,12 @@ class BarcodeEventServiceTest {
   inner class CreateEvent {
     @Test
     fun `should default empty location`() {
-      whenever(barcodeEventRepository.save(any())).thenReturn(
-        BarcodeEvent(barcode = Barcode("SOME_BARCODE"), userId = "some_user", status = BarcodeStatus.CREATED)
-      )
+      whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(status = CREATED))
 
-      val createdEvent = barcodeEventService.createEvent(barcode = Barcode("SOME_BARCODE"), userId = "some_user", status = BarcodeStatus.CREATED)
+      val createdEvent =
+        barcodeEventService.createEvent(barcode = aBarcode(), userId = "some_user", status = CREATED)
 
-      verify(barcodeEventRepository).save(
-        check {
-          assertThat(it.location).isEqualTo("")
-        }
-      )
+      verify(barcodeEventRepository).save(check { assertThat(it.location).isEqualTo("") })
       assertThat(createdEvent.location).isEqualTo("")
     }
   }
@@ -48,18 +47,18 @@ class BarcodeEventServiceTest {
   inner class CheckForCreated {
     @Test
     fun `should do nothing if created event exists`() {
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CREATED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "any_user", BarcodeStatus.CREATED)))
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED)))
 
-      barcodeEventService.checkForCreated(Barcode("SOME_BARCODE"))
+      assertDoesNotThrow {
+        barcodeEventService.checkForCreated(aBarcode())
+      }
     }
 
     @Test
     fun `should throw not found if created event does not exist`() {
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CREATED)))
-        .thenReturn(listOf())
+      mockFindBarcodeEvents(CREATED, listOf())
 
-      assertThatThrownBy { barcodeEventService.checkForCreated(Barcode("SOME_BARCODE")) }
+      assertThatThrownBy { barcodeEventService.checkForCreated(aBarcode()) }
         .isInstanceOf(EntityNotFoundException::class.java)
     }
   }
@@ -68,37 +67,38 @@ class BarcodeEventServiceTest {
   inner class CheckForDuplicate {
     @Test
     fun `should do nothing if a single checked event exists`() {
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CHECKED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "any_user", BarcodeStatus.CHECKED)))
+      mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
 
-      barcodeEventService.checkForDuplicate(Barcode("SOME_BARCODE"), "any_user", "any_location")
+      assertDoesNotThrow {
+        barcodeEventService.checkForDuplicate(aBarcode(), "any_user", "any_location")
+      }
     }
 
     @Test
     fun `should throw and create duplicate event if more than one checked event exists`() {
       val firstCheckTime = Instant.now().minus(1, ChronoUnit.DAYS)
       val secondCheckTime = Instant.now()
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CHECKED)))
-        .thenReturn(
-          listOf(
-            BarcodeEvent(1L, Barcode("SOME_BARCODE"), "first_user", BarcodeStatus.CHECKED, firstCheckTime, "first_location"),
-            BarcodeEvent(2L, Barcode("SOME_BARCODE"), "second_user", BarcodeStatus.CHECKED, secondCheckTime, "second_location"),
-          )
+      mockFindBarcodeEvents(
+        status = CHECKED,
+        listOf(
+          aBarcodeEvent(userId = "first_check_user", status = CHECKED, createdTime = firstCheckTime, location = "first_check_location"),
+          aBarcodeEvent(userId = "second_check_user", status = CHECKED, createdTime = secondCheckTime, location = "second_check_location"),
         )
+      )
 
       assertThatThrownBy {
-        barcodeEventService.checkForDuplicate(Barcode("SOME_BARCODE"), "some_user", "second_location")
+        barcodeEventService.checkForDuplicate(aBarcode(), "second_check_user", "second_check_location")
       }.isInstanceOf(ValidationException::class.java)
         .extracting {
           val error = (it as ValidationException).errorCode as Duplicate
           assertThat(error.scannedDate).isEqualTo(firstCheckTime)
-          assertThat(error.scannedLocation).isEqualTo("first_location")
+          assertThat(error.scannedLocation).isEqualTo("first_check_location")
         }
 
       verify(barcodeEventRepository).save(
         check {
           assertThat(it).extracting("barcode", "status", "location", "userId")
-            .isEqualTo(listOf(Barcode("SOME_BARCODE"), BarcodeStatus.DUPLICATE, "second_location", "some_user"))
+            .isEqualTo(listOf(aBarcode(), BarcodeStatus.DUPLICATE, "second_check_location", "second_check_user"))
         }
       )
     }
@@ -106,41 +106,64 @@ class BarcodeEventServiceTest {
 
   @Nested
   inner class CheckForExpired {
+    @BeforeEach
+    fun `mock barcode expiry`() {
+      whenever(barcodeConfig.expiry).thenReturn(barcodeExpiryDuration)
+    }
+
     @Test
     fun `should do nothing if the barcode has not expired`() {
-      whenever(barcodeConfig.expiry).thenReturn(barcodeExpiryDuration)
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CREATED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "created_user", BarcodeStatus.CREATED, Instant.now().minus(1, ChronoUnit.DAYS))))
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CHECKED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "checked_user", BarcodeStatus.CHECKED)))
+      val createdTime = Instant.now().minus(1, ChronoUnit.DAYS)
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = createdTime)))
+      mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
 
-      barcodeEventService.checkForExpired(Barcode("SOME_BARCODE"), "any_user", "any_location")
+      assertDoesNotThrow {
+        barcodeEventService.checkForExpired(aBarcode(), "any_user", "any_location")
+      }
     }
 
     @Test
     fun `should throw and create expired event if the barcode has expired`() {
-      val expectedCreatedDate = Instant.now().minus(barcodeExpiryDuration.plusDays(1))
-      whenever(barcodeConfig.expiry).thenReturn(barcodeExpiryDuration)
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CREATED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "created_user", BarcodeStatus.CREATED, expectedCreatedDate)))
-      whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(BarcodeStatus.CHECKED)))
-        .thenReturn(listOf(BarcodeEvent(1L, Barcode("SOME_BARCODE"), "checked_user", BarcodeStatus.CHECKED)))
+      val expectedCreatedTime = Instant.now().minus(barcodeExpiryDuration).minus(1, ChronoUnit.DAYS)
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = expectedCreatedTime)))
+      mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
 
       assertThatThrownBy {
-        barcodeEventService.checkForExpired(Barcode("SOME_BARCODE"), "some_user", "some_location")
+        barcodeEventService.checkForExpired(aBarcode(), "check_user", "check_location")
       }.isInstanceOf(ValidationException::class.java)
         .extracting {
           val error = (it as ValidationException).errorCode as Expired
           assertThat(error.barcodeExpiry).isEqualTo(barcodeExpiryDuration)
-          assertThat(error.createdDate).isEqualTo(expectedCreatedDate)
+          assertThat(error.createdDate).isEqualTo(expectedCreatedTime)
         }
 
       verify(barcodeEventRepository).save(
         check {
           assertThat(it).extracting("barcode", "status", "location", "userId")
-            .isEqualTo(listOf(Barcode("SOME_BARCODE"), BarcodeStatus.EXPIRED, "some_location", "some_user"))
+            .isEqualTo(listOf(aBarcode(), BarcodeStatus.EXPIRED, "check_location", "check_user"))
         }
       )
     }
   }
+
+  // Test helpers
+  private fun aBarcode() = Barcode("SOME_BARCODE")
+
+  private fun aBarcodeEvent(
+    userId: String = "any_user",
+    createdTime: Instant = Instant.now(),
+    location: String = "",
+    status: BarcodeStatus,
+  ) =
+    BarcodeEvent(
+      barcode = aBarcode(),
+      userId = userId,
+      status = status,
+      createdDateTime = createdTime,
+      location = location
+    )
+
+  private fun mockFindBarcodeEvents(status: BarcodeStatus, barcodeEvents: List<BarcodeEvent>) =
+    whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(status)))
+      .thenReturn(barcodeEvents)
 }
