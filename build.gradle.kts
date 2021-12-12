@@ -16,6 +16,9 @@ configurations {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+  implementation("org.apache.logging.log4j:log4j-to-slf4j:2.15.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.15.0")
+
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-data-redis")
