@@ -228,5 +228,30 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
         .jsonPath("$.errorCode.createdDate").value<String> { assertThat(it).contains(expiredDayString) }
     }
+
+    @Test
+    fun `Bad request with random check if barcode has been selected for a random check`() {
+      whenever(randomCheckService.requiresRandomCheck()).thenReturn(true)
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo("RANDOM_CHECK")
+    }
   }
 }

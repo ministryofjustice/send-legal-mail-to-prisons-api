@@ -30,6 +30,7 @@ class BarcodeService(
           checkForCreated(barcode)
           checkForDuplicate(barcode, userId, location)
           checkForExpired(barcode, userId, location)
+          checkForRandomSecurityCheck(barcode, userId, location)
         }
       }
   }
