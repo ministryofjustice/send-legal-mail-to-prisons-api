@@ -1,7 +1,10 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import io.lettuce.core.ClientOptions
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer
@@ -21,9 +24,9 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeCon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
@@ -60,19 +63,24 @@ abstract class IntegrationTest {
   protected lateinit var magicLinkConfig: MagicLinkConfig
 
   @Autowired
-  protected lateinit var magicLinkService: MagicLinkService
-
-  @Autowired
   protected lateinit var jwtService: JwtService
 
   @SpyBean
   protected lateinit var barcodeConfig: BarcodeConfig
+
+  @SpyBean
+  protected lateinit var randomCheckService: RandomCheckService
 
   @AfterEach
   fun `clear database`() {
     barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
     magicLinkSecretRepository.deleteAll()
+  }
+
+  @BeforeEach
+  fun `turn off random checks`() {
+    doReturn(false).whenever(randomCheckService).requiresRandomCheck()
   }
 
   internal fun setAuthorisation(

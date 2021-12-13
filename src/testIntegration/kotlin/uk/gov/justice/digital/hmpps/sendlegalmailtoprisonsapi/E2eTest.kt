@@ -103,19 +103,22 @@ class E2eTest(
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
       .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
       .exchange()
       .expectStatus().isOk
+      .expectBody().jsonPath("$.createdBy").isEqualTo("some.email@company.com.cjsm.net")
 
   private fun requestCheckBarcodeDuplicate(barcode: String) =
     webTestClient.post()
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
       .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
       .exchange()
       .expectStatus().isBadRequest
-      .expectBody().jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
+      .expectBody()
+      .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
+      .jsonPath("$.errorCode.createdBy").isEqualTo("some.email@company.com.cjsm.net")
 }

@@ -38,7 +38,7 @@ class BarcodeEventService(
       ?.first()
       ?.also { firstCheck ->
         createEvent(barcode, userId, DUPLICATE, location)
-        throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location))
+        throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location, getCreatedBy(barcode)))
       }
 
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =
@@ -47,7 +47,7 @@ class BarcodeEventService(
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
       ?.also { createdEvent ->
         createEvent(barcode, userId, EXPIRED, location)
-        throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays()))
+        throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays(), getCreatedBy(barcode)))
       }
 
   fun checkForRandomSecurityCheck(barcode: Barcode, userId: String, location: String) =
@@ -55,6 +55,13 @@ class BarcodeEventService(
       .takeIf { requiresRandomCheck -> requiresRandomCheck }
       ?.also {
         createEvent(barcode, userId, RANDOM_CHECK, location)
-        throw ValidationException(RandomCheck)
+        throw ValidationException(RandomCheck(getCreatedBy(barcode)))
       }
+
+  // TODO SLM-35 When we have loaded the CJSM organisations into our database, this should be the created by user's organisation description
+  fun getCreatedBy(barcode: Barcode) =
+    barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED)
+      .firstOrNull()
+      ?.userId
+      ?: "An error occurred and we cannot identify the barcode sender"
 }

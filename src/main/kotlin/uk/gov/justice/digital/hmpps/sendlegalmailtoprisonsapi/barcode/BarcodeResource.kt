@@ -89,10 +89,14 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   fun checkBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
     @RequestBody request: CheckBarcodeRequest,
-  ) = barcodeService.checkBarcode(userId, request.barcode, userContext.caseload)
+  ) = CheckBarcodeResponse(barcodeService.checkBarcode(userId, request.barcode, userContext.caseload))
 }
 
 data class CheckBarcodeRequest(
   @Schema(description = "The barcode being checked", example = "123456789012", required = true)
   val barcode: String,
+)
+data class CheckBarcodeResponse(
+  @Schema(description = "The organisation that created the barcode", example = "Aardvark Lawyers", required = true)
+  val createdBy: String,
 )

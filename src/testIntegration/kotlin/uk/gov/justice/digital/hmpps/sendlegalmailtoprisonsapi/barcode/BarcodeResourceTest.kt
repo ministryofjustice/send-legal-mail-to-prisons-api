@@ -36,7 +36,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com"))
+        .headers(setAuthorisation(user = "AUSER_GEN"))
         .exchange()
         .expectStatus().isForbidden
         .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
@@ -136,7 +136,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "doesnt-exist" }"""))
         .exchange()
         .expectStatus().isNotFound
@@ -159,10 +159,11 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isOk
+        .expectBody().jsonPath("$.createdBy").isEqualTo("some.user@company.com.cjsm.net")
     }
 
     @Test
@@ -181,7 +182,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isOk
@@ -191,7 +192,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -199,6 +200,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
         .jsonPath("$.errorCode.scannedDate").value<String> { assertThat(it).contains(today) }
         .jsonPath("$.errorCode.scannedLocation").isEqualTo("LEI")
+        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
     }
 
     @Test
@@ -219,7 +221,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "some.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -227,6 +229,33 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.code").isEqualTo("EXPIRED")
         .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
         .jsonPath("$.errorCode.createdDate").value<String> { assertThat(it).contains(expiredDayString) }
+        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
+    }
+
+    @Test
+    fun `Bad request with random check if barcode has been selected for a random check`() {
+      whenever(randomCheckService.requiresRandomCheck()).thenReturn(true)
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo("RANDOM_CHECK")
+        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
     }
   }
 }

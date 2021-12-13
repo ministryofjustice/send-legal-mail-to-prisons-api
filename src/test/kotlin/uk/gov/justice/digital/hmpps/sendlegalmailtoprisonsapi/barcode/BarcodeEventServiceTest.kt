@@ -191,6 +191,27 @@ class BarcodeEventServiceTest {
     }
   }
 
+  @Nested
+  inner class GetCreatedBy {
+    @Test
+    fun `Will return the user that created the barcode`() {
+      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(userId = "some_user", status = CREATED)))
+
+      val createdBy = barcodeEventService.getCreatedBy(aBarcode())
+
+      assertThat(createdBy).isEqualTo("some_user")
+    }
+
+    @Test
+    fun `Will return with error text if cannot find user created event - in theory this cannot happen`() {
+      mockFindBarcodeEvents(CREATED, listOf())
+
+      val createdBy = barcodeEventService.getCreatedBy(aBarcode())
+
+      assertThat(createdBy).contains("error")
+    }
+  }
+
   // Test helpers
   private fun aBarcode() = Barcode("SOME_BARCODE")
 

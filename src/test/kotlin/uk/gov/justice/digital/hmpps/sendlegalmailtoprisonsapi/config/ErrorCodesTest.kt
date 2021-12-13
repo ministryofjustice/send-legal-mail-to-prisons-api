@@ -14,7 +14,7 @@ class ErrorCodesTest {
   inner class Duplicate {
     @Test
     fun `should format the user message correctly`() {
-      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location")
+      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location", "sender")
 
       assertThat(ex.userMessage).contains("at 9:11 am on 8 December 2021")
     }
@@ -27,7 +27,7 @@ class ErrorCodesTest {
       val createdTime = Instant.now().minus(55, ChronoUnit.DAYS)
       val createdTimeString =
         DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault()).format(createdTime)
-      val ex = Expired(createdTime, 28)
+      val ex = Expired(createdTime, 28, "sender")
 
       assertThat(ex.userMessage).contains("55 days ago")
       assertThat(ex.userMessage).contains(createdTimeString)

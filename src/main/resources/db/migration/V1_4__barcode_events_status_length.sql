@@ -1,0 +1,1 @@
+ALTER TABLE barcode_events ALTER COLUMN status TYPE VARCHAR(20);
