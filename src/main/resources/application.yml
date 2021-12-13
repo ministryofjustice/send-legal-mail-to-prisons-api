@@ -91,3 +91,5 @@ app:
     expiry: 7d
   barcode:
     expiry: 28d
+    random-check-percentage: 10
+

@@ -24,6 +24,7 @@ object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Ente
 sealed class CheckBarcodeErrorCodes(code: String, userMessage: String) : StandardErrorCodes(code, userMessage)
 class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It may be an illegal copy.")
 class Expired(val createdDate: Instant, val barcodeExpiryDays: Long) : CheckBarcodeErrorCodes("EXPIRED", "This barcode was created ${createdDate.ageInDays()}, ${createdDate.formatOnDate()}.")
+object RandomCheck : CheckBarcodeErrorCodes("RANDOM_CHECK", "For additional security this barcode has been selected for a random check")
 
 private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault())
