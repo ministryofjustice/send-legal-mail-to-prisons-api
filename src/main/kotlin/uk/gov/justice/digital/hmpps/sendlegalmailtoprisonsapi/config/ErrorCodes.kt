@@ -22,9 +22,12 @@ object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an emai
 object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
 sealed class CheckBarcodeErrorCodes(code: String, userMessage: String) : StandardErrorCodes(code, userMessage)
-class Duplicate(val scannedDate: Instant, val scannedLocation: String) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It may be an illegal copy.")
-class Expired(val createdDate: Instant, val barcodeExpiryDays: Long) : CheckBarcodeErrorCodes("EXPIRED", "This barcode was created ${createdDate.ageInDays()}, ${createdDate.formatOnDate()}.")
-object RandomCheck : CheckBarcodeErrorCodes("RANDOM_CHECK", "For additional security this barcode has been selected for a random check")
+class Duplicate(val scannedDate: Instant, val scannedLocation: String, val createdBy: String) :
+  CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It may be an illegal copy.")
+class Expired(val createdDate: Instant, val barcodeExpiryDays: Long, val createdBy: String) :
+  CheckBarcodeErrorCodes("EXPIRED", "This barcode was created ${createdDate.ageInDays()}, ${createdDate.formatOnDate()}.")
+class RandomCheck(val createdBy: String) :
+  CheckBarcodeErrorCodes("RANDOM_CHECK", "For additional security this barcode has been selected for a random check")
 
 private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM y").withZone(ZoneId.systemDefault())

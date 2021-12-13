@@ -22,7 +22,7 @@ class BarcodeService(
     return barcodeRepository.save(Barcode(barcode))
   }
 
-  fun checkBarcode(userId: String, code: String, location: String) {
+  fun checkBarcode(userId: String, code: String, location: String): String =
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
       .also { barcode ->
         with(barcodeEventService) {
@@ -33,5 +33,5 @@ class BarcodeService(
           checkForRandomSecurityCheck(barcode, userId, location)
         }
       }
-  }
+      .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
 }

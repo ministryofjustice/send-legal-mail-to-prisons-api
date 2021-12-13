@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.ArgumentMatchers.anyString
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
@@ -50,11 +49,11 @@ class BarcodeServiceTest {
     @Test
     fun `should complete ok and create checked event if barcode exists`() {
       mockFindBarcode()
+      whenever(barcodeEventService.getCreatedBy(aBarcode())).thenReturn("some_sender")
 
-      assertDoesNotThrow {
-        barcodeService.checkBarcode("some_user", "SOME_BARCODE", "some_location")
-      }
+      val createdBy = barcodeService.checkBarcode("some_user", "SOME_BARCODE", "some_location")
 
+      assertThat(createdBy).isEqualTo("some_sender")
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeStatus.CHECKED, "some_location")
     }
@@ -82,7 +81,7 @@ class BarcodeServiceTest {
     @Test
     fun `should throw validation exception and create checked event if duplicate`() {
       val yesterday = Instant.now().minus(1, ChronoUnit.DAYS)
-      val expectedException = ValidationException(Duplicate(yesterday, "previous_location"))
+      val expectedException = ValidationException(Duplicate(yesterday, "previous_location", "some_sender"))
       mockFindBarcode()
       whenever(barcodeEventService.checkForDuplicate(aBarcode(), "current_user", "current_location"))
         .thenThrow(expectedException)
@@ -102,7 +101,7 @@ class BarcodeServiceTest {
     @Test
     fun `should throw validation exception and create checked event if duplicate`() {
       val expired = Instant.now().minus(barcodeExpiryDays + 1, ChronoUnit.DAYS)
-      val expectedException = ValidationException(Expired(expired, barcodeExpiryDays))
+      val expectedException = ValidationException(Expired(expired, barcodeExpiryDays, "some_sender"))
       mockFindBarcode()
       whenever(barcodeEventService.checkForExpired(aBarcode(), "current_user", "current_location"))
         .thenThrow(expectedException)
@@ -119,7 +118,7 @@ class BarcodeServiceTest {
   inner class CheckBarcodeRandomSecurityCheck {
     @Test
     fun `should throw validation exception and create checked event if duplicate`() {
-      val expectedException = ValidationException(RandomCheck)
+      val expectedException = ValidationException(RandomCheck("some_sender"))
       mockFindBarcode()
       whenever(barcodeEventService.checkForRandomSecurityCheck(aBarcode(), "current_user", "current_location"))
         .thenThrow(expectedException)
