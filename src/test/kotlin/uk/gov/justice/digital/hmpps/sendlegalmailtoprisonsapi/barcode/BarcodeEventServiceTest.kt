@@ -14,8 +14,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CHECKED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CREATED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Duration
 import java.time.Instant
@@ -26,13 +30,19 @@ class BarcodeEventServiceTest {
 
   private val barcodeEventRepository = mock<BarcodeEventRepository>()
   private val barcodeConfig = mock<BarcodeConfig>()
-  private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig)
+  private val randomCheckService = mock<RandomCheckService>()
+  private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig, randomCheckService)
+
+  @BeforeEach
+  fun `defaults to not requiring a random security check`() {
+    whenever(randomCheckService.requiresRandomCheck()).thenReturn(false)
+  }
 
   @Nested
   inner class CreateEvent {
     @Test
     fun `should default empty location`() {
-      whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(status = CREATED))
+      mockSaveBarcodeEvent(CREATED)
 
       val createdEvent =
         barcodeEventService.createEvent(barcode = aBarcode(), userId = "some_user", status = CREATED)
@@ -84,6 +94,7 @@ class BarcodeEventServiceTest {
           aBarcodeEvent(userId = "second_check_user", status = CHECKED, createdTime = secondCheckTime, location = "second_check_location"),
         )
       )
+      mockSaveBarcodeEvent(DUPLICATE)
 
       assertThatThrownBy {
         barcodeEventService.checkForDuplicate(aBarcode(), "second_check_user", "second_check_location")
@@ -97,7 +108,7 @@ class BarcodeEventServiceTest {
       verify(barcodeEventRepository).save(
         check {
           assertThat(it).extracting("barcode", "status", "location", "userId")
-            .isEqualTo(listOf(aBarcode(), BarcodeStatus.DUPLICATE, "second_check_location", "second_check_user"))
+            .isEqualTo(listOf(aBarcode(), DUPLICATE, "second_check_location", "second_check_user"))
         }
       )
     }
@@ -130,6 +141,7 @@ class BarcodeEventServiceTest {
     fun `should throw and create expired event if the barcode has expired`() {
       mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = expiredTime)))
       mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
+      mockSaveBarcodeEvent(EXPIRED)
 
       assertThatThrownBy {
         barcodeEventService.checkForExpired(aBarcode(), "check_user", "check_location")
@@ -143,7 +155,37 @@ class BarcodeEventServiceTest {
       verify(barcodeEventRepository).save(
         check {
           assertThat(it).extracting("barcode", "status", "location", "userId")
-            .isEqualTo(listOf(aBarcode(), BarcodeStatus.EXPIRED, "check_location", "check_user"))
+            .isEqualTo(listOf(aBarcode(), EXPIRED, "check_location", "check_user"))
+        }
+      )
+    }
+  }
+
+  @Nested
+  inner class CheckForRandomSecurityCheck {
+    @Test
+    fun `should do nothing if not selected for a random check`() {
+      assertDoesNotThrow {
+        barcodeEventService.checkForRandomSecurityCheck(aBarcode(), "some_user", "some_location")
+      }
+    }
+
+    @Test
+    fun `should throw and create random check event if selected for a random check`() {
+      whenever(randomCheckService.requiresRandomCheck()).thenReturn(true)
+      mockSaveBarcodeEvent(RANDOM_CHECK)
+
+      assertThatThrownBy {
+        barcodeEventService.checkForRandomSecurityCheck(aBarcode(), "check_user", "check_location")
+      }.isInstanceOf(ValidationException::class.java)
+        .extracting {
+          assertThat((it as ValidationException).errorCode).isInstanceOf(RandomCheck::class.java)
+        }
+
+      verify(barcodeEventRepository).save(
+        check {
+          assertThat(it).extracting("barcode", "status", "location", "userId")
+            .isEqualTo(listOf(aBarcode(), RANDOM_CHECK, "check_location", "check_user"))
         }
       )
     }
@@ -169,4 +211,7 @@ class BarcodeEventServiceTest {
   private fun mockFindBarcodeEvents(status: BarcodeStatus, barcodeEvents: List<BarcodeEvent>) =
     whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(status)))
       .thenReturn(barcodeEvents)
+
+  private fun mockSaveBarcodeEvent(status: BarcodeStatus) =
+    whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(status = status))
 }

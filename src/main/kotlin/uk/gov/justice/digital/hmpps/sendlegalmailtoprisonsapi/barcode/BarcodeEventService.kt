@@ -1,8 +1,12 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Instant
 import javax.persistence.EntityNotFoundException
@@ -11,6 +15,7 @@ import javax.persistence.EntityNotFoundException
 class BarcodeEventService(
   private val barcodeEventRepository: BarcodeEventRepository,
   private val barcodeConfig: BarcodeConfig,
+  private val randomCheckService: RandomCheckService,
 ) {
 
   fun createEvent(barcode: Barcode, userId: String, status: BarcodeStatus, location: String = ""): BarcodeEvent =
@@ -32,14 +37,7 @@ class BarcodeEventService(
       .takeIf { checkedEvents -> checkedEvents.size > 1 }
       ?.first()
       ?.also { firstCheck ->
-        barcodeEventRepository.save(
-          BarcodeEvent(
-            barcode = barcode,
-            userId = userId,
-            status = BarcodeStatus.DUPLICATE,
-            location = location
-          )
-        )
+        createEvent(barcode, userId, DUPLICATE, location)
         throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location))
       }
 
@@ -48,14 +46,15 @@ class BarcodeEventService(
       .firstOrNull()
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
       ?.also { createdEvent ->
-        barcodeEventRepository.save(
-          BarcodeEvent(
-            barcode = barcode,
-            userId = userId,
-            status = BarcodeStatus.EXPIRED,
-            location = location,
-          )
-        )
+        createEvent(barcode, userId, EXPIRED, location)
         throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays()))
+      }
+
+  fun checkForRandomSecurityCheck(barcode: Barcode, userId: String, location: String) =
+    randomCheckService.requiresRandomCheck()
+      .takeIf { requiresRandomCheck -> requiresRandomCheck }
+      ?.also {
+        createEvent(barcode, userId, RANDOM_CHECK, location)
+        throw ValidationException(RandomCheck)
       }
 }
