@@ -69,4 +69,3 @@ ecr.repo
 
 #Helm
 **/Chart.lock
-/.trivyignore
