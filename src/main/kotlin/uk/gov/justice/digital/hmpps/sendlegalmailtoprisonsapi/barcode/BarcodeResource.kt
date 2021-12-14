@@ -71,7 +71,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad request",
+        description = "Bad request. For specific errors see the Schema for CheckBarcodeErrorCodes",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
