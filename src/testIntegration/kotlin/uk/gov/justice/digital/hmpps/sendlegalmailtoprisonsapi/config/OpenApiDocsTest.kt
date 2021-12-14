@@ -34,7 +34,7 @@ class OpenApiDocsTest : IntegrationTest() {
   }
 
   @Test
-  fun `the swagger json reports no errors`() {
+  fun `the oepn api json reports no errors`() {
     webTestClient.get()
       .uri("/v3/api-docs")
       .accept(MediaType.APPLICATION_JSON)
@@ -44,7 +44,7 @@ class OpenApiDocsTest : IntegrationTest() {
   }
 
   @Test
-  fun `the swagger json contains the version number`() {
+  fun `the open api json contains the version number`() {
     webTestClient.get()
       .uri("/v3/api-docs")
       .accept(MediaType.APPLICATION_JSON)
@@ -54,7 +54,7 @@ class OpenApiDocsTest : IntegrationTest() {
   }
 
   @Test
-  fun `the swagger json is valid`() {
+  fun `the open api json is valid`() {
     val result = OpenAPIV3Parser().readLocation("http://localhost:$port/v3/api-docs", null, null)
     assertThat(result.messages).isEmpty()
   }
