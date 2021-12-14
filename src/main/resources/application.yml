@@ -83,6 +83,9 @@ management:
       cache:
         time-to-live: 2000ms
 
+springdoc:
+  remove-broken-reference-definitions: false
+
 app:
   magiclink:
     secret-expiry: 1h

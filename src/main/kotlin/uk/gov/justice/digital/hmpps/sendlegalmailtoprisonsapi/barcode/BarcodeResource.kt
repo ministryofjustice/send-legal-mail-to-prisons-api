@@ -67,11 +67,11 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
       ApiResponse(
         responseCode = "200",
         description = "Barcode is OK and no further checks are required",
-        content = [Content(mediaType = "application/json")],
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = CheckBarcodeResponse::class))],
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Bad request",
+        description = "Bad request. For specific errors see the Schema for CheckBarcodeErrorCodes",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -97,6 +97,6 @@ data class CheckBarcodeRequest(
   val barcode: String,
 )
 data class CheckBarcodeResponse(
-  @Schema(description = "The organisation that created the barcode", example = "Aardvark Lawyers", required = true)
+  @Schema(description = "The organisation that created the barcode", example = "Aardvark Solicitors", required = true)
   val createdBy: String,
 )

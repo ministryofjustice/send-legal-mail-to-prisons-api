@@ -40,6 +40,11 @@ class MagicLinkResource(
         ],
       ),
       ApiResponse(
+        responseCode = "400",
+        description = "Bad request. For specific errors see the Schema for MagicLinkRequestErrorCodes",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
         responseCode = "401",
         description = "Unauthorised, requires a valid Oauth2 token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
