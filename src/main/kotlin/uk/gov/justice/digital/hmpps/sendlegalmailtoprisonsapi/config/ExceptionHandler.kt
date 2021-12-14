@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
+import io.swagger.v3.oas.annotations.media.Schema
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -79,6 +80,11 @@ class SendLegalMailToPrisonsApiExceptionHandler {
 
 class ValidationException(val errorCode: ErrorCode) : RuntimeException()
 
-class ErrorResponse(val status: Int, val errorCode: ErrorCode) {
+class ErrorResponse(
+  @Schema(description = "The HTTP status code", example = "400")
+  val status: Int,
+  @Schema(description = "The error code describing the error")
+  val errorCode: ErrorCode
+) {
   constructor(status: HttpStatus, errorCode: ErrorCode) : this(status.value(), errorCode)
 }
