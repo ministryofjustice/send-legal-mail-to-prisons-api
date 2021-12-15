@@ -97,4 +97,5 @@ app:
     random-check-percentage: 10
   s3:
     region: eu-west-2
+    cjsmOrgsCsv: cjsm-orgs.csv
 
