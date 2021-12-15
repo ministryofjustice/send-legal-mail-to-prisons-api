@@ -77,9 +77,13 @@ Then run the following command:
 `./gradlew bootRun --args='--spring.profiles.active=dev,stdout'`
 
 ## Running the tests
+Note that there are two test source sets - `test` for unit tests and `testIntegration` for integration tests.
 
 ### Dependent containers for integration tests
-The integration tests rely on a Postgres container running on port 5432 and a mailcatcher container running on port 1080. 
+The integration tests depend on:
+* a Postgres container running on port 5432
+* a mailcatcher container running on port 1080
+* a LocalStack instance emulating S3 on port 4566
 
 By default Testcontainers will notice the dependent containers are not running and start an instance of each.
 
@@ -88,16 +92,16 @@ To speed up the tests you can start the dependent containers with the command:
 `docker-compose -f docker-compose-test.yml up`
 
 ### Intellij
-Right click on the `test` source directory and select `Run`.
+Right click on the `test` or `testIntegration` source directory and select `Run`.
 
 ### Gradle
 Run the following command:
 
-`./gradlew test`
+`./gradlew test` or `./gradlew testIntegration`
 
 Or to run all checks including ktlintCheck run command:
 
-`./gradlew check`
+`./gradlew check testIntegration`
 
 ## Dependency checks
 
