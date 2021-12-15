@@ -31,6 +31,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:2.1.16")
 
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.128")
+
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
@@ -39,6 +41,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:4.1.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.28")
+  testImplementation("org.testcontainers:localstack:1.16.0")
 }
 
 java {
