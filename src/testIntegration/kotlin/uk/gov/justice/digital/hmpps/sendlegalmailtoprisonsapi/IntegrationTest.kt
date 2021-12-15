@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.testcontainers.containers.localstack.LocalStackContainer.Service.S3
 import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLin
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
 import javax.annotation.PostConstruct
@@ -120,6 +122,7 @@ abstract class IntegrationTest {
   companion object {
     private val pgContainer = PostgresContainer.instance
     private val mailcatcherContainer = MailcatcherContainer.instance
+    private val localStackContainer = LocalStackContainer.instance
 
     @JvmStatic
     @DynamicPropertySource
@@ -137,6 +140,13 @@ abstract class IntegrationTest {
       mailcatcherContainer?.run {
         registry.add("spring.mail.port") { getMappedPort(1025) }
         registry.add("mailcatcher.api.port") { getMappedPort(1080) }
+      }
+      localStackContainer?.run {
+        getEndpointConfiguration(S3)
+          .run {
+            registry.add("app.s3.localstack-url") { serviceEndpoint }
+            registry.add("app.s3.region") { signingRegion }
+          }
       }
     }
   }

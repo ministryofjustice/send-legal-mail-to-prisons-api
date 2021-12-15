@@ -95,4 +95,6 @@ app:
   barcode:
     expiry: 28d
     random-check-percentage: 10
+  s3:
+    region: eu-west-2
 
