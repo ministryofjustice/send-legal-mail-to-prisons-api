@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEve
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
@@ -73,11 +74,15 @@ abstract class IntegrationTest {
   @SpyBean
   protected lateinit var randomCheckService: RandomCheckService
 
+  @Autowired
+  protected lateinit var cjsmDirectoryRepository: CjsmDirectoryRepository
+
   @AfterEach
   fun `clear database`() {
     barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
     magicLinkSecretRepository.deleteAll()
+    cjsmDirectoryRepository.deleteAll()
   }
 
   @BeforeEach
