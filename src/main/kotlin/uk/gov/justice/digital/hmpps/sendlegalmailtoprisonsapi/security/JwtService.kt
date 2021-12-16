@@ -43,7 +43,13 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
       .setExpiration(Date.from(calculateExpiryAtMidnight(expiry)))
-      .addClaims(mapOf("authorities" to listOf("ROLE_SLM_CREATE_BARCODE"), "client_id" to "send-legal-mail"))
+      .addClaims(
+        mapOf(
+          "authorities" to listOf("ROLE_SLM_CREATE_BARCODE"),
+          "client_id" to "send-legal-mail",
+          "user_name" to email,
+        )
+      )
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()
 
