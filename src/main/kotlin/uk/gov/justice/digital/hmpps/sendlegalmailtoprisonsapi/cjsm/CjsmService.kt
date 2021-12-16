@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
 import com.amazonaws.services.s3.AmazonS3
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
 import java.io.BufferedReader
@@ -34,16 +36,16 @@ class CjsmService(
       }
 
   private fun fromCjsmDirectoryCsvLine(csvLine: String): CjsmDirectoryEntry? =
-    csvLine.split(",")
-      .takeIf { !it.contains("Secure Email") }
-      ?.let { propertyList ->
+    csvLine.takeIf { !it.contains("Secure Email") }
+      ?.let { CSVParser.parse(csvLine, CSVFormat.DEFAULT).first() }
+      ?.let { csvRecord ->
         CjsmDirectoryEntry(
-          firstName = propertyList[0],
-          lastName = propertyList[1],
-          organisation = propertyList[3],
-          secureEmail = propertyList[4],
-          townCity = propertyList[7],
-          businessType = propertyList[12]
+          firstName = csvRecord[0],
+          lastName = csvRecord[1],
+          organisation = csvRecord[3],
+          secureEmail = csvRecord[4],
+          townCity = csvRecord[7],
+          businessType = csvRecord[12],
         )
       }
 }

@@ -32,4 +32,22 @@ class CjsmServiceTest {
     )
     verifyNoMoreInteractions(cjsmDirectoryRepository)
   }
+
+  @Test
+  fun `can load a csv with commas`() {
+    val csv = """
+      Firstname,Lastname,UserType,Organisation,Secure Email,Address1,Address2,Town/City,Postcode,Telephone,Mobile,Description,Business Type,CJ Area,Account Status
+      Bridlington,AJU,smtpgroup,Humberside Police,ajubridlington@humberside.pnn.police.uk.cjsm.net,"Sessions House, New Walk","Sessions House, New Walk",Beverley,HU17 7AF, , , ,Police,Humberside,Active
+    """.trimIndent()
+
+    cjsmService.streamCjsmDirectoryCsv(csv.byteInputStream())
+
+    verify(cjsmDirectoryRepository).save(
+      check {
+        assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
+          .isEqualTo(listOf("ajubridlington@humberside.pnn.police.uk.cjsm.net", "Bridlington", "AJU", "Humberside Police", "Beverley", "Police"))
+      }
+    )
+    verifyNoMoreInteractions(cjsmDirectoryRepository)
+  }
 }
