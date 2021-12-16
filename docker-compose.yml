@@ -18,7 +18,6 @@ services:
     networks:
       - hmpps
     container_name: send-legal-mail-api-db
-    restart: always
     ports:
       - "5432:5432"
     environment:
@@ -31,7 +30,6 @@ services:
     networks:
       - hmpps
     container_name: send-legal-mail-api-cache
-    restart: always
     ports:
       - '6378:6378'
     command: --port 6378
@@ -40,7 +38,6 @@ services:
     image: schickling/mailcatcher
     networks:
       - hmpps
-    restart: always
     ports:
       - '1080:1080'
       - '1025:1025'
