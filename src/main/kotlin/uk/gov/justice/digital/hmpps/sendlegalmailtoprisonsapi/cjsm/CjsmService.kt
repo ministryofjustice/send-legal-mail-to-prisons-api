@@ -6,7 +6,6 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
-import java.io.BufferedInputStream
 import java.io.InputStream
 
 private val log = KotlinLogging.logger {}
@@ -24,7 +23,7 @@ class CjsmService(
       .let { saveCjsmDirectoryStream(it) }
 
   fun saveCjsmDirectoryStream(inputStream: InputStream) =
-    CSVParser.parse(BufferedInputStream(inputStream), Charsets.UTF_8, CSVFormat.DEFAULT)
+    CSVParser.parse(inputStream, Charsets.UTF_8, CSVFormat.DEFAULT)
       .forEach { csvRecord ->
         takeIf { !csvRecord.secureEmail().contains("Secure Email") }
           ?.takeIf { csvRecord.secureEmail().isNotBlank() }
