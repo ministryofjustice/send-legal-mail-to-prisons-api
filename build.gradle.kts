@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.15"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0-beta-4"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.5.31"
-  kotlin("plugin.jpa") version "1.5.31"
+  kotlin("plugin.spring") version "1.6.10"
+  kotlin("plugin.jpa") version "1.6.10"
 }
 
 testSets {
@@ -23,15 +23,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.0")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.0")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.0")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.0")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.1")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
-  implementation("io.github.microutils:kotlin-logging:2.1.16")
+  implementation("io.github.microutils:kotlin-logging:2.1.20")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.128")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.129")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
@@ -41,17 +41,17 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:4.1.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.28")
-  testImplementation("org.testcontainers:localstack:1.16.0")
+  testImplementation("org.testcontainers:localstack:1.16.2")
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "16"
+      jvmTarget = "17"
     }
   }
 }
