@@ -1,13 +1,15 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
 import com.amazonaws.services.s3.AmazonS3
+import mu.KotlinLogging
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
-import java.io.BufferedReader
 import java.io.InputStream
-import java.io.InputStreamReader
+
+private val log = KotlinLogging.logger {}
 
 @Service
 class CjsmService(
@@ -16,36 +18,41 @@ class CjsmService(
   private val cjsmDirectoryRepository: CjsmDirectoryRepository
 ) {
 
-  fun readCjsmOrgs(): String =
-    try {
-      amazonS3.getObjectAsString(s3Config.bucketName, s3Config.cjsmOrgsCsv)
-    } catch (ex: Exception) {
-      "An error occurred attempting to read ${s3Config.cjsmOrgsCsv} from S3 bucket ${s3Config.bucketName}: ${ex.message}"
-    }
-
   fun saveCjsmDirectoryCsv() =
-    amazonS3.getObject(s3Config.bucketName, s3Config.cjsmOrgsCsv)
+    amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
       .objectContent
-      .let { streamCjsmDirectoryCsv(it) }
+      .let { saveCjsmDirectoryStream(it) }
 
-  fun streamCjsmDirectoryCsv(inputStream: InputStream) =
-    inputStream.let { BufferedReader(InputStreamReader(BufferedInputStream(it))) }
-      .useLines { lines ->
-        lines.mapNotNull { line -> fromCjsmDirectoryCsvLine(line) }
-          .forEach { cjsmDirectoryEntry -> cjsmDirectoryRepository.save(cjsmDirectoryEntry) }
+  fun saveCjsmDirectoryStream(inputStream: InputStream) =
+    CSVParser.parse(BufferedInputStream(inputStream), Charsets.UTF_8, CSVFormat.DEFAULT)
+      .forEach { csvRecord ->
+        takeIf { !csvRecord.secureEmail().contains("Secure Email") }
+          ?.takeIf { csvRecord.secureEmail().isNotBlank() }
+          ?.let {
+            with(csvRecord) {
+              CjsmDirectoryEntry(
+                firstName = firstName(),
+                lastName = lastName(),
+                organisation = organisation(),
+                secureEmail = secureEmail(),
+                townCity = townCity(),
+                businessType = businessType(),
+              )
+            }
+          }
+          ?.also { cjsmDirectoryEntry ->
+            try {
+              cjsmDirectoryRepository.save(cjsmDirectoryEntry)
+            } catch (ex: Exception) {
+              log.error("Failed to load record $cjsmDirectoryEntry due to ${ex.message}")
+            }
+          }
       }
 
-  private fun fromCjsmDirectoryCsvLine(csvLine: String): CjsmDirectoryEntry? =
-    csvLine.takeIf { !it.contains("Secure Email") }
-      ?.let { CSVParser.parse(csvLine, CSVFormat.DEFAULT).first() }
-      ?.let { csvRecord ->
-        CjsmDirectoryEntry(
-          firstName = csvRecord[0],
-          lastName = csvRecord[1],
-          organisation = csvRecord[3],
-          secureEmail = csvRecord[4],
-          townCity = csvRecord[7],
-          businessType = csvRecord[12],
-        )
-      }
+  private fun CSVRecord.firstName() = this[0]
+  private fun CSVRecord.lastName() = this[1]
+  private fun CSVRecord.organisation() = this[3]
+  private fun CSVRecord.secureEmail() = this[4]
+  private fun CSVRecord.townCity() = this[7]
+  private fun CSVRecord.businessType() = this[12]
 }
