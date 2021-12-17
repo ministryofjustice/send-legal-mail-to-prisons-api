@@ -30,6 +30,6 @@ class CjsmResourceTest : IntegrationTest() {
 
     val cjsmDirectorySize = cjsmDirectoryRepository.count()
 
-    assertThat(cjsmDirectorySize).isEqualTo(1000)
+    assertThat(cjsmDirectorySize).isEqualTo(100)
   }
 }

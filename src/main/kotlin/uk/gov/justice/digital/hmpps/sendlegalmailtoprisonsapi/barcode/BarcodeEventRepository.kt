@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.time.Instant
 import javax.persistence.Entity
@@ -17,8 +18,9 @@ import javax.validation.constraints.NotNull
 
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
-  fun findByBarcode(barcode: Barcode): List<BarcodeEvent>
   fun findByBarcodeAndStatusOrderByCreatedDateTime(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
+  @Query("select be from BarcodeEvent as be where be.barcode = :barcode and be.status = 'CREATED'")
+  fun findByBarcodeAndStatusCreated(barcode: Barcode): BarcodeEvent?
 }
 
 @Entity

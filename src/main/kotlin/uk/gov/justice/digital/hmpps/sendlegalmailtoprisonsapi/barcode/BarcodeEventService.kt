@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
@@ -16,6 +17,7 @@ class BarcodeEventService(
   private val barcodeEventRepository: BarcodeEventRepository,
   private val barcodeConfig: BarcodeConfig,
   private val randomCheckService: RandomCheckService,
+  private val cjsmService: CjsmService,
 ) {
 
   fun createEvent(barcode: Barcode, userId: String, status: BarcodeStatus, location: String = ""): BarcodeEvent =
@@ -29,7 +31,7 @@ class BarcodeEventService(
     )
 
   fun checkForCreated(barcode: Barcode) =
-    barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED).firstOrNull()
+    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?: throw EntityNotFoundException("The barcode is not found")
 
   fun checkForDuplicate(barcode: Barcode, userId: String, location: String) =
@@ -42,8 +44,7 @@ class BarcodeEventService(
       }
 
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =
-    barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED)
-      .firstOrNull()
+    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
       ?.also { createdEvent ->
         createEvent(barcode, userId, EXPIRED, location)
@@ -58,10 +59,13 @@ class BarcodeEventService(
         throw ValidationException(RandomCheck(getCreatedBy(barcode)))
       }
 
-  // TODO SLM-35 When we have loaded the CJSM organisations into our database, this should be the created by user's organisation description
-  fun getCreatedBy(barcode: Barcode) =
-    barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CREATED)
-      .firstOrNull()
+  fun getCreatedBy(barcode: Barcode): String =
+    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?.userId
+      ?.let { userId -> findOrganisation(userId) ?: userId }
       ?: "An error occurred and we cannot identify the barcode sender"
+
+  private fun findOrganisation(userId: String): String? =
+    cjsmService.findOrganisation(userId)
+      ?.takeIf { it.isNotBlank() }
 }

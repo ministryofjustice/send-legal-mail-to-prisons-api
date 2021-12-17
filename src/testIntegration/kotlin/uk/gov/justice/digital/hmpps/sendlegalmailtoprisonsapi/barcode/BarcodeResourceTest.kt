@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -8,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CREATED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
@@ -81,6 +83,11 @@ class BarcodeResourceTest : IntegrationTest() {
 
   @Nested
   inner class CheckBarcode {
+    @BeforeEach
+    fun `add the user's organisation to the CJSM directory`() {
+      cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some.user@company.com.cjsm.net", "anyfirstname", "anylastname", "Some Company", "Anytown", "Any type"))
+    }
+
     @Test
     fun `unauthorised without a valid auth token`() {
       webTestClient.post()
@@ -163,6 +170,30 @@ class BarcodeResourceTest : IntegrationTest() {
         .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
         .exchange()
         .expectStatus().isOk
+        .expectBody().jsonPath("$.createdBy").isEqualTo("Some Company")
+    }
+
+    @Test
+    fun `OK if barcode exists but no CJSM organisation in the directory`() {
+      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+      cjsmDirectoryRepository.deleteAll()
+
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isCreated
+
+      webTestClient.post()
+        .uri("/barcode/check")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+        .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
+        .exchange()
+        .expectStatus().isOk
         .expectBody().jsonPath("$.createdBy").isEqualTo("some.user@company.com.cjsm.net")
     }
 
@@ -200,7 +231,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
         .jsonPath("$.errorCode.scannedDate").value<String> { assertThat(it).contains(today) }
         .jsonPath("$.errorCode.scannedLocation").isEqualTo("LEI")
-        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
+        .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
     }
 
     @Test
@@ -229,7 +260,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.code").isEqualTo("EXPIRED")
         .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
         .jsonPath("$.errorCode.createdDate").value<String> { assertThat(it).contains(expiredDayString) }
-        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
+        .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
     }
 
     @Test
@@ -255,7 +286,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectStatus().isBadRequest
         .expectBody()
         .jsonPath("$.errorCode.code").isEqualTo("RANDOM_CHECK")
-        .jsonPath("$.errorCode.createdBy").isEqualTo("some.user@company.com.cjsm.net")
+        .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
     }
   }
 }
