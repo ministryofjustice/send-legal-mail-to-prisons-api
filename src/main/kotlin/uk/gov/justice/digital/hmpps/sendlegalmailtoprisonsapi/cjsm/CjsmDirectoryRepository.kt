@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -11,7 +12,9 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Repository
-interface CjsmDirectoryRepository : JpaRepository<CjsmDirectoryEntry, Long>
+interface CjsmDirectoryRepository : JpaRepository<CjsmDirectoryEntry, Long> {
+  fun findBySecureEmail(secureEmail: String): CjsmDirectoryEntry?
+}
 
 @Entity
 @Table(name = "cjsm_directory")
@@ -21,6 +24,7 @@ data class CjsmDirectoryEntry(
   @NotNull
   val id: Long = -1,
   @NotNull
+  @Column(unique = true)
   val secureEmail: String,
   val firstName: String,
   val lastName: String,

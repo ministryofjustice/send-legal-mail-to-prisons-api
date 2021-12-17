@@ -3,11 +3,13 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 
@@ -16,6 +18,11 @@ class E2eTest(
 ) : IntegrationTest() {
 
   private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
+
+  @BeforeEach
+  fun `add the user's organisation to the CJSM directory`() {
+    cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some.email@company.com.cjsm.net", "anyfirstname", "anylastname", "Some Company", "Anytown", "Any type"))
+  }
 
   @AfterEach
   fun `clear mail server`() {
@@ -107,7 +114,7 @@ class E2eTest(
       .body(BodyInserters.fromValue("""{ "barcode": "$barcode" }"""))
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("$.createdBy").isEqualTo("some.email@company.com.cjsm.net")
+      .expectBody().jsonPath("$.createdBy").isEqualTo("Some Company")
 
   private fun requestCheckBarcodeDuplicate(barcode: String) =
     webTestClient.post()
@@ -120,5 +127,5 @@ class E2eTest(
       .expectStatus().isBadRequest
       .expectBody()
       .jsonPath("$.errorCode.code").isEqualTo("DUPLICATE")
-      .jsonPath("$.errorCode.createdBy").isEqualTo("some.email@company.com.cjsm.net")
+      .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
 }

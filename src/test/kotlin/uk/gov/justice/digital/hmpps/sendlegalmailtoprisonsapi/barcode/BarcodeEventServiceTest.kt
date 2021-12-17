@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeSta
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
@@ -31,7 +32,8 @@ class BarcodeEventServiceTest {
   private val barcodeEventRepository = mock<BarcodeEventRepository>()
   private val barcodeConfig = mock<BarcodeConfig>()
   private val randomCheckService = mock<RandomCheckService>()
-  private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig, randomCheckService)
+  private val cjsmService = mock<CjsmService>()
+  private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig, randomCheckService, cjsmService)
 
   @BeforeEach
   fun `defaults to not requiring a random security check`() {
@@ -56,7 +58,7 @@ class BarcodeEventServiceTest {
   inner class CheckForCreated {
     @Test
     fun `should do nothing if created event exists`() {
-      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED)))
+      mockFindBarcodeEventCreated(aBarcodeEvent(status = CREATED))
 
       assertDoesNotThrow {
         barcodeEventService.checkForCreated(aBarcode())
@@ -139,7 +141,7 @@ class BarcodeEventServiceTest {
 
     @Test
     fun `should throw and create expired event if the barcode has expired`() {
-      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(status = CREATED, createdTime = expiredTime)))
+      mockFindBarcodeEventCreated(aBarcodeEvent(status = CREATED, createdTime = expiredTime))
       mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(status = CHECKED)))
       mockSaveBarcodeEvent(EXPIRED)
 
@@ -194,17 +196,38 @@ class BarcodeEventServiceTest {
   @Nested
   inner class GetCreatedBy {
     @Test
-    fun `Will return the user that created the barcode`() {
-      mockFindBarcodeEvents(CREATED, listOf(aBarcodeEvent(userId = "some_user", status = CREATED)))
+    fun `should return the organisation of the user that created the barcode`() {
+      mockFindBarcodeEventCreated(aBarcodeEvent(userId = "some.user@company.com.cjsm.net", status = CREATED))
+      mockUserOrganisation("some.user@company.com.cjsm.net", "some organisation")
 
       val createdBy = barcodeEventService.getCreatedBy(aBarcode())
 
-      assertThat(createdBy).isEqualTo("some_user")
+      assertThat(createdBy).isEqualTo("some organisation")
     }
 
     @Test
-    fun `Will return with error text if cannot find user created event - in theory this cannot happen`() {
-      mockFindBarcodeEvents(CREATED, listOf())
+    fun `should return user if we cannot find the user in the CJSM directory`() {
+      mockFindBarcodeEventCreated(aBarcodeEvent(userId = "some.user@company.com.cjsm.net", status = CREATED))
+      mockUserOrganisation("some.user@copmany.com.cjsm.net", null)
+
+      val createdBy = barcodeEventService.getCreatedBy(aBarcode())
+
+      assertThat(createdBy).isEqualTo("some.user@company.com.cjsm.net")
+    }
+
+    @Test
+    fun `should return user if the user has a blank organisation`() {
+      mockFindBarcodeEventCreated(aBarcodeEvent(userId = "some.user@company.com.cjsm.net", status = CREATED))
+      mockUserOrganisation("some.user@copmany.com.cjsm.net", "")
+
+      val createdBy = barcodeEventService.getCreatedBy(aBarcode())
+
+      assertThat(createdBy).isEqualTo("some.user@company.com.cjsm.net")
+    }
+
+    @Test
+    fun `should return with error text if cannot find user created event - in theory this cannot happen`() {
+      mockFindBarcodeEventCreated(null)
 
       val createdBy = barcodeEventService.getCreatedBy(aBarcode())
 
@@ -229,10 +252,18 @@ class BarcodeEventServiceTest {
       location = location
     )
 
+  private fun mockFindBarcodeEventCreated(barcodeEvent: BarcodeEvent?) =
+    whenever(barcodeEventRepository.findByBarcodeAndStatusCreated(aBarcode()))
+      .thenReturn(barcodeEvent)
+
   private fun mockFindBarcodeEvents(status: BarcodeStatus, barcodeEvents: List<BarcodeEvent>) =
     whenever(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(any(), eq(status)))
       .thenReturn(barcodeEvents)
 
   private fun mockSaveBarcodeEvent(status: BarcodeStatus) =
     whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(status = status))
+
+  private fun mockUserOrganisation(userId: String, organisation: String?) {
+    whenever(cjsmService.findOrganisation(userId)).thenReturn(organisation)
+  }
 }
