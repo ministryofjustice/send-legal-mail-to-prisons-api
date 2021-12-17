@@ -14,5 +14,5 @@ data class S3Config(
   val bucketArn: String = "",
   val localstackUrl: String = "",
   val region: String = "",
-  val cjsmOrgsCsv: String = "",
+  val cjsmDirectoryCsvName: String = "",
 )
