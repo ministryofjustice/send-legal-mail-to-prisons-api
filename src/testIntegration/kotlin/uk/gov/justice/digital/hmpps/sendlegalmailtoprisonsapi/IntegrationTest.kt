@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
+import com.amazonaws.services.s3.AmazonS3
 import io.lettuce.core.ClientOptions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -27,6 +28,8 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGen
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.S3Config
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
@@ -76,6 +79,15 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var cjsmDirectoryRepository: CjsmDirectoryRepository
+
+  @Autowired
+  protected lateinit var amazonS3: AmazonS3
+
+  @Autowired
+  protected lateinit var s3Config: S3Config
+
+  @Autowired
+  protected lateinit var cjsmService: CjsmService
 
   @AfterEach
   fun `clear database`() {

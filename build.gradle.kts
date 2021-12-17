@@ -32,6 +32,7 @@ dependencies {
   implementation("io.github.microutils:kotlin-logging:2.1.20")
 
   implementation("com.amazonaws:aws-java-sdk-s3:1.12.129")
+  implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
