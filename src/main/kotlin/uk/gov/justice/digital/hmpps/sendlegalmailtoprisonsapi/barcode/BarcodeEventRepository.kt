@@ -18,7 +18,9 @@ import javax.validation.constraints.NotNull
 
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
+
   fun findByBarcodeAndStatusOrderByCreatedDateTime(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
+
   @Query("select be from BarcodeEvent as be where be.barcode = :barcode and be.status = 'CREATED'")
   fun findByBarcodeAndStatusCreated(barcode: Barcode): BarcodeEvent?
 }

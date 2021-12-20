@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
-import com.amazonaws.auth.AnonymousAWSCredentials
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.services.s3.AmazonS3
@@ -31,7 +30,7 @@ class S3ClientsConfig(private val s3Config: S3Config) {
   fun amazonS3Test(): AmazonS3 =
     AmazonS3ClientBuilder.standard()
       .withEndpointConfiguration(AwsClientBuilder.EndpointConfiguration(s3Config.localstackUrl, s3Config.region))
-      .withCredentials(AWSStaticCredentialsProvider(AnonymousAWSCredentials()))
+      .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials("any", "any")))
       .build()
       .also {
         val request = CreateBucketRequest(s3Config.bucketName, s3Config.region)

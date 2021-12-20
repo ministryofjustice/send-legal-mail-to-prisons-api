@@ -61,6 +61,7 @@ class CjsmServiceTest {
 
     cjsmService.saveCjsmDirectoryStream(csv.byteInputStream())
 
+    verify(cjsmDirectoryRepository).deleteAll()
     verify(cjsmDirectoryRepository).save(
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")

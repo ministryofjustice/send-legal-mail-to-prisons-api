@@ -23,7 +23,7 @@ services:
       - '1025:1025'
 
   localstack:
-    image: localstack/localstack:0.12.10
+    image: localstack/localstack:0.13.1
     networks:
       - hmpps
     container_name: localstack
