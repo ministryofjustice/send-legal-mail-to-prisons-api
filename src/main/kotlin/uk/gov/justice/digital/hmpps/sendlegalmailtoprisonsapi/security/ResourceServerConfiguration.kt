@@ -39,6 +39,7 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
           "/v3/api-docs/**",
           "/swagger-ui/**",
           "/swagger-ui.html",
+          "/cjsm/directory/refresh", // Protected by the ingress - see Kube config in helm_deploy
         ).permitAll().anyRequest().authenticated()
       }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
   }
