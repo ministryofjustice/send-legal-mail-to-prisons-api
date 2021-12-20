@@ -115,6 +115,55 @@ To update all dependencies to their latest stable versions run command:
 
 `./gradlew useLatestVersions`
 
+## CJSM Directory
+
+In order to find the organisation of each CJSM user we have a data dump from CJSM which contains their entire directory in CSV format. To make that data available we load it into our database table `cjsm_directory`.
+
+### How it works
+
+We have an endpoint in `CjsmResource` that triggers a refresh of the table `cjsm_directory`. When we hit the endpoint:
+
+* it checks the S3 bucket found in Kubernetes secret `send-legal-mail-s3-bucket-output` for file `cjsm-directory.csv`
+* if it is not found then we return a 404 and nothing happens
+* if it is found we clear the table `cjsm_directory`...
+* ...then read each line from `cjsm-directory.csv`
+* ...and write a record to table `cjsm_directory` for each
+* ...then archive the csv file in S3 bucket location `/data/cjsm-directory.csv.YYYY-MM-DDThh:mm:ss`
+
+If any record in the CSV file cannot be processed we log the error and ignore it.
+
+If we get an unexpected error (e.g. network failure) we leave the old database in place and leave the CSV file in the S3 bucket.
+
+### Triggering the refresh
+
+The endpoint is triggered by a nightly Kubernetes Cronjob. This will refresh the `cjsm_directory` table with `cjsm-directory.csv` if it exists, otherwise do nothing.
+
+The endpoint is protected from being called externally, so it is not possible to call the endpoint directly. Only the Cronjob can call the endpoint.
+
+So to manually trigger the refesh, we just trigger the Cronjob
+
+#### Prerequisites
+
+*Requires access to the Kubernetes cluster - see the [Cloud Platform guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#github-setup)*
+
+*Requires the AWS CLI*
+
+*Requires the kubectl CLI*
+
+#### Upload the new csv file to S3
+
+CD into the directory containing the new CJSM directory CSV, e.g. `new-cjsm-directory.csv`.
+
+Find the AWS access key ID, AWS secret access key and S3 bucket name from the Kubernetes secret `send-legal-mail-s3-bucket-output` - see the [Cloud Platform guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#decoding-a-secret).
+
+Run the following command to push the CSV file into the S3 bucket (remembering to replace the `<placeholders>`):
+
+`AWS_ACCESS_KEY_ID=<enter-key-here> AWS_SECRET_ACCESS_KEY=<enter-secret-here> aws s3api put-object --bucket <enter-s3-bucket-name-here> --key cjsm-directory.csv --body new-cjsm-directory.csv`
+
+To manually trigger the refresh, you have to trigger the Cronjob - use the following command:
+
+`kubectl create job --from=cronjob/send-legal-mail-to-prisons-api-cjsm-directory manual-cjsm-directory-triggered`
+
 ## Authorisation via Magic Link (CJSM users)
 
 For the `create barcode` user story we verify users by sending a magic link to their CJSM email account. Once the user clicks the link we issue a JWT giving the user authorisation to use the create barcode function.
