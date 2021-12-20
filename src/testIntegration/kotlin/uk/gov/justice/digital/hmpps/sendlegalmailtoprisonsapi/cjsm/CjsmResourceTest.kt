@@ -52,6 +52,31 @@ class CjsmResourceTest : IntegrationTest() {
       // But the archived CJSM directory csv should exist in the bucket
       assertThat(bucketObjects.objectSummaries.find { it.key.contains(s3Config.cjsmDirectoryCsvName) }).isNotNull
     }
+
+    @Test
+    fun `should allow two runs in a row`() {
+      uploadCjsmDirectoryCsvToS3()
+
+      webTestClient.post()
+        .uri("/cjsm/directory/refresh")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isOk
+
+      uploadCjsmDirectoryCsvToS3()
+
+      webTestClient.post()
+        .uri("/cjsm/directory/refresh")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isOk
+
+      assertThat(cjsmDirectoryRepository.count()).isEqualTo(100)
+    }
   }
 
   @Nested

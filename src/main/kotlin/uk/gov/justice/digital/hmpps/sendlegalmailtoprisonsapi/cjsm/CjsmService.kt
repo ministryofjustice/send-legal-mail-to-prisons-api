@@ -46,6 +46,7 @@ class CjsmService(
 
   fun saveCjsmDirectoryStream(inputStream: InputStream) {
     cjsmDirectoryRepository.deleteAll()
+    cjsmDirectoryRepository.flush()
     CSVParser.parse(inputStream, Charsets.UTF_8, CSVFormat.DEFAULT)
       .forEach { csvRecord ->
         takeIf { !csvRecord.secureEmail().contains("Secure Email") }
