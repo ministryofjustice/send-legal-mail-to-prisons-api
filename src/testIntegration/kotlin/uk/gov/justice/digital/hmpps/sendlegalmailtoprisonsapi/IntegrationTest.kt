@@ -80,7 +80,7 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var cjsmDirectoryRepository: CjsmDirectoryRepository
 
-  @Autowired
+  @SpyBean
   protected lateinit var amazonS3: AmazonS3
 
   @Autowired

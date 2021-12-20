@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
 import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.AmazonS3Exception
+import com.amazonaws.services.s3.model.DeleteObjectRequest
 import mu.KotlinLogging
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
 import java.io.InputStream
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import javax.persistence.EntityNotFoundException
+import javax.transaction.Transactional
 
 private val log = KotlinLogging.logger {}
 
@@ -17,12 +23,29 @@ class CjsmService(
   private val cjsmDirectoryRepository: CjsmDirectoryRepository
 ) {
 
+  @Transactional
   fun saveCjsmDirectoryCsv() =
-    amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
-      .objectContent
-      .let { saveCjsmDirectoryStream(it) }
+    try {
+      amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
+        .objectContent
+        .let { saveCjsmDirectoryStream(it) }
+    } catch (ex: AmazonS3Exception) {
+      throw EntityNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
+    }
+      .also { archiveCjsmDirectoryFile() }
 
-  fun saveCjsmDirectoryStream(inputStream: InputStream) =
+  private fun archiveCjsmDirectoryFile() {
+    amazonS3.copyObject(
+      s3Config.bucketName,
+      s3Config.cjsmDirectoryCsvName,
+      s3Config.bucketName,
+      """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
+    )
+    amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
+  }
+
+  fun saveCjsmDirectoryStream(inputStream: InputStream) {
+    cjsmDirectoryRepository.deleteAll()
     CSVParser.parse(inputStream, Charsets.UTF_8, CSVFormat.DEFAULT)
       .forEach { csvRecord ->
         takeIf { !csvRecord.secureEmail().contains("Secure Email") }
@@ -47,8 +70,10 @@ class CjsmService(
             }
           }
       }
+  }
 
-  fun findOrganisation(secureEmail: String): String? = cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.organisation
+  fun findOrganisation(secureEmail: String): String? =
+    cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.organisation
 
   private fun CSVRecord.firstName() = this[0]
   private fun CSVRecord.lastName() = this[1]

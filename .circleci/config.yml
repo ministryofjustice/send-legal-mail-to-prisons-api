@@ -21,7 +21,7 @@ executors:
           - POSTGRES_USER=admin
           - POSTGRES_DB=send_legal_mail_api_db
       - image: schickling/mailcatcher
-      - image: localstack/localstack:0.12.10
+      - image: localstack/localstack:0.13.1
         environment:
           - SERVICES=s3
           - DEBUG=${DEBUG- }
