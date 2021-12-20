@@ -1,9 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "app.fullname" . }}-cjsm-directory
-  labels:
-    {{- include "app.labels" . | nindent 4 }}
+  name: send-legal-mail-to-prisons-api-cjsm-directory
 spec:
   schedule: "15 3 * * *"
   concurrencyPolicy: Forbid
