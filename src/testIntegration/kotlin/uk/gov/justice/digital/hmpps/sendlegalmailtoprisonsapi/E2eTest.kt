@@ -59,7 +59,7 @@ class E2eTest(
       .retrieve()
       .bodyToMono(Message::class.java)
       .block() as Message
-    val (secretValue) = ".*secret=(.*)$".toRegex().find(message.source)!!.destructured
+    val (secretValue) = ".*secret=(.*)".toRegex().find(message.source)!!.destructured
     return secretValue
   }
 
