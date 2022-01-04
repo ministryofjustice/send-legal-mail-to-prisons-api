@@ -13,25 +13,6 @@ testSets {
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
-tasks.named("test") {
-  finalizedBy("jacocoTestReport")
-}
-tasks.named("testIntegration") {
-  finalizedBy("jacocoTestIntegrationReport")
-}
-
-tasks.named<JacocoReport>("jacocoTestReport") {
-  reports {
-    xml.required.set(true)
-    html.required.set(true)
-  }
-}
-tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
-  reports {
-    xml.required.set(true)
-    html.required.set(true)
-  }
-}
 
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -65,6 +46,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.16.2")
 }
 
+// Language versions
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
@@ -74,5 +56,36 @@ tasks {
     kotlinOptions {
       jvmTarget = "17"
     }
+  }
+}
+
+// Jacoco code coverage
+tasks.named("test") {
+  finalizedBy("jacocoTestReport")
+}
+tasks.named("testIntegration") {
+  finalizedBy("jacocoTestIntegrationReport")
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
+}
+tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
+}
+
+tasks.register<JacocoReport>("mergeJacoco") {
+  executionData(fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"))
+  classDirectories.setFrom(files(project.sourceSets.main.get().output))
+  sourceDirectories.setFrom(files(project.sourceSets.main.get().allSource))
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
   }
 }

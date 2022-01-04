@@ -38,30 +38,6 @@ executors:
 
 jobs:
   validate:
-    executor:
-      name: hmpps/java
-      tag: "17.0"
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          command: ./gradlew --daemon check
-      - codecov/upload:
-          file: build/reports/jacoco/test/jacocoTestReport.xml
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
-      - store_test_results:
-          path: build/test-results
-      - store_artifacts:
-          path: build/reports/tests
-      - store_artifacts:
-          path: build/reports/jacoco
-  test-integration:
     executor: integration-test-validator
     steps:
       - checkout
@@ -70,9 +46,9 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew --daemon testIntegration
+          command: ./gradlew check testIntegration mergeJacoco
       - codecov/upload:
-          file: build/reports/jacoco/jacocoTestIntegrationReport/jacocoTestIntegrationReport.xml
+          file: build/reports/jacoco/mergeJacoco/mergeJjacoco.xml
       - save_cache:
           paths:
             - ~/.gradle
@@ -89,10 +65,6 @@ workflows:
   build-test-and-deploy:
     jobs:
       - validate:
-          filters:
-            tags:
-              ignore: /.*/
-      - test-integration:
           filters:
             tags:
               ignore: /.*/
@@ -115,7 +87,6 @@ workflows:
           requires:
             - helm_lint
             - validate
-            - test-integration
             - build_docker
       - request-preprod-approval:
           type: approval
