@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
+  codecov: codecov/codecov@3.2.0
 
 parameters:
   alerts-slack-channel:
@@ -48,6 +49,8 @@ jobs:
             - gradle-
       - run:
           command: ./gradlew check
+      - codecov/upload:
+          file: build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
             - ~/.gradle
@@ -68,6 +71,8 @@ jobs:
             - gradle-
       - run:
           command: ./gradlew testIntegration
+      - codecov/upload:
+          file: build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
             - ~/.gradle
