@@ -46,7 +46,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew check testIntegration mergeJacoco
+          command: ./gradlew --daemon check testIntegration mergeJacoco
       - codecov/upload:
           file: build/reports/jacoco/mergeJacoco/mergeJjacoco.xml
       - save_cache:
