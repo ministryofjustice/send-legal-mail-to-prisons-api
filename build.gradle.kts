@@ -3,6 +3,7 @@ plugins {
   id("org.unbroken-dome.test-sets") version "4.0.0"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
+  id("jacoco")
 }
 
 testSets {
@@ -11,6 +12,25 @@ testSets {
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
+}
+tasks.named("test") {
+  finalizedBy("jacocoTestReport")
+}
+tasks.named("testIntegration") {
+  finalizedBy("jacocoTestIntegrationReport")
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
+}
+tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
 }
 
 dependencies {
