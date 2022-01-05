@@ -3,6 +3,7 @@ plugins {
   id("org.unbroken-dome.test-sets") version "4.0.0"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
+  id("jacoco")
 }
 
 testSets {
@@ -45,6 +46,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.16.2")
 }
 
+// Language versions
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
@@ -54,5 +56,33 @@ tasks {
     kotlinOptions {
       jvmTarget = "17"
     }
+  }
+}
+
+// Jacoco code coverage
+tasks.named("test") {
+  finalizedBy("jacocoTestReport")
+}
+tasks.named("testIntegration") {
+  finalizedBy("jacocoTestIntegrationReport")
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+  reports {
+    html.required.set(true)
+  }
+}
+tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
+  reports {
+    html.required.set(true)
+  }
+}
+
+tasks.register<JacocoReport>("combineJacocoReports") {
+  executionData(fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"))
+  classDirectories.setFrom(files(project.sourceSets.main.get().output))
+  sourceDirectories.setFrom(files(project.sourceSets.main.get().allSource))
+  reports {
+    html.required.set(true)
   }
 }

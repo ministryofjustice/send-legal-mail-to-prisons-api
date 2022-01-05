@@ -103,6 +103,20 @@ Or to run all checks including ktlintCheck run command:
 
 `./gradlew check testIntegration`
 
+## Test Coverage Reports
+We use Jacoco to report on test coverage and produce reports for the unit tests, integration tests and the combination of both.
+
+Code coverage verification is not included in any GitHub or CircleCI checks. The reports are there for developers to monitor and look for gaps in test coverage or areas where we could improve tests by switching from integration to unit tests. It will not be used as a stick to beat developers with due to the many failings of this approach.
+
+It is also worth noting that Jacoco is not the ideal code coverage tool for Kotlin and produces some false negatives. Unfortunately there isn't a stable Kotlin alternative at the moment.
+
+### Where are the code coverage reports?
+In the [CircleCI builds](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api?filter=all) find a `validate` job and click on the `ARTIFACTS` tab.
+
+The combined code coverage report should be available at `build/reports/jacoco/combineJacocoReport/html/index.html`. This is our overall test coverage between unit and integration tests. We should worry about any gaps in this report first.
+
+The unit test coverage report and integration test coverage report can be found at `build/reports/jacoco/test/html/index.html` and `build/reports/jacoco/testIntegration/html/index.html` respectively. We should look for gaps in unit tests that are covered by integration tests and see if we can move the tests - though bear in mind this applies mainly to application logic but not so much to application configuration.
+
 ## Dependency checks
 
 ### Vulnerable dependencies
