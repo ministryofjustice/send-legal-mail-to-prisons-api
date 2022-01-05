@@ -69,23 +69,20 @@ tasks.named("testIntegration") {
 
 tasks.named<JacocoReport>("jacocoTestReport") {
   reports {
-    xml.required.set(true)
     html.required.set(true)
   }
 }
 tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
   reports {
-    xml.required.set(true)
     html.required.set(true)
   }
 }
 
-tasks.register<JacocoReport>("mergeJacoco") {
+tasks.register<JacocoReport>("combineJacocoReports") {
   executionData(fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"))
   classDirectories.setFrom(files(project.sourceSets.main.get().output))
   sourceDirectories.setFrom(files(project.sourceSets.main.get().allSource))
   reports {
-    xml.required.set(true)
     html.required.set(true)
   }
 }

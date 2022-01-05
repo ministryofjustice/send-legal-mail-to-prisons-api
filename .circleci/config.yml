@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
-  codecov: codecov/codecov@3.2.0
 
 parameters:
   alerts-slack-channel:
@@ -46,9 +45,11 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew --daemon check testIntegration mergeJacoco
-      - codecov/upload:
-          file: build/reports/jacoco/mergeJacoco/mergeJjacoco.xml
+          command: ./gradlew --daemon check
+      - run:
+          command: ./gradlew --daemon testIntegration
+      - run:
+          command: ./gradlew --daemon combineJacocoReports
       - save_cache:
           paths:
             - ~/.gradle
