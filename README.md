@@ -18,7 +18,7 @@ The application has a ping endpoint found at `/ping` which indicates that the ap
 The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
 
 ### Versions
-The application version currently running can be found on the `/health` endpoint at node `build.buildNumber`. The format of the version number is `YYY-MM-DD.ccc.gggggg` where `ccc` is the Circle job number and `gggggg` is the git commit reference.
+The application version currently running can be found on the `/info` endpoint at node `build.version`. The format of the version number is `YYY-MM-DD.ccc.gggggg` where `ccc` is the Circle job number and `gggggg` is the git commit reference.
 
 ### Rolling back the application
 
@@ -31,7 +31,7 @@ For example in the dev environment:
 2. Set the Kube namespace with command `kubectl config set-context --current --namespace send-legal-mail-to-prisons-dev`
 3. List the charts deployed by helm with command `helm list`
 4. List the deployments for this application with command `helm history send-legal-mail-to-prisons-api`
-5. Given the application version you wish to rollback to, find the related revision number
+5. Given the application version you wish to roll back to, find the related revision number
 6. Rollback to that version with command `helm rollback <revision-number>` replacing `<revision-number>` as appropriate
 
 ## Configuring the project
@@ -61,16 +61,16 @@ The easiest (and slowest) way to run the app is to use docker compose to create 
 ### Running the app for development - Intellij
 First start the dependent containers with command:
 
-`docker-compose up --scale send-legal-mail-to-prisons-api=0`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack`
 
 In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
 
-Run the configuration and the app should start. Check `http://localhost:8080/health` to check the app is running.
+Run the configuration and the app should start. See `http://localhost:8080/health` to check the app is running.
 
 ### Running the app for development - Gradle
 First start the dependent containers with command:
 
-`docker-compose up --scale send-legal-mail-to-prisons-api=0`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack`
 
 Then run the following command:
 
@@ -85,14 +85,14 @@ The integration tests depend on:
 * a mailcatcher container running on port 1080
 * a LocalStack instance emulating S3 on port 4566
 
-By default Testcontainers will notice the dependent containers are not running and start an instance of each.
+By default, Testcontainers will notice the dependent containers are not running and start an instance of each.
 
 To speed up the tests you can start the dependent containers with the command:
 
 `docker-compose -f docker-compose-test.yml up`
 
 ### Intellij
-Right click on the `test` or `testIntegration` source directory and select `Run`.
+Right-click on the `test` or `testIntegration` source directory and select `Run`.
 
 ### Gradle
 Run the following command:
@@ -154,7 +154,7 @@ The endpoint is triggered by a nightly Kubernetes Cronjob. This will refresh the
 
 The endpoint is protected from being called externally, so it is not possible to call the endpoint directly. Only the Cronjob can call the endpoint.
 
-So to manually trigger the refesh, we just trigger the Cronjob
+So to manually trigger the refresh, we just trigger the Cronjob
 
 #### Prerequisites
 
