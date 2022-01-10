@@ -12,7 +12,7 @@ class MagicLinkEmailSender(
 
   private companion object {
     val TEXT_BODY_TEMPLATE: String = """
-      You requested a link to log in to Send legal mail to prisons.
+      You requested a link to sign in to Send legal mail to prisons.
 
       Click on the link or paste it into your browser:
       %s
@@ -20,7 +20,9 @@ class MagicLinkEmailSender(
       You have %s to use the link.
 
       If you didn't request a link you can ignore this email.
-      From HMPPS Digital
+      
+      Send legal mail to prisons team
+      Ministry of Justice
     """.trimIndent()
 
     val HTML_BODY_TEMPLATE: String = """
@@ -28,7 +30,7 @@ class MagicLinkEmailSender(
       <head></head>
       <body>
         <p>
-          You requested a link to log in to Send legal mail to prisons.
+          You requested a link to sign in to Send legal mail to prisons.
         </p>
 
         <p>
@@ -38,9 +40,11 @@ class MagicLinkEmailSender(
 
         <p>You have %s to use the link.</p>
 
+        <p>If you didn't request a link you can ignore this email.</p>
+
         <p>
-          If you didn't request a link you can ignore this email.<br/>
-          From HMPPS Digital
+          <strong>Send legal mail to prisons team</strong><br/>
+          Ministry of Justice
         </p>
       </body>
       </html>
@@ -55,7 +59,7 @@ class MagicLinkEmailSender(
       .also { mimeMessage ->
         MimeMessageHelper(mimeMessage, true).apply {
           setTo(email)
-          setSubject("Send Legal Mail Sign in")
+          setSubject("Sign in to Send legal mail to prisons")
           setText(textBody(magicLink, magicLinkExpiry), htmlBody(magicLink, magicLinkExpiry))
         }
       }
