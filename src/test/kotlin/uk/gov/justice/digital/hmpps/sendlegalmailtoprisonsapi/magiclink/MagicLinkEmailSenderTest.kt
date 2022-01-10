@@ -28,7 +28,7 @@ class MagicLinkEmailSenderTest {
 
     verify(mockMailSender).send(
       check<MimeMessage> {
-        assertThat(it.subject).isEqualTo("Send Legal Mail Sign in")
+        assertThat(it.subject).isEqualTo("Sign in to Send legal mail to prisons")
         assertThat(it.allRecipients.map { recipient -> recipient.toString() }).isEqualTo(listOf("an.email@company.com"))
 
         val bodyPartContents = (it.content as MimeMultipart).getBodyPartContents()
