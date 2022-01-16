@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeResource.CreateBarcodeResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
@@ -35,7 +36,7 @@ class E2eTest(
     val secretValue = getSecretFromReceivedEmail()
     val jwt = requestVerifySecret(secretValue)
     requestVerifySecretFails(secretValue)
-    val barcode = requestCreateBarcode(jwt)
+    val barcode = requestCreateBarcode(jwt).barcode
 
     requestCheckBarcodeOk(barcode)
     requestCheckBarcodeDuplicate(barcode)
@@ -88,7 +89,7 @@ class E2eTest(
       .exchange()
       .expectStatus().isNotFound
 
-  private fun requestCreateBarcode(jwt: String): String =
+  private fun requestCreateBarcode(jwt: String): CreateBarcodeResponse =
     webTestClient.post()
       .uri("/barcode")
       .accept(MediaType.APPLICATION_JSON)
@@ -96,12 +97,12 @@ class E2eTest(
       .header("Create-Barcode-Token", jwt)
       .exchange()
       .expectStatus().isCreated
-      .returnResult(String::class.java)
+      .returnResult(CreateBarcodeResponse::class.java)
       .responseBody
       .blockFirst()
-      ?.also { barcode ->
-        assertThat(barcode.length).isEqualTo(12)
-        assertThat(barcode).containsOnlyDigits()
+      ?.also { response ->
+        assertThat(response.barcode.length).isEqualTo(12)
+        assertThat(response.barcode).containsOnlyDigits()
       }
       ?: fail("Did not receive a response from /barcode")
 
