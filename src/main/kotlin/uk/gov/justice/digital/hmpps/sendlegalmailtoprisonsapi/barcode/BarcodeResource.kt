@@ -38,7 +38,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
       ApiResponse(
         responseCode = "201",
         description = "Barcode created",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = String::class))],
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = CreateBarcodeResponse::class))],
       ),
       ApiResponse(
         responseCode = "400",
@@ -52,8 +52,13 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
       ),
     ]
   )
-  fun createBarcode(@Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails): String =
-    barcodeService.createBarcode(userDetails.username)
+  fun createBarcode(@Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails): CreateBarcodeResponse =
+    CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username))
+
+  data class CreateBarcodeResponse(
+    @Schema(description = "The generated barcode", example = "123456789012")
+    val barcode: String,
+  )
 
   @PostMapping(value = ["/barcode/check"])
   @ResponseBody
