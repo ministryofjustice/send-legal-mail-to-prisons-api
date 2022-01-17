@@ -56,7 +56,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
         .expectBody()
-        .jsonPath("$").isEqualTo("SOME_CODE")
+        .jsonPath("$.barcode").isEqualTo("SOME_CODE")
 
       val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
       barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, CREATED).firstOrNull()
@@ -77,7 +77,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
         .expectBody()
-        .jsonPath("$").isEqualTo("ANOTHER_CODE")
+        .jsonPath("$.barcode").isEqualTo("ANOTHER_CODE")
     }
   }
 

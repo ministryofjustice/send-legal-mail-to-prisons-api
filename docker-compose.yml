@@ -1,17 +1,22 @@
 version: "3"
 services:
   send-legal-mail-to-prisons-api:
-    build:
-      context: .
-    network_mode: "host"
+    image: quay.io/hmpps/send-legal-mail-to-prisons-api
+    networks:
+      - hmpps
     container_name: send-legal-mail-to-prisons-api
     ports:
-      - "8081:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
     environment:
       - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=dev,stdout,postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://send-legal-mail-api-db:5432/send_legal_mail_api_db
+      - HMPPS_AUTH_URL=http://hmpps-auth:9090/auth
+      - SPRING_MAIL_HOST=send-legal-mail-to-prisons-api_mailcatcher_1
+      - APP_S3_LOCALSTACKURL=localstack
+      - SPRING_REDIS_HOST=send-legal-mail-api-cache
 
   send-legal-mail-api-db:
     image: postgres:13.3
