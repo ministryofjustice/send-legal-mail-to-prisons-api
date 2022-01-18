@@ -94,7 +94,7 @@ app:
     expiry: 7d
   barcode:
     expiry: 28d
-    random-check-percentage: 10
+    random-check-percentage: 50
   s3:
     region: eu-west-2
     cjsm-directory-csv-name: cjsm-directory.csv
