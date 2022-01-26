@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0-beta-4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.1"
   id("org.unbroken-dome.test-sets") version "4.0.0"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
@@ -24,26 +24,26 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.1")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.1")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.1")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.1")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.5")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.5")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.5")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.5")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
-  implementation("io.github.microutils:kotlin-logging:2.1.20")
+  implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.129")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.147")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
-  testImplementation("org.testcontainers:postgresql:1.16.2")
+  testImplementation("org.testcontainers:postgresql:1.16.3")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("org.mockito:mockito-inline:4.1.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.28")
-  testImplementation("org.testcontainers:localstack:1.16.2")
+  testImplementation("org.mockito:mockito-inline:4.3.1")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.29")
+  testImplementation("org.testcontainers:localstack:1.16.3")
 }
 
 // Language versions
