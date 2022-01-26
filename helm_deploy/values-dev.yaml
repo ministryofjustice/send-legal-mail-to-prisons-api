@@ -13,7 +13,8 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     APP_MAGICLINK_URL: https://send-legal-mail-dev.prison.service.justice.gov.uk/link/verify-link
     APP_JWT_EXPIRY: 1d
-    APP_BARCODE_EXPIRY: 2h
+    APP_BARCODE_EXPIRY: 2d
+    APP_BARCODE_RANDOM_CHECK_PERCENTAGE: 25
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
