@@ -17,7 +17,7 @@ interface ContactRepository : JpaRepository<Contact, Int>
 data class Contact(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long?,
+  val id: Long? = null,
 
   @NotNull
   val owner: String,
