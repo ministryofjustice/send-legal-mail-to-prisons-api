@@ -77,8 +77,8 @@ data class CreateContactRequest(
   @Schema(description = "The ID of the prison location of the new contact", example = "BXI", required = true)
   val prisonId: String,
 
-  @Schema(description = "The date of birth of the new contact if known", example = "23/04/1965", required = false)
-  @JsonFormat(pattern = "dd/MM/yyyy")
+  @Schema(description = "The date of birth of the new contact if known", example = "1965-04-23", required = false)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   val dob: LocalDate?,
 
   @Schema(description = "The prison number of the new contact if known", example = "A1234BC", required = false)
@@ -95,8 +95,8 @@ data class ContactResponse(
   @Schema(description = "The ID of the prison location of the contact", example = "BXI", required = true)
   val prisonId: String,
 
-  @Schema(description = "The date of birth of the contact if known", example = "23/04/1965", required = false)
-  @JsonFormat(pattern = "dd/MM/yyyy")
+  @Schema(description = "The date of birth of the contact if known", example = "1965-04-23", required = false)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   val dob: LocalDate?,
 
   @Schema(description = "The prison number of the contact if known", example = "A1234BC", required = false)
