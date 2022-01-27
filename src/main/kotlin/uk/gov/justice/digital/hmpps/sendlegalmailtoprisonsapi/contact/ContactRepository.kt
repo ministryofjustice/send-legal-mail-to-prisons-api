@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 interface ContactRepository : JpaRepository<Contact, Int>
 
@@ -16,13 +17,24 @@ interface ContactRepository : JpaRepository<Contact, Int>
 data class Contact(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long,
+  val id: Long?,
 
+  @NotNull
   val owner: String,
+
+  @NotNull
   val name: String,
+
+  @NotNull
   val prisonCode: String,
+
   val dob: LocalDate?,
+
   val prisonNumber: String?,
+
+  @NotNull
   val created: Instant,
+
+  @NotNull
   val updated: Instant
 )
