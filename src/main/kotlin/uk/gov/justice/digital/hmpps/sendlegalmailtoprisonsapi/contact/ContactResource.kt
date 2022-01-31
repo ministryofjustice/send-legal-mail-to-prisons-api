@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -11,9 +14,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
@@ -58,7 +63,6 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-
   fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
     contactService.createContact(authentication.name, createContactRequest).let {
       return ContactResponse(
@@ -69,6 +73,33 @@ class ContactResource(private val contactService: ContactService) {
         prisonNumber = it.prisonNumber
       )
     }
+
+  @GetMapping(value = ["/contacts"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Search for Contacts by their name or partial name",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
+    parameters = [Parameter(`in` = ParameterIn.QUERY, name = "name", example = "john", description = "The name or partial name of the Contacts to return. Case insensitive.")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Matching Contacts",
+        content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ContactResponse::class)))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid magic link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      )
+    ]
+  )
+  fun searchContactsByName(@RequestParam name: String): Collection<ContactResource> {
+    TODO()
+  }
 }
 
 @ContactHasDobOrPrisonNumber
