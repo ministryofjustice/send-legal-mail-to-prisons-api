@@ -13,7 +13,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
@@ -81,9 +80,11 @@ class SendLegalMailToPrisonsApiExceptionHandler {
   }
 
   @ExceptionHandler(DuplicateContactException::class)
-  @ResponseStatus(CONFLICT)
-  fun handleDuplicateContactException(e: DuplicateContactException) {
+  fun handleDuplicateContactException(e: DuplicateContactException): ResponseEntity<ErrorResponse> {
     log.info { "Duplicate Contact exception: [${e.userId}, ${e.prisonNumber}]" }
+    return ResponseEntity
+      .status(CONFLICT)
+      .body(ErrorResponse(status = CONFLICT, errorCode = DuplicateContact))
   }
 
   @ExceptionHandler(Exception::class)

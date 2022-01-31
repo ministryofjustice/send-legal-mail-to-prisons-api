@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 
 class ContactResourceTest : IntegrationTest() {
@@ -148,7 +149,7 @@ class ContactResourceTest : IntegrationTest() {
 
     @Test
     fun `duplicate contacts without prison number are created`() {
-      doTwice {
+      repeat(2) {
         webTestClient.post()
           .uri("/contact")
           .accept(MediaType.APPLICATION_JSON)
@@ -187,14 +188,9 @@ class ContactResourceTest : IntegrationTest() {
         .bodyValue(JOHN_SMITH)
         .exchange()
         .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(DuplicateContact.code)
 
       assertThat(contactRepository.findAll()).hasSize(1)
     }
-  }
-}
-
-private fun doTwice(f: () -> Unit) {
-  for (i in 1..2) {
-    f.invoke()
   }
 }
