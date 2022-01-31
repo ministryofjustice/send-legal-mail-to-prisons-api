@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -12,6 +13,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
@@ -78,6 +80,12 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
+  @ExceptionHandler(DuplicateContactException::class)
+  @ResponseStatus(CONFLICT)
+  fun handleDuplicateContactException(e: DuplicateContactException) {
+    log.info { "Duplicate Contact exception: [${e.userId}, ${e.prisonNumber}]" }
+  }
+
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse?>? {
     log.error("Unexpected exception", e)
@@ -88,6 +96,8 @@ class SendLegalMailToPrisonsApiExceptionHandler {
 }
 
 class ValidationException(val errorCode: ErrorCode) : RuntimeException()
+
+class DuplicateContactException(val userId: String, val prisonNumber: String) : RuntimeException()
 
 class ErrorResponse(
   @Schema(description = "The HTTP status code", example = "400")

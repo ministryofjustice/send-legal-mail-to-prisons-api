@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.Instant
 import java.time.LocalDate
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -26,11 +27,13 @@ data class Contact(
   val name: String,
 
   @NotNull
+  @Column(name = "prison_code")
   val prisonCode: String,
 
-  val dob: LocalDate?,
+  val dob: LocalDate? = null,
 
-  val prisonNumber: String?,
+  @Column(name = "prison_number")
+  val prisonNumber: String? = null,
 
   @NotNull
   val created: Instant,

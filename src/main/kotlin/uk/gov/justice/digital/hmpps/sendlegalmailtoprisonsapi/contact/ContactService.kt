@@ -1,15 +1,19 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
+import mu.KotlinLogging
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
+import java.time.Clock
 import java.time.Instant
 
+private val log = KotlinLogging.logger {}
+
 @Service
-class ContactService(private val contactRepository: ContactRepository) {
+class ContactService(private val contactRepository: ContactRepository, private val clock: Clock) {
 
   fun createContact(userId: String, createContactRequest: CreateContactRequest): Contact {
-    // TODO - check whether the contact exists in order to allow the API to return a 409
-    // Need to consider what defines contact equality - a combination of owner, name & prisonId ?
-    val now = Instant.now()
+    val now = Instant.now(clock)
     val newContactEntity = Contact(
       owner = userId,
       name = createContactRequest.prisonerName,
@@ -19,6 +23,13 @@ class ContactService(private val contactRepository: ContactRepository) {
       created = now,
       updated = now
     )
-    return contactRepository.save(newContactEntity)
+    try {
+      return contactRepository.save(newContactEntity)
+        .also {
+          log.debug { "Created new Contact: $it" }
+        }
+    } catch (dataIntegrityViolationException: DataIntegrityViolationException) {
+      throw DuplicateContactException(userId, createContactRequest.prisonNumber!!)
+    }
   }
 }
