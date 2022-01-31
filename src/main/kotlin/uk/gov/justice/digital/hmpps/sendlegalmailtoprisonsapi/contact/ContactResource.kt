@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
 import java.time.LocalDate
+import javax.validation.Valid
+import javax.validation.constraints.Pattern
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -57,7 +59,7 @@ class ContactResource(private val contactService: ContactService) {
     ]
   )
   // TODO exception handler in order to return a 409 if createContact throws xxxException
-  fun createContact(@RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
+  fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
     contactService.createContact(authentication.name, createContactRequest).let {
       return ContactResponse(
         id = it.id!!,
@@ -69,24 +71,26 @@ class ContactResource(private val contactService: ContactService) {
     }
 }
 
-// TODO - apply validation that either dob or prisonNumber are present
+@ContactHasDobOrPrisonNumber
 data class CreateContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)
   val prisonerName: String,
 
   @Schema(description = "The ID of the prison location of the new contact", example = "BXI", required = true)
+  @field:Pattern(regexp = "^[A-Z]{3}$")
   val prisonId: String,
 
   @Schema(description = "The date of birth of the new contact if known", example = "1965-04-23", required = false)
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  val dob: LocalDate?,
+  @field:JsonFormat(pattern = "yyyy-MM-dd")
+  val dob: LocalDate? = null,
 
   @Schema(description = "The prison number of the new contact if known", example = "A1234BC", required = false)
-  val prisonNumber: String?,
+  @field:Pattern(regexp = "^[A-Z]\\d{4}[A-Z]{2}$")
+  val prisonNumber: String? = null,
 )
 
 data class ContactResponse(
-  @Schema(description = "The ID of contact", example = "1", required = true)
+  @Schema(description = "The ID of the contact", example = "1", required = true)
   val id: Long,
 
   @Schema(description = "The name of the contact", example = "John Doe", required = true)
@@ -97,8 +101,8 @@ data class ContactResponse(
 
   @Schema(description = "The date of birth of the contact if known", example = "1965-04-23", required = false)
   @JsonFormat(pattern = "yyyy-MM-dd")
-  val dob: LocalDate?,
+  val dob: LocalDate? = null,
 
   @Schema(description = "The prison number of the contact if known", example = "A1234BC", required = false)
-  val prisonNumber: String?
+  val prisonNumber: String? = null
 )
