@@ -58,7 +58,7 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-  // TODO exception handler in order to return a 409 if createContact throws xxxException
+
   fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
     contactService.createContact(authentication.name, createContactRequest).let {
       return ContactResponse(

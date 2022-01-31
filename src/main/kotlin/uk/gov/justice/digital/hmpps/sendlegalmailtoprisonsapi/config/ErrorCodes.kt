@@ -38,6 +38,13 @@ object EmailTooLong : MagicLinkRequestErrorCodes("EMAIL_TOO_LONG", "The email ad
 object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
 object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
+sealed class ContactErrorCodes(
+  @Schema(allowableValues = ["DUPLICATE_CONTACT"])
+  code: String,
+  userMessage: String
+) : StandardErrorCodes(code, userMessage)
+object DuplicateContact : ContactErrorCodes("CONFLICT", "A contact already exists for this prison number")
+
 @Schema(oneOf = [Duplicate::class, Expired::class, RandomCheck::class])
 sealed class CheckBarcodeErrorCodes(
   @Schema(allowableValues = ["DUPLICATE", "EXPIRED", "RANDOM_CHECK"])
