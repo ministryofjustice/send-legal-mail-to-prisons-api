@@ -91,6 +91,11 @@ class ContactResource(private val contactService: ContactService) {
         content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ContactResponse::class)))],
       ),
       ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
         responseCode = "401",
         description = "Unauthorised, requires a valid magic link token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
