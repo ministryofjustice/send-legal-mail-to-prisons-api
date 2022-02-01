@@ -193,4 +193,51 @@ class ContactResourceTest : IntegrationTest() {
       assertThat(contactRepository.findAll()).hasSize(1)
     }
   }
+
+  @Nested
+  inner class SearchContactsByName {
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.get()
+        .uri("/contacts?name=fred")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `forbidden without a valid role`() {
+      webTestClient.get()
+        .uri("/contacts?name=fred")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "AUSER_GEN"))
+        .exchange()
+        .expectStatus().isForbidden
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
+    }
+
+    @Test
+    fun `bad request without required query string parameter`() {
+      webTestClient.get()
+        .uri("/contacts")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `returns zero matching Contacts`() {
+      contactRepository.deleteAll()
+
+      webTestClient.get()
+        .uri("/contacts?name=fred")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(Contact::class.java).hasSize(0)
+    }
+  }
 }
