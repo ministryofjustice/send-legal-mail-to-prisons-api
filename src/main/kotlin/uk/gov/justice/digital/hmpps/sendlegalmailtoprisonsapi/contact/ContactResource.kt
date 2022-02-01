@@ -97,8 +97,16 @@ class ContactResource(private val contactService: ContactService) {
       )
     ]
   )
-  fun searchContactsByName(@RequestParam name: String): Collection<ContactResource> {
-    TODO()
+  fun searchContactsByName(@RequestParam(required = true) name: String, authentication: Authentication): Collection<ContactResponse> {
+    return contactService.searchContactsByName(authentication.name, name).map {
+      ContactResponse(
+        id = it.id!!,
+        prisonerName = it.name,
+        prisonId = it.prisonCode,
+        dob = it.dob,
+        prisonNumber = it.prisonNumber
+      )
+    }
   }
 }
 
