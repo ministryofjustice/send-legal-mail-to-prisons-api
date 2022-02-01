@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
@@ -85,6 +86,14 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     return ResponseEntity
       .status(CONFLICT)
       .body(ErrorResponse(status = CONFLICT, errorCode = DuplicateContact))
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException::class)
+  fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse?>? {
+    log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
   @ExceptionHandler(Exception::class)

@@ -91,14 +91,27 @@ class ContactResource(private val contactService: ContactService) {
         content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ContactResponse::class)))],
       ),
       ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
         responseCode = "401",
         description = "Unauthorised, requires a valid magic link token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       )
     ]
   )
-  fun searchContactsByName(@RequestParam name: String): Collection<ContactResource> {
-    TODO()
+  fun searchContactsByName(@RequestParam(required = true) name: String, authentication: Authentication): Collection<ContactResponse> {
+    return contactService.searchContactsByName(authentication.name, name).map {
+      ContactResponse(
+        id = it.id!!,
+        prisonerName = it.name,
+        prisonId = it.prisonCode,
+        dob = it.dob,
+        prisonNumber = it.prisonNumber
+      )
+    }
   }
 }
 

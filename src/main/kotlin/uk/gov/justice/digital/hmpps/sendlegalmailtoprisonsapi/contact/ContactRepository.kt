@@ -11,7 +11,9 @@ import javax.persistence.Id
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
-interface ContactRepository : JpaRepository<Contact, Int>
+interface ContactRepository : JpaRepository<Contact, Int> {
+  fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
+}
 
 @Entity
 @Table(name = "contacts")

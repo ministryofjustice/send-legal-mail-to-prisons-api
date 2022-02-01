@@ -32,4 +32,10 @@ class ContactService(private val contactRepository: ContactRepository, private v
       throw DuplicateContactException(userId, createContactRequest.prisonNumber!!)
     }
   }
+
+  fun searchContactsByName(userId: String, name: String): Collection<Contact> =
+    contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
+      .also {
+        log.debug { "Returning ${it.size} matching Contact records" }
+      }
 }
