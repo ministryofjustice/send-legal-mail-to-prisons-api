@@ -8,11 +8,11 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.EntityNotFoundException
-import javax.transaction.Transactional
 
 private val log = KotlinLogging.logger {}
 
@@ -44,6 +44,7 @@ class CjsmService(
     amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
   }
 
+  @Transactional
   fun saveCjsmDirectoryStream(inputStream: InputStream) {
     cjsmDirectoryRepository.deleteAll()
     cjsmDirectoryRepository.flush()
@@ -73,6 +74,7 @@ class CjsmService(
       }
   }
 
+  @Transactional(readOnly = true)
   fun findOrganisation(secureEmail: String): String? =
     cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.organisation
 
