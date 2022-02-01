@@ -37,7 +37,7 @@ class BarcodeEventService(
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?: throw EntityNotFoundException("The barcode is not found")
 
-  @Transactional(readOnly = true)
+  @Transactional
   fun checkForDuplicate(barcode: Barcode, userId: String, location: String) =
     barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CHECKED)
       .takeIf { checkedEvents -> checkedEvents.size > 1 }
@@ -47,7 +47,7 @@ class BarcodeEventService(
         throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location, getCreatedBy(barcode)))
       }
 
-  @Transactional(readOnly = true)
+  @Transactional
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
@@ -56,7 +56,7 @@ class BarcodeEventService(
         throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays(), getCreatedBy(barcode)))
       }
 
-  @Transactional(readOnly = true)
+  @Transactional
   fun checkForRandomSecurityCheck(barcode: Barcode, userId: String, location: String) =
     randomCheckService.requiresRandomCheck()
       .takeIf { requiresRandomCheck -> requiresRandomCheck }
