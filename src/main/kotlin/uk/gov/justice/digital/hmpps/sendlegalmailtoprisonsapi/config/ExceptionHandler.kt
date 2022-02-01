@@ -92,8 +92,8 @@ class SendLegalMailToPrisonsApiExceptionHandler {
   fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse?>? {
     log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
     return ResponseEntity
-      .status(NOT_FOUND)
-      .body(ErrorResponse(status = NOT_FOUND, errorCode = NotFound))
+      .status(BAD_REQUEST)
+      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
   @ExceptionHandler(Exception::class)

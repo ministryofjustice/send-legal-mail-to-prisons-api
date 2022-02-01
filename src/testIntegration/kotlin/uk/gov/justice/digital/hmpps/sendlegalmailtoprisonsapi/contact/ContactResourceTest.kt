@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
 
 class ContactResourceTest : IntegrationTest() {
 
@@ -218,14 +217,14 @@ class ContactResourceTest : IntegrationTest() {
     }
 
     @Test
-    fun `not found without required query string parameter`() {
+    fun `bad request without required query string parameter`() {
       webTestClient.get()
         .uri("/contacts")
         .accept(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation())
         .exchange()
-        .expectStatus().isNotFound
-        .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
 
     @Test
