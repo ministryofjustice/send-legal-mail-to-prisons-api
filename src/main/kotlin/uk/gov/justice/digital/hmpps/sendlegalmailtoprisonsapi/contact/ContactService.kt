@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 import mu.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
 import java.time.Clock
 import java.time.Instant
@@ -13,7 +12,6 @@ private val log = KotlinLogging.logger {}
 @Service
 class ContactService(private val contactRepository: ContactRepository, private val clock: Clock) {
 
-  @Transactional
   fun createContact(userId: String, createContactRequest: CreateContactRequest): Contact {
     val now = Instant.now(clock)
     val newContactEntity = Contact(
@@ -35,7 +33,6 @@ class ContactService(private val contactRepository: ContactRepository, private v
     }
   }
 
-  @Transactional(readOnly = true)
   fun searchContactsByName(userId: String, name: String): Collection<Contact> =
     contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
       .also {

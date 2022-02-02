@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
@@ -21,7 +20,6 @@ class BarcodeEventService(
   private val cjsmService: CjsmService,
 ) {
 
-  @Transactional
   fun createEvent(barcode: Barcode, userId: String, status: BarcodeStatus, location: String = ""): BarcodeEvent =
     barcodeEventRepository.save(
       BarcodeEvent(
@@ -32,12 +30,10 @@ class BarcodeEventService(
       )
     )
 
-  @Transactional(readOnly = true)
   fun checkForCreated(barcode: Barcode) =
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?: throw EntityNotFoundException("The barcode is not found")
 
-  @Transactional
   fun checkForDuplicate(barcode: Barcode, userId: String, location: String) =
     barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CHECKED)
       .takeIf { checkedEvents -> checkedEvents.size > 1 }
@@ -47,7 +43,6 @@ class BarcodeEventService(
         throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location, getCreatedBy(barcode)))
       }
 
-  @Transactional
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
@@ -56,7 +51,6 @@ class BarcodeEventService(
         throw ValidationException(Expired(createdEvent.createdDateTime, barcodeConfig.expiry.toDays(), getCreatedBy(barcode)))
       }
 
-  @Transactional
   fun checkForRandomSecurityCheck(barcode: Barcode, userId: String, location: String) =
     randomCheckService.requiresRandomCheck()
       .takeIf { requiresRandomCheck -> requiresRandomCheck }
@@ -65,7 +59,6 @@ class BarcodeEventService(
         throw ValidationException(RandomCheck(getCreatedBy(barcode)))
       }
 
-  @Transactional(readOnly = true)
   fun getCreatedBy(barcode: Barcode): String =
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
       ?.userId
