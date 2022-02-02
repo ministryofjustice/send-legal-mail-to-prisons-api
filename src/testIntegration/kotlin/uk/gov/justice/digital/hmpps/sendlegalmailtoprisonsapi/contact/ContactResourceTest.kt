@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.web.reactive.server.returnResult
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
@@ -195,6 +197,7 @@ class ContactResourceTest : IntegrationTest() {
   }
 
   @Nested
+  @Sql("/createContacts.sql")
   inner class SearchContactsByName {
     @Test
     fun `unauthorised without a valid auth token`() {
@@ -228,16 +231,28 @@ class ContactResourceTest : IntegrationTest() {
     }
 
     @Test
-    fun `returns zero matching Contacts`() {
-      contactRepository.deleteAll()
-
-      webTestClient.get()
-        .uri("/contacts?name=fred")
+    fun `returns matching Contacts given owner and name that match records`() {
+      val contacts: List<ContactResponse> = webTestClient.get()
+        .uri("/contacts?name=john")
         .accept(MediaType.APPLICATION_JSON)
-        .headers(setCreateBarcodeAuthorisation())
+        .headers(setCreateBarcodeAuthorisation(email = "some.user@company.com.cjsm.net"))
         .exchange()
         .expectStatus().isOk
-        .expectBodyList(Contact::class.java).hasSize(0)
+        .expectBodyList(ContactResponse::class.java).hasSize(4).returnResult().responseBody
+
+      val contactNames = contacts.map { it.prisonerName }
+      assertThat(contactNames).containsExactly("John Smith", "Johnathon Evans", "Malcolm Johnston", "Bart Johnson")
+    }
+
+    @Test
+    fun `returns zero matching Contacts given owner and name that match no records`() {
+      webTestClient.get()
+        .uri("/contacts?name=john")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation(email = "some.user.with.no.contacts.in.the.database@company.com.cjsm.net"))
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(ContactResponse::class.java).hasSize(0)
     }
   }
 }
