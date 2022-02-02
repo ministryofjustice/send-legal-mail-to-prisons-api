@@ -2,10 +2,9 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import mu.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ContactNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.Clock
 import java.time.Instant
 
@@ -42,12 +41,9 @@ class ContactService(private val contactRepository: ContactRepository, private v
       }
 
   fun getContactByPrisonNumber(userId: String, prisonNumber: String): Contact =
-    try {
-      contactRepository.findContactByOwnerAndPrisonNumber(userId, prisonNumber)
-        .also {
-          log.debug { "Returning Contact: $it" }
-        }
-    } catch (emptyResultDataAccessException: EmptyResultDataAccessException) {
-      throw ContactNotFoundException(userId, prisonNumber)
-    }
+    contactRepository.getContactByOwnerAndPrisonNumber(userId, prisonNumber)
+      ?.also {
+        log.debug { "Returning Contact: $it" }
+      }
+      ?: throw ResourceNotFoundException("Could not find a matching Contact [$userId, $prisonNumber]")
 }

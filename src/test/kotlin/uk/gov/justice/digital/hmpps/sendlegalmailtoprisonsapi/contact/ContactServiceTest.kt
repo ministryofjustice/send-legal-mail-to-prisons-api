@@ -9,9 +9,8 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.dao.EmptyResultDataAccessException
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ContactNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -176,22 +175,22 @@ class ContactServiceTest {
         created = Instant.now(clock),
         updated = Instant.now(clock)
       )
-      given { contactRepository.findContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(expectedContact)
+      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(expectedContact)
 
       val contact = contactService.getContactByPrisonNumber("a-user@cjsm.net", "A1234BC")
 
       assertThat(contact).isEqualTo(expectedContact)
-      verify(contactRepository).findContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
+      verify(contactRepository).getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
     }
 
     @Test
-    fun `should throw ContactNotFoundException given database throws empty result set exception`() {
-      given { contactRepository.findContactByOwnerAndPrisonNumber(any(), any()) }.willThrow(EmptyResultDataAccessException("Expected 1 record", 1))
+    fun `should throw ResourceNotFoundException given contact is not found on the database`() {
+      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(null)
 
-      assertThrows<ContactNotFoundException> {
+      assertThrows<ResourceNotFoundException> {
         contactService.getContactByPrisonNumber("a-user@cjsm.net", "A1234BC")
       }
-      verify(contactRepository).findContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
+      verify(contactRepository).getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
     }
   }
 }

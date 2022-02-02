@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
-import javax.persistence.EntityNotFoundException
 
 private val log = KotlinLogging.logger {}
 
@@ -56,8 +55,8 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(ErrorResponse(status = INTERNAL_SERVER_ERROR, errorCode = DownstreamError))
   }
 
-  @ExceptionHandler(EntityNotFoundException::class)
-  fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
+  @ExceptionHandler(ResourceNotFoundException::class)
+  fun handleResourceNotFoundException(e: ResourceNotFoundException): ResponseEntity<ErrorResponse> {
     log.info("Entity not found exception: {}", e.message)
     return ResponseEntity
       .status(NOT_FOUND)
@@ -88,14 +87,6 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(ErrorResponse(status = CONFLICT, errorCode = DuplicateContact))
   }
 
-  @ExceptionHandler(ContactNotFoundException::class)
-  fun handleContactNotFoundException(e: ContactNotFoundException): ResponseEntity<ErrorResponse> {
-    log.info { "Contact Not Found exception: [${e.userId}, ${e.prisonNumber}]" }
-    return ResponseEntity
-      .status(NOT_FOUND)
-      .body(ErrorResponse(status = NOT_FOUND, errorCode = NotFound))
-  }
-
   @ExceptionHandler(MissingServletRequestParameterException::class)
   fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse?>? {
     log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
@@ -117,7 +108,7 @@ class ValidationException(val errorCode: ErrorCode) : RuntimeException()
 
 class DuplicateContactException(val userId: String, val prisonNumber: String) : RuntimeException()
 
-class ContactNotFoundException(val userId: String, val prisonNumber: String) : RuntimeException()
+class ResourceNotFoundException(message: String) : RuntimeException(message)
 
 class ErrorResponse(
   @Schema(description = "The HTTP status code", example = "400")

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull
 interface ContactRepository : JpaRepository<Contact, Int> {
   fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
 
-  fun findContactByOwnerAndPrisonNumber(owner: String, prisonNumber: String): Contact
+  fun getContactByOwnerAndPrisonNumber(owner: String, prisonNumber: String): Contact?
 }
 
 @Entity

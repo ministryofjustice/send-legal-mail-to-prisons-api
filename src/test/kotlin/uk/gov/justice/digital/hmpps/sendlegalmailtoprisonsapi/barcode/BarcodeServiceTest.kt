@@ -12,11 +12,11 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Optional
-import javax.persistence.EntityNotFoundException
 
 class BarcodeServiceTest {
 
@@ -63,7 +63,7 @@ class BarcodeServiceTest {
   inner class CheckBarcodeNotFound {
     @Test
     fun `should throw not found and create barcode checked event if barcode does not exist`() {
-      val expectedException = EntityNotFoundException("some_message")
+      val expectedException = ResourceNotFoundException("some_message")
       mockFindBarcode(null)
       mockSaveBarcode()
       whenever(barcodeEventService.checkForCreated(aBarcode())).thenThrow(expectedException)
