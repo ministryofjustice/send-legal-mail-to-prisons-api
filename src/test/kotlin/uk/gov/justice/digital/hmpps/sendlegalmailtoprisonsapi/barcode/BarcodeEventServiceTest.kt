@@ -21,11 +21,11 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import javax.persistence.EntityNotFoundException
 
 class BarcodeEventServiceTest {
 
@@ -70,7 +70,7 @@ class BarcodeEventServiceTest {
       mockFindBarcodeEvents(CREATED, listOf())
 
       assertThatThrownBy { barcodeEventService.checkForCreated(aBarcode()) }
-        .isInstanceOf(EntityNotFoundException::class.java)
+        .isInstanceOf(ResourceNotFoundException::class.java)
     }
   }
 

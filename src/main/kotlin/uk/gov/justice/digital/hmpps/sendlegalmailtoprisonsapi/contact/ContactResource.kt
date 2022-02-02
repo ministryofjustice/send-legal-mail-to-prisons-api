@@ -15,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -65,6 +66,45 @@ class ContactResource(private val contactService: ContactService) {
   )
   fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
     contactService.createContact(authentication.name, createContactRequest).let {
+      return ContactResponse(
+        id = it.id!!,
+        prisonerName = it.name,
+        prisonId = it.prisonCode,
+        dob = it.dob,
+        prisonNumber = it.prisonNumber
+      )
+    }
+
+  @GetMapping(value = ["/contact/{prisonNumber}"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Retrieve a Contact by prisonNumber for the logged in user",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
+    parameters = [Parameter(`in` = ParameterIn.PATH, name = "prisonNumber", example = "A1234BC", description = "The prison number of the Contact to return.")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Contact returned",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ContactResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid magic link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
+    contactService.getContactByPrisonNumber(authentication.name, prisonNumber).let {
       return ContactResponse(
         id = it.id!!,
         prisonerName = it.name,

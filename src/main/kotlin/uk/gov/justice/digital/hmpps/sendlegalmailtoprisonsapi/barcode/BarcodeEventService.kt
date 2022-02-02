@@ -8,9 +8,9 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Instant
-import javax.persistence.EntityNotFoundException
 
 @Service
 class BarcodeEventService(
@@ -32,7 +32,7 @@ class BarcodeEventService(
 
   fun checkForCreated(barcode: Barcode) =
     barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
-      ?: throw EntityNotFoundException("The barcode is not found")
+      ?: throw ResourceNotFoundException("Barcode ${barcode.code} not found")
 
   fun checkForDuplicate(barcode: Barcode, userId: String, location: String) =
     barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CHECKED)

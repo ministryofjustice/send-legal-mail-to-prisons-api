@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.Clock
 import java.time.Instant
 
@@ -38,4 +39,11 @@ class ContactService(private val contactRepository: ContactRepository, private v
       .also {
         log.debug { "Returning ${it.size} matching Contact records" }
       }
+
+  fun getContactByPrisonNumber(userId: String, prisonNumber: String): Contact =
+    contactRepository.getContactByOwnerAndPrisonNumber(userId, prisonNumber)
+      ?.also {
+        log.debug { "Returning Contact: $it" }
+      }
+      ?: throw ResourceNotFoundException("Could not find a matching Contact [$userId, $prisonNumber]")
 }

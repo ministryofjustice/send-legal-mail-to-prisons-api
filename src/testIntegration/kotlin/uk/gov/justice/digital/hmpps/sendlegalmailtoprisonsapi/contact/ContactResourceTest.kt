@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.web.reactive.server.returnResult
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
 
 class ContactResourceTest : IntegrationTest() {
 
@@ -253,6 +253,54 @@ class ContactResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
         .expectBodyList(ContactResponse::class.java).hasSize(0)
+    }
+  }
+
+  @Nested
+  @Sql("/createContacts.sql")
+  inner class GetContactByPrisonNumber {
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.get()
+        .uri("/contact/A1234BC")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `forbidden without a valid role`() {
+      webTestClient.get()
+        .uri("/contact/A1234BC")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = "AUSER_GEN"))
+        .exchange()
+        .expectStatus().isForbidden
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
+    }
+
+    @Test
+    fun `not found given unknown prison number`() {
+      webTestClient.get()
+        .uri("/contact/X9999ZZ")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isNotFound
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
+    }
+
+    @Test
+    fun `returns contact given valid prison number`() {
+      webTestClient.get()
+        .uri("/contact/A1234BC")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$.prisonNumber").isEqualTo("A1234BC")
+        .jsonPath("$.prisonerName").isEqualTo("John Smith")
     }
   }
 }

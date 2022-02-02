@@ -36,7 +36,7 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.3.1")
+  runtimeOnly("org.postgresql:postgresql:42.3.2")
 
   testImplementation("org.testcontainers:postgresql:1.16.3")
   testImplementation("it.ozimov:embedded-redis:0.7.3")

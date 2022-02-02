@@ -8,10 +8,10 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 private val log = KotlinLogging.logger {}
@@ -30,7 +30,7 @@ class CjsmService(
         .objectContent
         .let { saveCjsmDirectoryStream(it) }
     } catch (ex: AmazonS3Exception) {
-      throw EntityNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
+      throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
     }
       .also { archiveCjsmDirectoryFile() }
 
