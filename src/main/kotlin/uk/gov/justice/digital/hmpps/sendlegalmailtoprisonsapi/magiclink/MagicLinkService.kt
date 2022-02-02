@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.toNullable
 import java.util.UUID
-import javax.persistence.EntityNotFoundException
 
 @Service
 class MagicLinkService(
@@ -23,5 +23,5 @@ class MagicLinkService(
     magicLinkSecretRepository.findById(secret).toNullable()
       ?.also { magicLinkSecretRepository.deleteById(secret) }
       ?.let { savedSecret -> jwtService.generateToken(savedSecret.email) }
-      ?: throw EntityNotFoundException("Not found")
+      ?: throw ResourceNotFoundException("Magic Link not found")
 }
