@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
-import javax.validation.constraints.NotNull
 
 @Repository
 interface CjsmDirectoryRepository : JpaRepository<CjsmDirectoryEntry, Long> {
@@ -21,15 +20,19 @@ interface CjsmDirectoryRepository : JpaRepository<CjsmDirectoryEntry, Long> {
 data class CjsmDirectoryEntry(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @NotNull
   val id: Long = -1,
-  @NotNull
+
   @Column(unique = true)
   val secureEmail: String,
+
   val firstName: String,
+
   val lastName: String,
+
   val organisation: String,
+
   val townCity: String,
+
   val businessType: String,
 ) {
   override fun equals(other: Any?): Boolean {

@@ -14,7 +14,6 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
-import javax.validation.constraints.NotNull
 
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
@@ -30,20 +29,19 @@ interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
 data class BarcodeEvent(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @NotNull
   val id: Long = -1,
-  @NotNull
+
   @ManyToOne
   @JoinColumn(name = "barcode")
   val barcode: Barcode,
-  @NotNull
+
   val userId: String,
-  @NotNull
+
   @Enumerated(EnumType.STRING)
   val status: BarcodeStatus,
-  @NotNull
+
   val createdDateTime: Instant = Instant.now(),
-  @NotNull
+
   val location: String = "",
 ) {
   override fun equals(other: Any?): Boolean {
