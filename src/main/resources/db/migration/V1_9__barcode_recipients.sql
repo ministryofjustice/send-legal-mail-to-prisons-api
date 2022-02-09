@@ -4,5 +4,6 @@ CREATE TABLE barcode_recipients(
   name varchar(64) NOT NULL,
   prison_code varchar(3) NOT NULL,
   dob date,
-  prison_number varchar(7)
+  prison_number varchar(7),
+  contact integer REFERENCES contacts(id)
 );

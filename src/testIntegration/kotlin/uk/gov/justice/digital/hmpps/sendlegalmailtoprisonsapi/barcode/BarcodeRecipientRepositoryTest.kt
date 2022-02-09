@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipientAssert.Companion.assertThat
 
 class BarcodeRecipientRepositoryTest : IntegrationTest() {
 
@@ -23,7 +23,10 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
 
     barcodeRecipientRepository.save(barcodeRecipient)
 
-    assertThat(barcodeRecipientRepository.getByBarcode(barcode)).hasFieldsEqualToFieldsOf(barcodeRecipient)
+    assertThat(barcodeRecipientRepository.getByBarcode(barcode))
+      .usingRecursiveComparison()
+      .ignoringFields("id")
+      .isEqualTo(barcodeRecipient)
   }
 
   @Test
