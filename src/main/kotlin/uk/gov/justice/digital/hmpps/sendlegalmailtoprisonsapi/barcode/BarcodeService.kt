@@ -7,11 +7,26 @@ class BarcodeService(
   private val barcodeRepository: BarcodeRepository,
   private val barcodeEventService: BarcodeEventService,
   private val barcodeGeneratorService: BarcodeGeneratorService,
+  private val barcodeRecipientService: BarcodeRecipientService,
 ) {
 
-  fun createBarcode(userId: String): String =
+  fun createBarcode(userId: String, createBarcodeRequest: CreateBarcodeRequest?): String =
     createBarcode()
       .also { barcodeEventService.createEvent(barcode = it, userId = userId, status = BarcodeStatus.CREATED) }
+      .also { barcode ->
+        createBarcodeRequest?.also {
+          val barcodeRecipient = BarcodeRecipient(
+            barcode = barcode,
+            name = it.prisonerName,
+            prisonCode = it.prisonId,
+            prisonNumber = it.prisonNumber,
+            dob = it.dob,
+            // FIXME - this feels smelly !
+            // contact = lookupContactBy(it.contactId)
+          )
+          barcodeRecipientService.saveBarcodeRecipient(barcodeRecipient)
+        }
+      }
       .code
 
   private fun createBarcode(): Barcode {

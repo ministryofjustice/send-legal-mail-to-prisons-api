@@ -23,24 +23,29 @@ class BarcodeServiceTest {
   private val barcodeRepository = mock<BarcodeRepository>()
   private val barcodeEventService = mock<BarcodeEventService>()
   private val barcodeGeneratorService = mock<BarcodeGeneratorService>()
-  private val barcodeService = BarcodeService(barcodeRepository, barcodeEventService, barcodeGeneratorService)
+  private val barcodeRecipientService = mock<BarcodeRecipientService>()
+  private val barcodeService = BarcodeService(barcodeRepository, barcodeEventService, barcodeGeneratorService, barcodeRecipientService)
 
   @Nested
   inner class CreateBarcode {
     @Test
-    fun `should create barcode and created event if ok`() {
+    fun `should create barcode and created event and barcode recipient if ok`() {
       whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
       mockFindBarcode(null)
       mockSaveBarcode()
       whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString())).thenReturn(
         BarcodeEvent(1L, aBarcode(), "some_user", BarcodeStatus.CREATED)
       )
+      val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 
-      val code = barcodeService.createBarcode("some_user")
+      val code = barcodeService.createBarcode("some_user", createBarcodeRequest)
 
       assertThat(code).isEqualTo("SOME_BARCODE")
       verify(barcodeRepository).save(aBarcode())
       verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeStatus.CREATED, "")
+      verify(barcodeRecipientService).saveBarcodeRecipient(
+        BarcodeRecipient(barcode = Barcode(code), name = "Fred Bloggs", prisonCode = "BXI", prisonNumber = "A1234BC")
+      )
     }
   }
 
