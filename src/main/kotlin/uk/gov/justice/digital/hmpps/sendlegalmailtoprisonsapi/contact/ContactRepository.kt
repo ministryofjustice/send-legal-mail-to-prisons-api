@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
-import javax.validation.constraints.NotNull
 
 interface ContactRepository : JpaRepository<Contact, Int> {
   fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
@@ -24,13 +23,10 @@ data class Contact(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long? = null,
 
-  @NotNull
   val owner: String,
 
-  @NotNull
   val name: String,
 
-  @NotNull
   @Column(name = "prison_code")
   val prisonCode: String,
 
@@ -39,9 +35,7 @@ data class Contact(
   @Column(name = "prison_number")
   val prisonNumber: String? = null,
 
-  @NotNull
   val created: Instant,
 
-  @NotNull
   val updated: Instant
 )

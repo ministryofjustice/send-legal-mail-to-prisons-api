@@ -25,6 +25,7 @@ import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipientRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryRepository
@@ -93,8 +94,12 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var contactRepository: ContactRepository
 
+  @Autowired
+  protected lateinit var barcodeRecipientRepository: BarcodeRecipientRepository
+
   @AfterEach
   fun `clear database`() {
+    barcodeRecipientRepository.deleteAll()
     barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
     magicLinkSecretRepository.deleteAll()
