@@ -158,7 +158,6 @@ class ContactResource(private val contactService: ContactService) {
   }
 }
 
-// @ContactHasDobOrPrisonNumber
 data class CreateContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)
   val prisonerName: String,
