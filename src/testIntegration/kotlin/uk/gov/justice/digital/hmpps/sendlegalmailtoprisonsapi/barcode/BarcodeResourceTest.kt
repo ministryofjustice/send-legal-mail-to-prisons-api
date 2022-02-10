@@ -102,6 +102,24 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectBody()
         .jsonPath("$.barcode").isEqualTo("ANOTHER_CODE")
     }
+
+    @Test
+    fun `bad request given neither prison number or dob for the recipient`() {
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(
+          """{ 
+            "prisonerName": "John Smith",
+            "prisonId": "BXI"
+          }"""
+        )
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
   }
 
   @Nested

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validateRequestHasDobOrPrisonNumber
 import java.time.LocalDate
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
@@ -64,9 +65,10 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-  fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse =
-    contactService.createContact(authentication.name, createContactRequest).let {
-      return ContactResponse(
+  fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse {
+    validateRequestHasDobOrPrisonNumber(createContactRequest)
+    return contactService.createContact(authentication.name, createContactRequest).let {
+      ContactResponse(
         id = it.id!!,
         prisonerName = it.name,
         prisonId = it.prisonCode,
@@ -74,6 +76,7 @@ class ContactResource(private val contactService: ContactService) {
         prisonNumber = it.prisonNumber
       )
     }
+  }
 
   @GetMapping(value = ["/contact/{prisonNumber}"])
   @ResponseBody
@@ -155,7 +158,7 @@ class ContactResource(private val contactService: ContactService) {
   }
 }
 
-@ContactHasDobOrPrisonNumber
+// @ContactHasDobOrPrisonNumber
 data class CreateContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)
   val prisonerName: String,

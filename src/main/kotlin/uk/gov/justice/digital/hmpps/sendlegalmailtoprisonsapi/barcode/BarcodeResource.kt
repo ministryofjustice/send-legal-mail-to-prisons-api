@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validateRequestHasDobOrPrisonNumber
 import java.time.LocalDate
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
@@ -59,8 +60,10 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   fun createBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails,
     @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest?
-  ): CreateBarcodeResponse =
-    CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, createBarcodeRequest))
+  ): CreateBarcodeResponse {
+    validateRequestHasDobOrPrisonNumber(createBarcodeRequest)
+    return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, createBarcodeRequest))
+  }
 
   @PostMapping(value = ["/barcode/check"])
   @ResponseBody
