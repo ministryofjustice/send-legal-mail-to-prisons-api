@@ -7,11 +7,13 @@ class BarcodeService(
   private val barcodeRepository: BarcodeRepository,
   private val barcodeEventService: BarcodeEventService,
   private val barcodeGeneratorService: BarcodeGeneratorService,
+  private val barcodeRecipientService: BarcodeRecipientService,
 ) {
 
-  fun createBarcode(userId: String): String =
+  fun createBarcode(userId: String, createBarcodeRequest: CreateBarcodeRequest?): String =
     createBarcode()
       .also { barcodeEventService.createEvent(barcode = it, userId = userId, status = BarcodeStatus.CREATED) }
+      .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
       .code
 
   private fun createBarcode(): Barcode {
