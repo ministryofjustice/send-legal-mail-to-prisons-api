@@ -43,9 +43,7 @@ class BarcodeServiceTest {
       assertThat(code).isEqualTo("SOME_BARCODE")
       verify(barcodeRepository).save(aBarcode())
       verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeStatus.CREATED, "")
-      verify(barcodeRecipientService).saveBarcodeRecipient(
-        BarcodeRecipient(barcode = Barcode(code), name = "Fred Bloggs", prisonCode = "BXI", prisonNumber = "A1234BC")
-      )
+      verify(barcodeRecipientService).saveBarcodeRecipient(aBarcode(), createBarcodeRequest)
     }
   }
 
