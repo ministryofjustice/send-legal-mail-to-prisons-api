@@ -193,4 +193,37 @@ class ContactServiceTest {
       verify(contactRepository).getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
     }
   }
+
+  @Nested
+  inner class GetContactById {
+    @Test
+    fun `should get contact by id`() {
+      val expectedContact = Contact(
+        id = 1,
+        owner = "a-user@cjsm.net",
+        name = "John Smith",
+        prisonCode = "BXI",
+        dob = LocalDate.of(1990, 12, 20),
+        created = Instant.now(clock),
+        updated = Instant.now(clock)
+      )
+      given { contactRepository.getById(any()) }.willReturn(expectedContact)
+
+      val contact = contactService.getContactById(1)
+
+      assertThat(contact).isEqualTo(expectedContact)
+      verify(contactRepository).getById(1)
+    }
+
+    @Test
+    fun `should return null given unknown contact id`() {
+
+      given { contactRepository.getById(any()) }.willReturn(null)
+
+      val contact = contactService.getContactById(2)
+
+      assertThat(contact).isNull()
+      verify(contactRepository).getById(2)
+    }
+  }
 }

@@ -10,7 +10,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
 
-interface ContactRepository : JpaRepository<Contact, Int> {
+interface ContactRepository : JpaRepository<Contact, Long> {
   fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
 
   fun getContactByOwnerAndPrisonNumber(owner: String, prisonNumber: String): Contact?

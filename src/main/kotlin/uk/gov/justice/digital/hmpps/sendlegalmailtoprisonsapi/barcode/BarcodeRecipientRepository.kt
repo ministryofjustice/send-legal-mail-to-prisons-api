@@ -24,7 +24,7 @@ interface BarcodeRecipientRepository : JpaRepository<BarcodeRecipient, Long> {
 data class BarcodeRecipient(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @OneToOne
   @JoinColumn(name = "barcode")

@@ -46,4 +46,7 @@ class ContactService(private val contactRepository: ContactRepository, private v
         log.debug { "Returning Contact: $it" }
       }
       ?: throw ResourceNotFoundException("Could not find a matching Contact [$userId, $prisonNumber]")
+
+  fun getContactById(id: Long): Contact? =
+    contactRepository.getById(id)
 }

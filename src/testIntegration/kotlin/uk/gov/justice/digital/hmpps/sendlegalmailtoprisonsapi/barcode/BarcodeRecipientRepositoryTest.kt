@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
+import org.springframework.dao.InvalidDataAccessApiUsageException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 class BarcodeRecipientRepositoryTest : IntegrationTest() {
@@ -40,9 +40,9 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
       prisonNumber = "A1234BC"
     )
 
-    assertThatExceptionOfType(JpaObjectRetrievalFailureException::class.java)
+    assertThatExceptionOfType(InvalidDataAccessApiUsageException::class.java)
       .isThrownBy { barcodeRecipientRepository.save(barcodeRecipient) }
-      .withMessageContaining("Barcode with id 123456789012")
+      .withMessageContaining("save the transient instance before flushing")
   }
 
   @Test
