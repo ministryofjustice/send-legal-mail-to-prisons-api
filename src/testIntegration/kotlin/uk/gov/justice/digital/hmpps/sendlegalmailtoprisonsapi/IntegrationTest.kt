@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer
@@ -27,6 +28,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEve
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipientRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
@@ -55,10 +57,10 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var jwtAuthHelper: JwtAuthHelper
 
-  @Autowired
+  @SpyBean
   protected lateinit var barcodeRepository: BarcodeRepository
 
-  @Autowired
+  @SpyBean
   protected lateinit var barcodeEventRepository: BarcodeEventRepository
 
   @SpyBean
@@ -94,8 +96,16 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var contactRepository: ContactRepository
 
-  @Autowired
+  @SpyBean
   protected lateinit var barcodeRecipientRepository: BarcodeRecipientRepository
+
+  @Autowired
+  protected lateinit var barcodeService: BarcodeService
+
+  @BeforeEach
+  fun `turn off random checks`() {
+    doReturn(false).whenever(randomCheckService).requiresRandomCheck()
+  }
 
   @AfterEach
   fun `clear database`() {
@@ -107,9 +117,9 @@ abstract class IntegrationTest {
     contactRepository.deleteAll()
   }
 
-  @BeforeEach
-  fun `turn off random checks`() {
-    doReturn(false).whenever(randomCheckService).requiresRandomCheck()
+  @AfterEach
+  fun `reset mocks and spies`() {
+    reset(barcodeRecipientRepository, amazonS3, randomCheckService, barcodeConfig, barcodeGeneratorService, barcodeEventRepository, barcodeRepository)
   }
 
   internal fun setAuthorisation(
