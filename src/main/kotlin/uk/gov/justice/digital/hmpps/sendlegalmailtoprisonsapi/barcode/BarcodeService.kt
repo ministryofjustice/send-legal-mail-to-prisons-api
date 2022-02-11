@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class BarcodeService(
@@ -10,6 +11,7 @@ class BarcodeService(
   private val barcodeRecipientService: BarcodeRecipientService,
 ) {
 
+  @Transactional
   fun createBarcode(userId: String, createBarcodeRequest: CreateBarcodeRequest?): String =
     createBarcode()
       .also { barcodeEventService.createEvent(barcode = it, userId = userId, status = BarcodeStatus.CREATED) }
