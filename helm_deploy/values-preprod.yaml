@@ -13,6 +13,10 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     APP_MAGICLINK_URL: https://send-legal-mail-preprod.prison.service.justice.gov.uk/link/verify-link
 
+  allowlist:
+    bsi-1: "54.37.241.156/30"
+    bsi-2: "167.71.136.237/32"
+
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
