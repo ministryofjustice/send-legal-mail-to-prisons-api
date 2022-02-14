@@ -59,7 +59,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   )
   fun createBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails,
-    @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest?
+    @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest
   ): CreateBarcodeResponse {
     validateRequestHasDobOrPrisonNumber(createBarcodeRequest)
     return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, createBarcodeRequest))

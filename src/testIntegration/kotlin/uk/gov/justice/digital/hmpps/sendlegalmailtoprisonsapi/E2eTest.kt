@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
@@ -95,6 +96,7 @@ class E2eTest(
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .header("Create-Barcode-Token", jwt)
+      .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
       .returnResult(CreateBarcodeResponse::class.java)
@@ -105,6 +107,9 @@ class E2eTest(
         assertThat(response.barcode).containsOnlyDigits()
       }
       ?: fail("Did not receive a response from /barcode")
+
+  private fun aCreateBarcodeRequest(): CreateBarcodeRequest =
+    CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 
   private fun requestCheckBarcodeOk(barcode: String) =
     webTestClient.post()

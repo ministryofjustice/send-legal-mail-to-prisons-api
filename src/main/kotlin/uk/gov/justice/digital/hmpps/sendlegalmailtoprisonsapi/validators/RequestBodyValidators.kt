@@ -11,8 +11,8 @@ fun validateRequestHasDobOrPrisonNumber(requestBody: CreateContactRequest) {
   }
 }
 
-fun validateRequestHasDobOrPrisonNumber(requestBody: CreateBarcodeRequest?) {
-  if (requestBody != null && requestBody.dob == null && requestBody.prisonNumber.isNullOrEmpty()) {
+fun validateRequestHasDobOrPrisonNumber(requestBody: CreateBarcodeRequest) {
+  if (requestBody.dob == null && requestBody.prisonNumber.isNullOrEmpty()) {
     throw ValidationException(MalformedRequest)
   }
 }

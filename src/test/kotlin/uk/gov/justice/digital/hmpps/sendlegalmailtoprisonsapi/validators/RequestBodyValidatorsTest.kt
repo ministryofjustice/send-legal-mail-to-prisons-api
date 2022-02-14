@@ -49,14 +49,6 @@ class RequestBodyValidatorsTest {
   @Nested
   inner class CreateBarcodeRequestValidators {
     @Test
-    fun `should validate given null request`() {
-      val createBarcodeRequest: CreateBarcodeRequest? = null
-
-      assertThatCode { validateRequestHasDobOrPrisonNumber(createBarcodeRequest) }
-        .doesNotThrowAnyException()
-    }
-
-    @Test
     fun `should validate given request with dob`() {
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", dob = LocalDate.now())
 

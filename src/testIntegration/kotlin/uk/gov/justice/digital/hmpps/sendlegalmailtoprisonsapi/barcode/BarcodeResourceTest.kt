@@ -28,6 +28,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -39,42 +40,22 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setAuthorisation(user = "AUSER_GEN"))
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isForbidden
         .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
     }
 
     @Test
-    fun `can create a barcode without recording the recipient`() {
-      whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_CODE")
-
-      webTestClient.post()
-        .uri("/barcode")
-        .accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
-        .headers(setCreateBarcodeAuthorisation())
-        .bodyValue("")
-        .exchange()
-        .expectStatus().isCreated
-        .expectBody()
-        .jsonPath("$.barcode").isEqualTo("SOME_CODE")
-
-      val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-      assertThat(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, CREATED)).isNotEmpty
-      assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNull()
-    }
-
-    @Test
     fun `can create a barcode and record the recipient`() {
       whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_CODE")
 
-      val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
       webTestClient.post()
         .uri("/barcode")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
-        .bodyValue(createBarcodeRequest)
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
         .expectBody()
@@ -97,6 +78,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
         .expectBody()
@@ -135,7 +117,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .uri("/barcode/check")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue("""{ "barcode": "any-barcode" }"""))
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isUnauthorized
     }
@@ -200,6 +182,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
 
@@ -224,6 +207,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
 
@@ -247,6 +231,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
 
@@ -285,6 +270,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
 
@@ -314,6 +300,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(aCreateBarcodeRequest())
         .exchange()
         .expectStatus().isCreated
 
@@ -330,4 +317,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
     }
   }
+
+  private fun aCreateBarcodeRequest(): CreateBarcodeRequest =
+    CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 }

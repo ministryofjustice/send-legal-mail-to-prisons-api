@@ -64,17 +64,5 @@ class BarcodeRecipientServiceTest {
       verify(barcodeRecipientRepository).save(expectedBarcodeRecipient)
       verifyNoInteractions(contactService)
     }
-
-    @Test
-    fun `should not save barcode recipient given no create barcode request`() {
-      val barcode = Barcode("SOME_BARCODE")
-      val createBarcodeRequest = null
-
-      val barcodeRecipient = barcodeRecipientService.saveBarcodeRecipient(barcode, createBarcodeRequest)
-
-      assertThat(barcodeRecipient).isNull()
-      verifyNoInteractions(barcodeRecipientRepository)
-      verifyNoInteractions(contactService)
-    }
   }
 }
