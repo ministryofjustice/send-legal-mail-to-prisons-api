@@ -15,6 +15,7 @@ import java.time.Instant
 @Service
 class BarcodeEventService(
   private val barcodeEventRepository: BarcodeEventRepository,
+  private val barcodeRecipientRepository: BarcodeRecipientRepository,
   private val barcodeConfig: BarcodeConfig,
   private val randomCheckService: RandomCheckService,
   private val cjsmService: CjsmService,
@@ -40,7 +41,8 @@ class BarcodeEventService(
       ?.first()
       ?.also { firstCheck ->
         createEvent(barcode, userId, DUPLICATE, location)
-        throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location, getCreatedBy(barcode)))
+        val recipient = barcodeRecipientRepository.getByBarcode(barcode) ?: BarcodeRecipient(barcode = barcode, name = "unknown", prisonCode = "unknown", prisonNumber = "unknown")
+        throw ValidationException(Duplicate(firstCheck.createdDateTime, firstCheck.location, getCreatedBy(barcode), recipient.name, recipient.prisonNumber, recipient.dob))
       }
 
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =

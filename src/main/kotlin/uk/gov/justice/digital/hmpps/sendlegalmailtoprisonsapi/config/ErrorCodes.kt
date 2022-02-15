@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MAX_EMAIL_LENGTH
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -59,7 +60,13 @@ class Duplicate(
   val scannedLocation: String,
   @Schema(description = "The organisation that created the barcode in the first place", example = "Aardvark Solicitors")
   val createdBy: String,
-) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It may be an illegal copy.")
+  @Schema(description = "The original barcode recipient name", example = "John Smith")
+  val recipientName: String,
+  @Schema(description = "The original barcode recipient prison number", example = "A1234BC")
+  val recipientPrisonNumber: String?,
+  @Schema(description = "The original barcode recipient date of birth", example = "1990-01-02")
+  val recipientDob: LocalDate?,
+) : CheckBarcodeErrorCodes("DUPLICATE", "Someone scanned this barcode ${scannedDate.formatAtTimeOnDate()} at $scannedLocation. It was originally addressed to $recipientName, ${recipientPrisonNumber ?: DateTimeFormatter.ISO_DATE.format(recipientDob)}. It may be an illegal copy.")
 
 class Expired(
   @Schema(description = "The time the barcode was created", example = "2021-11-30T09:06:10Z")
