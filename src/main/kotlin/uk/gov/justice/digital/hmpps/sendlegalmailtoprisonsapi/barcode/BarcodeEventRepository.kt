@@ -18,10 +18,10 @@ import javax.persistence.Table
 @Repository
 interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
 
-  fun findByBarcodeAndStatusOrderByCreatedDateTime(barcode: Barcode, status: BarcodeStatus): List<BarcodeEvent>
+  fun findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode: Barcode, eventType: BarcodeEventType): List<BarcodeEvent>
 
-  @Query("select be from BarcodeEvent as be where be.barcode = :barcode and be.status = 'CREATED'")
-  fun findByBarcodeAndStatusCreated(barcode: Barcode): BarcodeEvent?
+  @Query("select be from BarcodeEvent as be where be.barcode = :barcode and be.eventType = 'CREATED'")
+  fun findByBarcodeAndEventTypeCreated(barcode: Barcode): BarcodeEvent?
 }
 
 @Entity
@@ -38,7 +38,7 @@ data class BarcodeEvent(
   val userId: String,
 
   @Enumerated(EnumType.STRING)
-  val status: BarcodeStatus,
+  val eventType: BarcodeEventType,
 
   val createdDateTime: Instant = Instant.now(),
 
@@ -55,8 +55,8 @@ data class BarcodeEvent(
   override fun hashCode(): Int = barcode.hashCode() * createdDateTime.hashCode()
 
   override fun toString(): String {
-    return "BarcodeEvent(barcode=$barcode, userId='$userId', status=$status, dateTime=$createdDateTime, location=$location)"
+    return "BarcodeEvent(barcode=$barcode, userId='$userId', eventType=$eventType, dateTime=$createdDateTime, location=$location)"
   }
 }
 
-enum class BarcodeStatus { CREATED, CHECKED, DUPLICATE, EXPIRED, RANDOM_CHECK }
+enum class BarcodeEventType { CREATED, CHECKED, DUPLICATE, EXPIRED, RANDOM_CHECK }
