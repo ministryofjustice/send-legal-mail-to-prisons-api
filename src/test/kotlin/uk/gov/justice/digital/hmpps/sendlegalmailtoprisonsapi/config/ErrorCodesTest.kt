@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -14,9 +15,23 @@ class ErrorCodesTest {
   inner class Duplicate {
     @Test
     fun `should format the user message correctly`() {
-      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location", "sender")
+      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location", "sender", "recipient", "recipientPrisonNumber", null)
 
       assertThat(ex.userMessage).contains("at 9:11 am on 8 December 2021")
+    }
+
+    @Test
+    fun `should include prison number if available`() {
+      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location", "sender", "recipient", "recipientPrisonNumber", null)
+
+      assertThat(ex.userMessage).contains("recipientPrisonNumber")
+    }
+
+    @Test
+    fun `should include DoB if prison number not available`() {
+      val ex = Duplicate(Instant.parse("2021-12-08T09:11:23Z"), "some_location", "sender", "recipient", null, LocalDate.of(1990, 1, 1))
+
+      assertThat(ex.userMessage).contains("1990-01-01")
     }
   }
 

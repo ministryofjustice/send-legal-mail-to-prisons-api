@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.RandomCheck
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Instant
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Optional
 
@@ -84,7 +85,7 @@ class BarcodeServiceTest {
     @Test
     fun `should throw validation exception and create checked event if duplicate`() {
       val yesterday = Instant.now().minus(1, ChronoUnit.DAYS)
-      val expectedException = ValidationException(Duplicate(yesterday, "previous_location", "some_sender"))
+      val expectedException = ValidationException(Duplicate(yesterday, "previous_location", "some_sender", "some_recipient", "some_prison_number", LocalDate.of(1990, 1, 1)))
       mockFindBarcode()
       whenever(barcodeEventService.checkForDuplicate(aBarcode(), "current_user", "current_location"))
         .thenThrow(expectedException)
