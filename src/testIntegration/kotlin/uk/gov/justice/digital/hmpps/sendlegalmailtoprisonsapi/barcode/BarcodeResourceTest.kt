@@ -277,6 +277,9 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.errorCode.scannedDate").value<String> { assertThat(it).contains(today) }
         .jsonPath("$.errorCode.scannedLocation").isEqualTo("LEI")
         .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
+        .jsonPath("$.errorCode.recipientName").isEqualTo("Fred Bloggs")
+        .jsonPath("$.errorCode.recipientPrisonNumber").isEqualTo("A1234BC")
+        .jsonPath("$.errorCode.recipientDob").doesNotExist()
     }
 
     @Test

@@ -25,15 +25,23 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNot
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 class BarcodeEventServiceTest {
 
   private val barcodeEventRepository = mock<BarcodeEventRepository>()
+  private val barcodeRecipientRepository = mock<BarcodeRecipientRepository>()
   private val barcodeConfig = mock<BarcodeConfig>()
   private val randomCheckService = mock<RandomCheckService>()
   private val cjsmService = mock<CjsmService>()
-  private val barcodeEventService = BarcodeEventService(barcodeEventRepository, barcodeConfig, randomCheckService, cjsmService)
+  private val barcodeEventService = BarcodeEventService(
+    barcodeEventRepository,
+    barcodeRecipientRepository,
+    barcodeConfig,
+    randomCheckService,
+    cjsmService
+  )
 
   @BeforeEach
   fun `defaults to not requiring a random security check`() {
@@ -76,6 +84,19 @@ class BarcodeEventServiceTest {
 
   @Nested
   inner class CheckForDuplicate {
+    val firstCheckTime = Instant.now().minus(1, ChronoUnit.DAYS)
+
+    fun mockDuplicateBarcodeEvents() {
+      val secondCheckTime = Instant.now()
+      mockFindBarcodeEvents(
+        eventType = CHECKED,
+        listOf(
+          aBarcodeEvent(userId = "first_check_user", eventType = CHECKED, createdTime = firstCheckTime, location = "first_check_location"),
+          aBarcodeEvent(userId = "second_check_user", eventType = CHECKED, createdTime = secondCheckTime, location = "second_check_location"),
+        )
+      )
+    }
+
     @Test
     fun `should do nothing if a single checked event exists`() {
       mockFindBarcodeEvents(CHECKED, listOf(aBarcodeEvent(eventType = CHECKED)))
@@ -87,15 +108,8 @@ class BarcodeEventServiceTest {
 
     @Test
     fun `should throw and create duplicate event if more than one checked event exists`() {
-      val firstCheckTime = Instant.now().minus(1, ChronoUnit.DAYS)
-      val secondCheckTime = Instant.now()
-      mockFindBarcodeEvents(
-        eventType = CHECKED,
-        listOf(
-          aBarcodeEvent(userId = "first_check_user", eventType = CHECKED, createdTime = firstCheckTime, location = "first_check_location"),
-          aBarcodeEvent(userId = "second_check_user", eventType = CHECKED, createdTime = secondCheckTime, location = "second_check_location"),
-        )
-      )
+      mockDuplicateBarcodeEvents()
+      mockGetBarcodeRecipient(aBarcodeRecipient())
       mockSaveBarcodeEvent(DUPLICATE)
 
       assertThatThrownBy {
@@ -105,6 +119,9 @@ class BarcodeEventServiceTest {
           val error = (it as ValidationException).errorCode as Duplicate
           assertThat(error.scannedDate).isEqualTo(firstCheckTime)
           assertThat(error.scannedLocation).isEqualTo("first_check_location")
+          assertThat(error.recipientName).isEqualTo("some_name")
+          assertThat(error.recipientPrisonNumber).isEqualTo("some_prison_number")
+          assertThat(error.recipientDob).isEqualTo(LocalDate.of(1990, 1, 1))
         }
 
       verify(barcodeEventRepository).save(
@@ -113,6 +130,25 @@ class BarcodeEventServiceTest {
             .isEqualTo(listOf(aBarcode(), DUPLICATE, "second_check_location", "second_check_user"))
         }
       )
+    }
+
+    @Test
+    fun `should return unknown if there is no barcode recipient`() {
+      mockDuplicateBarcodeEvents()
+      mockGetBarcodeRecipient(null)
+      mockSaveBarcodeEvent(DUPLICATE)
+
+      assertThatThrownBy {
+        barcodeEventService.checkForDuplicate(aBarcode(), "second_check_user", "second_check_location")
+      }.isInstanceOf(ValidationException::class.java)
+        .extracting {
+          val error = (it as ValidationException).errorCode as Duplicate
+          assertThat(error.scannedDate).isEqualTo(firstCheckTime)
+          assertThat(error.scannedLocation).isEqualTo("first_check_location")
+          assertThat(error.recipientName).isEqualTo("unknown")
+          assertThat(error.recipientPrisonNumber).isEqualTo("unknown")
+          assertThat(error.recipientDob).isNull()
+        }
     }
   }
 
@@ -252,6 +288,8 @@ class BarcodeEventServiceTest {
       location = location
     )
 
+  private fun aBarcodeRecipient() = BarcodeRecipient(barcode = aBarcode(), name = "some_name", prisonCode = "some_prison_code", prisonNumber = "some_prison_number", dob = LocalDate.of(1990, 1, 1))
+
   private fun mockFindBarcodeEventCreated(barcodeEvent: BarcodeEvent?) =
     whenever(barcodeEventRepository.findByBarcodeAndEventTypeCreated(aBarcode()))
       .thenReturn(barcodeEvent)
@@ -266,4 +304,7 @@ class BarcodeEventServiceTest {
   private fun mockUserOrganisation(userId: String, organisation: String?) {
     whenever(cjsmService.findOrganisation(userId)).thenReturn(organisation)
   }
+
+  private fun mockGetBarcodeRecipient(barcodeRecipient: BarcodeRecipient?, barcode: Barcode = barcodeRecipient?.barcode ?: aBarcode()) =
+    whenever(barcodeRecipientRepository.getByBarcode(barcode)).thenReturn(barcodeRecipient)
 }
