@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validat
 import java.time.LocalDate
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
+import javax.validation.constraints.Size
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -104,6 +105,8 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
 
 data class CreateBarcodeRequest(
   @Schema(description = "The recipient name", example = "John Doe", required = true)
+  @field:Pattern(regexp = "^[a-zA-Z '`-]+$")
+  @field:Size(max = 60)
   val prisonerName: String,
 
   @Schema(description = "The ID of the prison where the recipient is located", example = "BXI", required = true)
