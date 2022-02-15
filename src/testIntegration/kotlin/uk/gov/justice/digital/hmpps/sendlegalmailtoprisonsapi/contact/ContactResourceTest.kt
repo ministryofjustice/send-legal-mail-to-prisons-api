@@ -136,6 +136,25 @@ class ContactResourceTest : IntegrationTest() {
     }
 
     @Test
+    fun `bad request given invalid format name`() {
+      webTestClient.post()
+        .uri("/contact")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(
+          """{ 
+            "prisonerName": "<John Smith>",
+            "prisonId": "BXI",
+            "prisonNumber": "A1234BC"
+          }"""
+        )
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
     fun `new contact is created`() {
       webTestClient.post()
         .uri("/contact")

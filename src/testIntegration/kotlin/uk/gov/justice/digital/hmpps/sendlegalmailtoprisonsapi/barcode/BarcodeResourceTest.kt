@@ -102,6 +102,25 @@ class BarcodeResourceTest : IntegrationTest() {
         .expectStatus().isBadRequest
         .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
     }
+
+    @Test
+    fun `bad request given fails validation for name format`() {
+      webTestClient.post()
+        .uri("/barcode")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setCreateBarcodeAuthorisation())
+        .bodyValue(
+          """{ 
+            "prisonerName": "<John Smith>",
+            "prisonId": "BXI",
+            "prisonNumber": "A1234BC"
+          }"""
+        )
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
   }
 
   @Nested

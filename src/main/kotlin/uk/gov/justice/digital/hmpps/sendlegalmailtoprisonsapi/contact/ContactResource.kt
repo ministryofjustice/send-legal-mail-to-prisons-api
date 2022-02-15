@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validat
 import java.time.LocalDate
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
+import javax.validation.constraints.Size
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -160,6 +161,8 @@ class ContactResource(private val contactService: ContactService) {
 
 data class CreateContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)
+  @field:Pattern(regexp = "^[a-zA-Z '`-]+$")
+  @field:Size(max = 60)
   val prisonerName: String,
 
   @Schema(description = "The ID of the prison location of the new contact", example = "BXI", required = true)
