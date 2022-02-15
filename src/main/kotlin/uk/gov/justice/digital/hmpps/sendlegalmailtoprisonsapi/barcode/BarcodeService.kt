@@ -14,7 +14,7 @@ class BarcodeService(
   @Transactional
   fun createBarcode(userId: String, createBarcodeRequest: CreateBarcodeRequest): String =
     createBarcode()
-      .also { barcodeEventService.createEvent(barcode = it, userId = userId, status = BarcodeStatus.CREATED) }
+      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED) }
       .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
       .code
 
@@ -30,7 +30,7 @@ class BarcodeService(
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
       .also { barcode ->
         with(barcodeEventService) {
-          createEvent(barcode, userId, BarcodeStatus.CHECKED, location)
+          createEvent(barcode, userId, BarcodeEventType.CHECKED, location)
           checkForCreated(barcode)
           checkForDuplicate(barcode, userId, location)
           checkForExpired(barcode, userId, location)

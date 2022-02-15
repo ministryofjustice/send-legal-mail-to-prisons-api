@@ -23,7 +23,7 @@ class BarcodeServiceTest : IntegrationTest() {
 
       val barcode = barcodeRepository.getById("SOME_CODE")
       assertThat(barcode).isNotNull
-      assertThat(barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)).isNotNull
+      assertThat(barcodeEventRepository.findByBarcodeAndEventTypeCreated(barcode)).isNotNull
       assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
     }
 

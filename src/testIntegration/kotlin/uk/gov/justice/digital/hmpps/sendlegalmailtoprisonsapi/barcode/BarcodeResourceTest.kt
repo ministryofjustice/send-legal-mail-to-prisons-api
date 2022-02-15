@@ -8,7 +8,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.CREATED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType.CREATED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
@@ -62,7 +62,7 @@ class BarcodeResourceTest : IntegrationTest() {
         .jsonPath("$.barcode").isEqualTo("SOME_CODE")
 
       val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-      assertThat(barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, CREATED)).isNotEmpty
+      assertThat(barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode, CREATED)).isNotEmpty
       assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
     }
 

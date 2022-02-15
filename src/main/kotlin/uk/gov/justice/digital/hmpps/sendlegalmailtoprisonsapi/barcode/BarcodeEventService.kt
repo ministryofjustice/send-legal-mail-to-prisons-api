@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.DUPLICATE
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.EXPIRED
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeStatus.RANDOM_CHECK
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType.DUPLICATE
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType.EXPIRED
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType.RANDOM_CHECK
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Duplicate
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.Expired
@@ -20,22 +20,22 @@ class BarcodeEventService(
   private val cjsmService: CjsmService,
 ) {
 
-  fun createEvent(barcode: Barcode, userId: String, status: BarcodeStatus, location: String = ""): BarcodeEvent =
+  fun createEvent(barcode: Barcode, userId: String, eventType: BarcodeEventType, location: String = ""): BarcodeEvent =
     barcodeEventRepository.save(
       BarcodeEvent(
         barcode = barcode,
         userId = userId,
-        status = status,
+        eventType = eventType,
         location = location,
       )
     )
 
   fun checkForCreated(barcode: Barcode) =
-    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
+    barcodeEventRepository.findByBarcodeAndEventTypeCreated(barcode)
       ?: throw ResourceNotFoundException("Barcode ${barcode.code} not found")
 
   fun checkForDuplicate(barcode: Barcode, userId: String, location: String) =
-    barcodeEventRepository.findByBarcodeAndStatusOrderByCreatedDateTime(barcode, BarcodeStatus.CHECKED)
+    barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode, BarcodeEventType.CHECKED)
       .takeIf { checkedEvents -> checkedEvents.size > 1 }
       ?.first()
       ?.also { firstCheck ->
@@ -44,7 +44,7 @@ class BarcodeEventService(
       }
 
   fun checkForExpired(barcode: Barcode, userId: String, location: String) =
-    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
+    barcodeEventRepository.findByBarcodeAndEventTypeCreated(barcode)
       ?.takeIf { createdEvent -> createdEvent.createdDateTime < Instant.now().minus(barcodeConfig.expiry) }
       ?.also { createdEvent ->
         createEvent(barcode, userId, EXPIRED, location)
@@ -60,7 +60,7 @@ class BarcodeEventService(
       }
 
   fun getCreatedBy(barcode: Barcode): String =
-    barcodeEventRepository.findByBarcodeAndStatusCreated(barcode)
+    barcodeEventRepository.findByBarcodeAndEventTypeCreated(barcode)
       ?.userId
       ?.let { userId -> findOrganisation(userId) ?: userId }
       ?: "An error occurred and we cannot identify the barcode sender"
