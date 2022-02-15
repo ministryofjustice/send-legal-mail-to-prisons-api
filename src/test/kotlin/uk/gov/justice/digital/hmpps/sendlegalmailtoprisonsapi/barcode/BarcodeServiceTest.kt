@@ -34,7 +34,7 @@ class BarcodeServiceTest {
       mockFindBarcode(null)
       mockSaveBarcode()
       whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString())).thenReturn(
-        BarcodeEvent(1L, aBarcode(), "some_user", BarcodeStatus.CREATED)
+        BarcodeEvent(1L, aBarcode(), "some_user", BarcodeEventType.CREATED)
       )
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 
@@ -42,7 +42,7 @@ class BarcodeServiceTest {
 
       assertThat(code).isEqualTo("SOME_BARCODE")
       verify(barcodeRepository).save(aBarcode())
-      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeStatus.CREATED, "")
+      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeEventType.CREATED, "")
       verify(barcodeRecipientService).saveBarcodeRecipient(aBarcode(), createBarcodeRequest)
     }
   }
@@ -58,7 +58,7 @@ class BarcodeServiceTest {
 
       assertThat(createdBy).isEqualTo("some_sender")
       verify(barcodeEventService)
-        .createEvent(aBarcode(), "some_user", BarcodeStatus.CHECKED, "some_location")
+        .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location")
     }
   }
 
@@ -75,7 +75,7 @@ class BarcodeServiceTest {
         .isEqualTo(expectedException)
 
       verify(barcodeEventService)
-        .createEvent(aBarcode(), "some_user", BarcodeStatus.CHECKED, "some_location")
+        .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location")
     }
   }
 
@@ -93,7 +93,7 @@ class BarcodeServiceTest {
         .isEqualTo(expectedException)
 
       verify(barcodeEventService)
-        .createEvent(aBarcode(), "current_user", BarcodeStatus.CHECKED, "current_location")
+        .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
     }
   }
 
@@ -113,7 +113,7 @@ class BarcodeServiceTest {
         .isEqualTo(expectedException)
 
       verify(barcodeEventService)
-        .createEvent(aBarcode(), "current_user", BarcodeStatus.CHECKED, "current_location")
+        .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
     }
   }
 
@@ -130,7 +130,7 @@ class BarcodeServiceTest {
         .isEqualTo(expectedException)
 
       verify(barcodeEventService)
-        .createEvent(aBarcode(), "current_user", BarcodeStatus.CHECKED, "current_location")
+        .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
     }
   }
 
