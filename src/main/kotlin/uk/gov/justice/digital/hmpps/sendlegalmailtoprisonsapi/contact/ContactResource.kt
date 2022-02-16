@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -39,7 +40,7 @@ class ContactResource(private val contactService: ContactService) {
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
-    summary = "Creates a new Contact for the logged in user",
+    summary = "Creates a new Contact for the signed in user",
     security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
   )
   @ApiResponses(
@@ -56,7 +57,12 @@ class ContactResource(private val contactService: ContactService) {
       ),
       ApiResponse(
         responseCode = "401",
-        description = "Unauthorised, requires a valid magic link token",
+        description = "Unauthorised, requires a valid CJSM email link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -69,6 +75,56 @@ class ContactResource(private val contactService: ContactService) {
   fun createContact(@Valid @RequestBody contactRequest: ContactRequest, authentication: Authentication): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
     return contactService.createContact(authentication.name, contactRequest).let {
+      ContactResponse(
+        id = it.id!!,
+        prisonerName = it.name,
+        prisonId = it.prisonCode,
+        dob = it.dob,
+        prisonNumber = it.prisonNumber
+      )
+    }
+  }
+
+  @PutMapping(value = ["/contact/{id}"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Update an existing Contact for the signed in user",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Contact udpated",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ContactResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid CJSM email link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun updateContact(@Valid @RequestBody contactRequest: ContactRequest, @PathVariable id: Long, authentication: Authentication): ContactResponse {
+    validateRequestHasDobOrPrisonNumber(contactRequest)
+    return contactService.updateContact(authentication.name, id, contactRequest).let {
       ContactResponse(
         id = it.id!!,
         prisonerName = it.name,
@@ -98,6 +154,11 @@ class ContactResource(private val contactService: ContactService) {
       ApiResponse(
         responseCode = "401",
         description = "Unauthorised, requires a valid magic link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -141,9 +202,14 @@ class ContactResource(private val contactService: ContactService) {
       ),
       ApiResponse(
         responseCode = "401",
-        description = "Unauthorised, requires a valid magic link token",
+        description = "Unauthorised, requires a valid CJSM email link token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
-      )
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
     ]
   )
   fun searchContactsByName(@RequestParam(required = true) name: String, authentication: Authentication): Collection<ContactResponse> {
@@ -158,27 +224,6 @@ class ContactResource(private val contactService: ContactService) {
     }
   }
 }
-
-// Deprecated until the only client (UI) has been moved to the new class
-@Deprecated("Use the generic ContactRequest which will be used for both create and udpate")
-data class CreateContactRequest(
-  @Schema(description = "The name of the new contact", example = "John Doe", required = true)
-  @field:Pattern(regexp = "^[a-zA-Z '`-]+$")
-  @field:Size(max = 60)
-  val prisonerName: String,
-
-  @Schema(description = "The ID of the prison location of the new contact", example = "BXI", required = true)
-  @field:Pattern(regexp = "^[A-Z]{3}$")
-  val prisonId: String,
-
-  @Schema(description = "The date of birth of the new contact if known", example = "1965-04-23", required = false)
-  @field:JsonFormat(pattern = "yyyy-MM-dd")
-  val dob: LocalDate? = null,
-
-  @Schema(description = "The prison number of the new contact if known", example = "A1234BC", required = false)
-  @field:Pattern(regexp = "^[A-Z]\\d{4}[A-Z]{2}$")
-  val prisonNumber: String? = null,
-)
 
 data class ContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)

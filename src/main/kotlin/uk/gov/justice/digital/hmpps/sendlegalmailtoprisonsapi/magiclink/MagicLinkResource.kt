@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorRespon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 
 @RestController
+@Tag(name = "email-link-resource")
 class MagicLinkResource(
   private val magicLinkService: MagicLinkService,
   private val magicLinkRequestValidator: MagicLinkRequestValidator,
@@ -27,14 +29,14 @@ class MagicLinkResource(
   @PostMapping(value = ["/link/email"])
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
-    summary = "Create and send a magic link",
-    description = "Creates a magic link and send to the email address entered by the user.",
+    summary = "Create and send a CJSM email link",
+    description = "Creates a CJSM email link and send to the email address entered by the user.",
   )
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "201",
-        description = "Magic link created",
+        description = "CJSM email link created",
         content = [
           Content(mediaType = "application/json")
         ],
@@ -59,8 +61,8 @@ class MagicLinkResource(
   @PostMapping(value = ["/link/verify"])
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
-    summary = "Verify a magic link secret",
-    description = "Verifies a magic link secret and swaps it for an authentication token if valid.",
+    summary = "Verify a CJSM email link secret",
+    description = "Verifies a CJSM email link secret and swaps it for an authentication token if valid.",
   )
   @ApiResponses(
     value = [
@@ -76,7 +78,7 @@ class MagicLinkResource(
       ),
       ApiResponse(
         responseCode = "404",
-        description = "Not found, unable to verify the magic link",
+        description = "Not found, unable to verify the CJSM email link",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ]
@@ -86,7 +88,7 @@ class MagicLinkResource(
 }
 
 data class MagicLinkRequest(
-  @Schema(description = "The email address to send the magic link to", example = "andrew.barret@company.com", required = true)
+  @Schema(description = "The email address to send the CJSM email link to", example = "andrew.barret@company.com", required = true)
   val email: String,
 )
 
