@@ -13,14 +13,14 @@ private val log = KotlinLogging.logger {}
 @Service
 class ContactService(private val contactRepository: ContactRepository, private val clock: Clock) {
 
-  fun createContact(userId: String, createContactRequest: CreateContactRequest): Contact {
+  fun createContact(userId: String, contactRequest: ContactRequest): Contact {
     val now = Instant.now(clock)
     val newContactEntity = Contact(
       owner = userId,
-      name = createContactRequest.prisonerName,
-      prisonCode = createContactRequest.prisonId,
-      dob = createContactRequest.dob,
-      prisonNumber = createContactRequest.prisonNumber,
+      name = contactRequest.prisonerName,
+      prisonCode = contactRequest.prisonId,
+      dob = contactRequest.dob,
+      prisonNumber = contactRequest.prisonNumber,
       created = now,
       updated = now
     )
@@ -30,7 +30,7 @@ class ContactService(private val contactRepository: ContactRepository, private v
           log.debug { "Created new Contact: $it" }
         }
     } catch (dataIntegrityViolationException: DataIntegrityViolationException) {
-      throw DuplicateContactException(userId, createContactRequest.prisonNumber!!)
+      throw DuplicateContactException(userId, contactRequest.prisonNumber!!)
     }
   }
 

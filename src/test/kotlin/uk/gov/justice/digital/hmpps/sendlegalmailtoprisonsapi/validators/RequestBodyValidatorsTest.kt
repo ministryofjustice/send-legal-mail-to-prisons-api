@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.CreateContactRequest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRequest
 import java.time.LocalDate
 
 class RequestBodyValidatorsTest {
@@ -15,34 +15,34 @@ class RequestBodyValidatorsTest {
   inner class CreateContactRequestValidators {
     @Test
     fun `should validate given request with dob`() {
-      val createContactRequest = CreateContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", dob = LocalDate.now())
+      val contactRequest = ContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", dob = LocalDate.now())
 
-      assertThatCode { validateRequestHasDobOrPrisonNumber(createContactRequest) }
+      assertThatCode { validateRequestHasDobOrPrisonNumber(contactRequest) }
         .doesNotThrowAnyException()
     }
 
     @Test
     fun `should validate given request with prison number`() {
-      val createContactRequest = CreateContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
+      val contactRequest = ContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 
-      assertThatCode { validateRequestHasDobOrPrisonNumber(createContactRequest) }
+      assertThatCode { validateRequestHasDobOrPrisonNumber(contactRequest) }
         .doesNotThrowAnyException()
     }
 
     @Test
     fun `should validate given request with both dob and prison number`() {
-      val createContactRequest = CreateContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", dob = LocalDate.now(), prisonNumber = "A1234BC")
+      val contactRequest = ContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", dob = LocalDate.now(), prisonNumber = "A1234BC")
 
-      assertThatCode { validateRequestHasDobOrPrisonNumber(createContactRequest) }
+      assertThatCode { validateRequestHasDobOrPrisonNumber(contactRequest) }
         .doesNotThrowAnyException()
     }
 
     @Test
     fun `should throw when validating given request without both dob and prison number`() {
-      val createContactRequest = CreateContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI")
+      val contactRequest = ContactRequest(prisonerName = "Fred Bloggs", prisonId = "BXI")
 
       assertThatExceptionOfType(ValidationException::class.java)
-        .isThrownBy { validateRequestHasDobOrPrisonNumber(createContactRequest) }
+        .isThrownBy { validateRequestHasDobOrPrisonNumber(contactRequest) }
     }
   }
 
