@@ -27,7 +27,7 @@ class ContactServiceTest {
 
     @Test
     fun `should create contact given request containing prison number`() {
-      val createContactRequest = CreateContactRequest(
+      val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
         prisonNumber = "A1234BC"
@@ -43,7 +43,7 @@ class ContactServiceTest {
       )
       given { contactRepository.save(any()) }.willReturn(expectedContact)
 
-      val contact = contactService.createContact("a-user@cjsm.net", createContactRequest)
+      val contact = contactService.createContact("a-user@cjsm.net", contactRequest)
 
       assertThat(contact).isEqualTo(expectedContact)
       verify(contactRepository).save(
@@ -61,7 +61,7 @@ class ContactServiceTest {
 
     @Test
     fun `should create contact given request containing prisoner DOB`() {
-      val createContactRequest = CreateContactRequest(
+      val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
         dob = LocalDate.of(1990, 12, 20)
@@ -77,7 +77,7 @@ class ContactServiceTest {
       )
       given { contactRepository.save(any()) }.willReturn(expectedContact)
 
-      val contact = contactService.createContact("a-user@cjsm.net", createContactRequest)
+      val contact = contactService.createContact("a-user@cjsm.net", contactRequest)
 
       assertThat(contact).isEqualTo(expectedContact)
       verify(contactRepository).save(
@@ -95,7 +95,7 @@ class ContactServiceTest {
 
     @Test
     fun `should throw DuplicateContactException given database throws constraint violation`() {
-      val createContactRequest = CreateContactRequest(
+      val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
         prisonNumber = "A1234BC"
@@ -103,7 +103,7 @@ class ContactServiceTest {
       given { contactRepository.save(any()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
 
       assertThrows<DuplicateContactException> {
-        contactService.createContact("a-user@cjsm.net", createContactRequest)
+        contactService.createContact("a-user@cjsm.net", contactRequest)
       }
       verify(contactRepository).save(
         Contact(
