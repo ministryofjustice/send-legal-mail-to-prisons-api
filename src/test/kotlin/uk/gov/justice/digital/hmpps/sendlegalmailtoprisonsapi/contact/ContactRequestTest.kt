@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.time.LocalDate
 import javax.validation.Validation
 
-class CreateContactRequestTest {
+class ContactRequestTest {
 
   private val validator = Validation.buildDefaultValidatorFactory().validator
 
@@ -17,7 +17,7 @@ class CreateContactRequestTest {
     prisonId: String = "BXI",
     dob: LocalDate? = null,
     prisonNumber: String = "A1234BC"
-  ) = CreateContactRequest(prisonerName = prisonerName, prisonId = prisonId, dob = dob, prisonNumber = prisonNumber)
+  ) = ContactRequest(prisonerName = prisonerName, prisonId = prisonId, dob = dob, prisonNumber = prisonNumber)
 
   @Nested
   inner class Name {
