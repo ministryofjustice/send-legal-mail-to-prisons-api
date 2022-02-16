@@ -59,4 +59,4 @@ data class BarcodeEvent(
   }
 }
 
-enum class BarcodeEventType { CREATED, CHECKED, DUPLICATE, EXPIRED, RANDOM_CHECK }
+enum class BarcodeEventType { CREATED, CHECKED, DUPLICATE, EXPIRED, RANDOM_CHECK, MORE_CHECKS_REQUESTED }
