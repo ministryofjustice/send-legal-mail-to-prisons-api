@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -93,6 +94,14 @@ class SendLegalMailToPrisonsApiExceptionHandler {
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
+  }
+
+  @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+  fun handleMethodNotSupportedException(e: HttpRequestMethodNotSupportedException): ResponseEntity<ErrorResponse?>? {
+    log.error("Received a request using the wrong HTTP method", e)
+    return ResponseEntity
+      .status(NOT_FOUND)
+      .body(ErrorResponse(status = NOT_FOUND, errorCode = NotFound))
   }
 
   @ExceptionHandler(Exception::class)

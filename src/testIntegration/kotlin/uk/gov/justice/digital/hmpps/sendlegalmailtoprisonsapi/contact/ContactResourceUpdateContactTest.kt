@@ -1,15 +1,17 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
-class ContactResourceCreateContactTest : IntegrationTest() {
+class ContactResourceUpdateContactTest : IntegrationTest() {
 
   private companion object {
     val JOHN_SMITH = ContactRequest(
@@ -21,8 +23,8 @@ class ContactResourceCreateContactTest : IntegrationTest() {
 
   @Test
   fun `unauthorised without a valid auth token`() {
-    webTestClient.post()
-      .uri("/contact")
+    webTestClient.put()
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .exchange()
@@ -31,8 +33,8 @@ class ContactResourceCreateContactTest : IntegrationTest() {
 
   @Test
   fun `forbidden without a valid role`() {
-    webTestClient.post()
-      .uri("/contact")
+    webTestClient.put()
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN"))
@@ -44,8 +46,8 @@ class ContactResourceCreateContactTest : IntegrationTest() {
 
   @Test
   fun `bad request given empty body`() {
-    webTestClient.post()
-      .uri("/contact")
+    webTestClient.put()
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
@@ -56,9 +58,28 @@ class ContactResourceCreateContactTest : IntegrationTest() {
   }
 
   @Test
-  fun `bad request given request body fails javax validation (invalid dob format)`() {
-    webTestClient.post()
+  fun `not found if no id`() {
+    webTestClient.put()
       .uri("/contact")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setCreateBarcodeAuthorisation())
+      .bodyValue(
+        """{ 
+            "prisonerName": "John Smith",
+            "prisonId": "BXI",
+            "dob": "17-08-1971"
+          }"""
+      )
+      .exchange()
+      .expectStatus().isNotFound
+      .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
+  }
+
+  @Test
+  fun `bad request given request body fails javax validation for Date of Birth`() {
+    webTestClient.put()
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
@@ -76,8 +97,8 @@ class ContactResourceCreateContactTest : IntegrationTest() {
 
   @Test
   fun `bad request given request body fails RequestBodyValidators validation (neither prison number or dob)`() {
-    webTestClient.post()
-      .uri("/contact")
+    webTestClient.put()
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
@@ -93,62 +114,37 @@ class ContactResourceCreateContactTest : IntegrationTest() {
   }
 
   @Test
-  fun `new contact is created`() {
+  @Disabled // TODO SLM-147 enable this test once ContactService#updateContact has been implemented
+  fun `new contact is updated`() {
+    val createdTime = Instant.now().minus(1, ChronoUnit.DAYS)
+    val existingContactId = contactRepository.save(
+      Contact(
+        owner = "some.user@company.com.cjsm.net",
+        name = "Johnnie Smith",
+        prisonCode = "LEI",
+        prisonNumber = "A1111ZZ",
+        created = createdTime,
+        updated = createdTime
+      )
+    ).id
+
     webTestClient.post()
-      .uri("/contact")
+      .uri("/contact/1")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .bodyValue(JOHN_SMITH)
       .exchange()
-      .expectStatus().isCreated
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("$.name").isEqualTo(JOHN_SMITH.prisonerName)
+      .jsonPath("$.prisonId").isEqualTo(JOHN_SMITH.prisonId)
+      .jsonPath("$.prisonNumber").isEqualTo(JOHN_SMITH.prisonNumber!!)
 
-    Assertions.assertThat(contactRepository.findAll()).hasSize(1)
-  }
-
-  @Test
-  fun `duplicate contacts without prison number are created`() {
-    repeat(2) {
-      webTestClient.post()
-        .uri("/contact")
-        .accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
-        .headers(setCreateBarcodeAuthorisation())
-        .bodyValue(
-          """{ 
-            "prisonerName": "John Smith",
-            "prisonId": "BXI",
-            "dob": "1972-05-29"
-          }"""
-        )
-        .exchange()
-        .expectStatus().isCreated
-    }
-
-    Assertions.assertThat(contactRepository.findAll()).hasSize(2)
-  }
-
-  @Test
-  fun `duplicate contact with prison number is not created`() {
-    webTestClient.post()
-      .uri("/contact")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setCreateBarcodeAuthorisation())
-      .bodyValue(JOHN_SMITH)
-      .exchange()
-      .expectStatus().isCreated
-
-    webTestClient.post()
-      .uri("/contact")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setCreateBarcodeAuthorisation())
-      .bodyValue(JOHN_SMITH)
-      .exchange()
-      .expectStatus().isEqualTo(HttpStatus.CONFLICT)
-      .expectBody().jsonPath("$.errorCode.code").isEqualTo(DuplicateContact.code)
-
-    Assertions.assertThat(contactRepository.findAll()).hasSize(1)
+    val savedContact = contactRepository.getById(existingContactId!!)
+    assertThat(savedContact.name).isEqualTo(JOHN_SMITH.prisonerName)
+    assertThat(savedContact.prisonNumber).isEqualTo(JOHN_SMITH.prisonNumber)
+    assertThat(savedContact.prisonCode).isEqualTo(JOHN_SMITH.prisonId)
+    assertThat(savedContact.updated).isAfter(savedContact.created)
   }
 }

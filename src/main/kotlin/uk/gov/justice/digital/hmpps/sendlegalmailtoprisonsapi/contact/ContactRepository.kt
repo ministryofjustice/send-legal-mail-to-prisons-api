@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
+import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.Instant
 import java.time.LocalDate
@@ -38,4 +39,19 @@ data class Contact(
   val created: Instant,
 
   val updated: Instant
-)
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+    other as Contact
+
+    return id != null && id == other.id
+  }
+
+  override fun hashCode(): Int = javaClass.hashCode()
+
+  @Override
+  override fun toString(): String {
+    return this::class.simpleName + "(id = $id , owner = $owner , name = $name , prisonCode = $prisonCode , dob = $dob , prisonNumber = $prisonNumber )"
+  }
+}
