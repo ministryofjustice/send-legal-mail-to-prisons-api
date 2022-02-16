@@ -66,9 +66,9 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-  fun createContact(@Valid @RequestBody createContactRequest: CreateContactRequest, authentication: Authentication): ContactResponse {
-    validateRequestHasDobOrPrisonNumber(createContactRequest)
-    return contactService.createContact(authentication.name, createContactRequest).let {
+  fun createContact(@Valid @RequestBody contactRequest: ContactRequest, authentication: Authentication): ContactResponse {
+    validateRequestHasDobOrPrisonNumber(contactRequest)
+    return contactService.createContact(authentication.name, contactRequest).let {
       ContactResponse(
         id = it.id!!,
         prisonerName = it.name,
@@ -159,7 +159,28 @@ class ContactResource(private val contactService: ContactService) {
   }
 }
 
+// Deprecated until the only client (UI) has been moved to the new class
+@Deprecated("Use the generic ContactRequest which will be used for both create and udpate")
 data class CreateContactRequest(
+  @Schema(description = "The name of the new contact", example = "John Doe", required = true)
+  @field:Pattern(regexp = "^[a-zA-Z '`-]+$")
+  @field:Size(max = 60)
+  val prisonerName: String,
+
+  @Schema(description = "The ID of the prison location of the new contact", example = "BXI", required = true)
+  @field:Pattern(regexp = "^[A-Z]{3}$")
+  val prisonId: String,
+
+  @Schema(description = "The date of birth of the new contact if known", example = "1965-04-23", required = false)
+  @field:JsonFormat(pattern = "yyyy-MM-dd")
+  val dob: LocalDate? = null,
+
+  @Schema(description = "The prison number of the new contact if known", example = "A1234BC", required = false)
+  @field:Pattern(regexp = "^[A-Z]\\d{4}[A-Z]{2}$")
+  val prisonNumber: String? = null,
+)
+
+data class ContactRequest(
   @Schema(description = "The name of the new contact", example = "John Doe", required = true)
   @field:Pattern(regexp = "^[a-zA-Z '`-]+$")
   @field:Size(max = 60)
