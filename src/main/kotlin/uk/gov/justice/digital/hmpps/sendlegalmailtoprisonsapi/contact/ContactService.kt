@@ -34,6 +34,11 @@ class ContactService(private val contactRepository: ContactRepository, private v
     }
   }
 
+  // TODO SLM-147 Implement this
+  fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): Contact {
+    throw ResourceNotFoundException("Not implemented")
+  }
+
   fun searchContactsByName(userId: String, name: String): Collection<Contact> =
     contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
       .also {
