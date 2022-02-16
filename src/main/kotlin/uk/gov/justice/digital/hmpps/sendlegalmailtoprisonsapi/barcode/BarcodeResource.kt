@@ -87,7 +87,12 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
       ),
       ApiResponse(
         responseCode = "401",
-        description = "Unauthorised, requires a valid magic link token",
+        description = "Unauthorised, requires a valid token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_SCAN_BARCODE",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
@@ -101,6 +106,48 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
     @RequestBody request: CheckBarcodeRequest,
   ) = CheckBarcodeResponse(barcodeService.checkBarcode(userId, request.barcode, userContext.caseload))
+
+  @PostMapping(value = ["/barcode/event/more-checks-requested"])
+  @ResponseBody
+  @ResponseStatus(CREATED)
+  @PreAuthorize("hasRole('ROLE_SLM_SCAN_BARCODE')")
+  @Operation(
+    summary = "Flags that more checks are required for a barcode received on Rule 39 mail",
+    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Barcode flagged as needing more checks",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = CheckBarcodeResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request. For specific errors see the Schema for CheckBarcodeErrorCodes",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_SCAN_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      )
+    ]
+  )
+  fun createBarcodeMoreChecksRequestedEvent(
+    @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
+    @RequestBody request: CheckBarcodeRequest,
+  ) = barcodeService.registerEvent(userId, userContext.caseload, request.barcode, BarcodeEventType.MORE_CHECKS_REQUESTED)
 }
 
 data class CreateBarcodeRequest(

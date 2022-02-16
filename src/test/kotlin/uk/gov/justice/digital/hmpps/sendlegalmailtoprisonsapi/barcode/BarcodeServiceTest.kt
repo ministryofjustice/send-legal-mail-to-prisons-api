@@ -49,7 +49,7 @@ class BarcodeServiceTest {
   }
 
   @Nested
-  inner class CheckBarcodeOk {
+  inner class CheckBarcode {
     @Test
     fun `should complete ok and create checked event if barcode exists`() {
       mockFindBarcode()
@@ -61,10 +61,7 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location")
     }
-  }
 
-  @Nested
-  inner class CheckBarcodeNotFound {
     @Test
     fun `should throw not found and create barcode checked event if barcode does not exist`() {
       val expectedException = ResourceNotFoundException("some_message")
@@ -75,13 +72,11 @@ class BarcodeServiceTest {
       assertThatThrownBy { barcodeService.checkBarcode("some_user", "SOME_BARCODE", "some_location") }
         .isEqualTo(expectedException)
 
+      verify(barcodeRepository).save(aBarcode())
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location")
     }
-  }
 
-  @Nested
-  inner class CheckBarcodeDuplicate {
     @Test
     fun `should throw validation exception and create checked event if duplicate`() {
       val yesterday = Instant.now().minus(1, ChronoUnit.DAYS)
@@ -96,14 +91,10 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
     }
-  }
-
-  @Nested
-  inner class CheckBarcodeExpired {
-    private val barcodeExpiryDays = 28L
 
     @Test
-    fun `should throw validation exception and create checked event if duplicate`() {
+    fun `should throw validation exception and create checked event if expired`() {
+      val barcodeExpiryDays = 28L
       val expired = Instant.now().minus(barcodeExpiryDays + 1, ChronoUnit.DAYS)
       val expectedException = ValidationException(Expired(expired, barcodeExpiryDays, "some_sender"))
       mockFindBarcode()
@@ -116,12 +107,9 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
     }
-  }
 
-  @Nested
-  inner class CheckBarcodeRandomSecurityCheck {
     @Test
-    fun `should throw validation exception and create checked event if duplicate`() {
+    fun `should throw validation exception and create checked event if selected for random check`() {
       val expectedException = ValidationException(RandomCheck("some_sender"))
       mockFindBarcode()
       whenever(barcodeEventService.checkForRandomSecurityCheck(aBarcode(), "current_user", "current_location"))
@@ -132,6 +120,31 @@ class BarcodeServiceTest {
 
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location")
+    }
+  }
+
+  @Nested
+  inner class RegisterEvent {
+    @Test
+    fun `should create event if barcode exists`() {
+      mockFindBarcode()
+
+      barcodeService.registerEvent("some_user", "some_location", "SOME_BARCODE", BarcodeEventType.MORE_CHECKS_REQUESTED)
+
+      verify(barcodeEventService)
+        .createEvent(aBarcode(), "some_user", BarcodeEventType.MORE_CHECKS_REQUESTED, "some_location")
+    }
+
+    @Test
+    fun `should create barcode and event if barcode does not exist`() {
+      mockFindBarcode(null)
+      mockSaveBarcode()
+
+      barcodeService.registerEvent("some_user", "some_location", "SOME_BARCODE", BarcodeEventType.MORE_CHECKS_REQUESTED)
+
+      verify(barcodeRepository).save(aBarcode())
+      verify(barcodeEventService)
+        .createEvent(aBarcode(), "some_user", BarcodeEventType.MORE_CHECKS_REQUESTED, "some_location")
     }
   }
 

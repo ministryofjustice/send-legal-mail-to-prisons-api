@@ -38,4 +38,14 @@ class BarcodeService(
         }
       }
       .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
+
+  fun registerEvent(userId: String, location: String, code: String, barcodeEventType: BarcodeEventType) {
+    barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
+      .also { barcode ->
+        with(barcodeEventService) {
+          createEvent(barcode, userId, barcodeEventType, location)
+          checkForCreated(barcode)
+        }
+      }
+  }
 }
