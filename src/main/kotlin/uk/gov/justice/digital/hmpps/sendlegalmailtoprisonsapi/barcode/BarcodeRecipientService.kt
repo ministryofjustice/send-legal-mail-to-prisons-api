@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRepository
 
 @Service
 class BarcodeRecipientService(
   private val barcodeRecipientRepository: BarcodeRecipientRepository,
-  private val contactService: ContactService
+  private val contactRepository: ContactRepository,
 ) {
   fun saveBarcodeRecipient(barcode: Barcode, createBarcodeRequest: CreateBarcodeRequest): BarcodeRecipient =
     BarcodeRecipient(
@@ -15,7 +15,7 @@ class BarcodeRecipientService(
       prisonCode = createBarcodeRequest.prisonId,
       prisonNumber = createBarcodeRequest.prisonNumber,
       dob = createBarcodeRequest.dob,
-      contact = createBarcodeRequest.contactId?.let { contactId -> contactService.getContactById(contactId) }
+      contact = createBarcodeRequest.contactId?.let { contactId -> contactRepository.getById(contactId) }
     ).let {
       barcodeRecipientRepository.save(it)
     }
