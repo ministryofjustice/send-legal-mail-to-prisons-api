@@ -16,6 +16,8 @@ import javax.persistence.Table
 interface ContactRepository : JpaRepository<Contact, Long> {
   fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
 
+  fun getContactByOwnerAndId(owner: String, id: Long): Contact?
+
   fun getContactByOwnerAndPrisonNumber(owner: String, prisonNumber: String): Contact?
 }
 
