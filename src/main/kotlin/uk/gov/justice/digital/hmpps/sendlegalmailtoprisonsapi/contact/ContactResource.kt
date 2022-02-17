@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validateRequestHasDobOrPrisonNumber
 import java.time.LocalDate
 import javax.validation.Valid
@@ -122,17 +123,23 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-  fun updateContact(@Valid @RequestBody contactRequest: ContactRequest, @PathVariable id: Long, authentication: Authentication): ContactResponse {
+  fun updateContact(
+    @Valid @RequestBody contactRequest: ContactRequest,
+    @PathVariable id: Long,
+    authentication: Authentication
+  ): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
-    return contactService.updateContact(authentication.name, id, contactRequest).let {
-      ContactResponse(
-        id = it.id!!,
-        prisonerName = it.name,
-        prisonId = it.prisonCode,
-        dob = it.dob,
-        prisonNumber = it.prisonNumber
-      )
-    }
+    return contactService.updateContact(authentication.name, id, contactRequest)
+      ?.let {
+        ContactResponse(
+          id = it.id!!,
+          prisonerName = it.name,
+          prisonId = it.prisonCode,
+          dob = it.dob,
+          prisonNumber = it.prisonNumber
+        )
+      }
+      ?: throw ResourceNotFoundException("")
   }
 
   @GetMapping(value = ["/contact/{prisonNumber}"])

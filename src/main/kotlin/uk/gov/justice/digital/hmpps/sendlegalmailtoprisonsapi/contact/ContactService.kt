@@ -34,10 +34,10 @@ class ContactService(private val contactRepository: ContactRepository, private v
     }
   }
 
-  // TODO SLM-147 Implement this
-  fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): Contact {
-    throw ResourceNotFoundException("Not implemented")
-  }
+  fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): Contact? =
+    contactRepository.getContactByOwnerAndId(userId, contactId)
+      ?.let { existingContact -> toContact(contactRequest, existingContact) }
+      ?.let { newContact -> contactRepository.save(newContact) }
 
   fun searchContactsByName(userId: String, name: String): Collection<Contact> =
     contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
@@ -54,4 +54,15 @@ class ContactService(private val contactRepository: ContactRepository, private v
 
   fun getContactById(id: Long): Contact? =
     contactRepository.getById(id)
+
+  private fun toContact(contactRequest: ContactRequest, contact: Contact) =
+    with(contactRequest) {
+      contact.copy(
+        name = prisonerName,
+        prisonCode = prisonId,
+        dob = dob,
+        prisonNumber = prisonNumber,
+        updated = Instant.now(clock),
+      )
+    }
 }
