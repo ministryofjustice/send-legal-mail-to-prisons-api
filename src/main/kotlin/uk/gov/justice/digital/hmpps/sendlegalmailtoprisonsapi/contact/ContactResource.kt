@@ -75,7 +75,7 @@ class ContactResource(private val contactService: ContactService) {
   )
   fun createContact(@Valid @RequestBody contactRequest: ContactRequest, authentication: Authentication): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
-    return toContactResponse(contactService.createContact(authentication.name, contactRequest))
+    return contactService.createContact(authentication.name, contactRequest)
   }
 
   @PutMapping(value = ["/contact/{id}"])
@@ -122,7 +122,6 @@ class ContactResource(private val contactService: ContactService) {
   ): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
     return contactService.updateContact(authentication.name, id, contactRequest)
-      ?.let { toContactResponse(it) }
       ?: throw ResourceNotFoundException("Contact not found")
   }
 
@@ -160,7 +159,8 @@ class ContactResource(private val contactService: ContactService) {
     ]
   )
   fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
-    toContactResponse(contactService.getContactByPrisonNumber(authentication.name, prisonNumber))
+    contactService.getContactByPrisonNumber(authentication.name, prisonNumber)
+      ?: throw ResourceNotFoundException("Could not find a matching Contact [${authentication.name}, $prisonNumber]")
 
   @GetMapping(value = ["/contacts"])
   @ResponseBody
@@ -199,7 +199,7 @@ class ContactResource(private val contactService: ContactService) {
     @RequestParam(required = true) name: String,
     authentication: Authentication
   ): Collection<ContactResponse> {
-    return contactService.searchContactsByName(authentication.name, name).map { toContactResponse(it) }
+    return contactService.searchContactsByName(authentication.name, name)
   }
 }
 
@@ -239,12 +239,3 @@ data class ContactResponse(
   @Schema(description = "The prison number of the contact if known", example = "A1234BC", required = false)
   val prisonNumber: String? = null
 )
-
-private fun toContactResponse(contact: Contact): ContactResponse =
-  ContactResponse(
-    id = contact.id!!,
-    prisonerName = contact.name,
-    prisonId = contact.prisonCode,
-    dob = contact.dob,
-    prisonNumber = contact.prisonNumber
-  )
