@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
 import io.swagger.v3.oas.annotations.media.Schema
 import mu.KotlinLogging
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
@@ -17,15 +18,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
-class SendLegalMailToPrisonsApiExceptionHandler {
+class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler() {
 
-  @ExceptionHandler(HttpMessageNotReadableException::class)
-  fun handleJsonParseException(e: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
+  override fun handleHttpMessageNotReadable(e: HttpMessageNotReadableException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
     log.info("Request message unreadable exception: {}", e.message)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
+  }
+
+  override fun handleMethodArgumentNotValid(e: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+    log.info("Method argument not valid exception: {}", e.message)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
+  }
+
+  override fun handleMissingServletRequestParameter(e: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+    log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
@@ -71,28 +87,12 @@ class SendLegalMailToPrisonsApiExceptionHandler {
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = e.errorCode))
   }
 
-  @ExceptionHandler(MethodArgumentNotValidException::class)
-  fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-    log.info("Method argument not valid exception: {}", e.message)
-    return ResponseEntity
-      .status(BAD_REQUEST)
-      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
-  }
-
   @ExceptionHandler(DuplicateContactException::class)
   fun handleDuplicateContactException(e: DuplicateContactException): ResponseEntity<ErrorResponse> {
     log.info { "Duplicate Contact exception: [${e.userId}, ${e.prisonNumber}]" }
     return ResponseEntity
       .status(CONFLICT)
       .body(ErrorResponse(status = CONFLICT, errorCode = DuplicateContact))
-  }
-
-  @ExceptionHandler(MissingServletRequestParameterException::class)
-  fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse?>? {
-    log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
-    return ResponseEntity
-      .status(BAD_REQUEST)
-      .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
   @ExceptionHandler(Exception::class)

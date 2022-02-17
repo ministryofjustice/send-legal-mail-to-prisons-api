@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.Contact
@@ -43,4 +44,19 @@ data class BarcodeRecipient(
   @ManyToOne
   @JoinColumn(name = "contact")
   val contact: Contact? = null,
-)
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+    other as BarcodeRecipient
+
+    return id != null && id == other.id
+  }
+
+  override fun hashCode(): Int = javaClass.hashCode()
+
+  @Override
+  override fun toString(): String {
+    return this::class.simpleName + "(id = $id , barcode = $barcode , prisonCode = $prisonCode , contactId = ${contact?.id} )"
+  }
+}

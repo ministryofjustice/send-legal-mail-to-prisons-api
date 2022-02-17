@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -47,15 +48,19 @@ class ContactServiceTest {
 
       assertThat(contact).isEqualTo(expectedContact)
       verify(contactRepository).save(
-        Contact(
-          id = null,
-          owner = "a-user@cjsm.net",
-          name = "John Smith",
-          prisonCode = "BXI",
-          prisonNumber = "A1234BC",
-          created = Instant.now(clock),
-          updated = Instant.now(clock)
-        )
+        check<Contact> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(
+            Contact(
+              id = null,
+              owner = "a-user@cjsm.net",
+              name = "John Smith",
+              prisonCode = "BXI",
+              prisonNumber = "A1234BC",
+              created = Instant.now(clock),
+              updated = Instant.now(clock)
+            )
+          )
+        }
       )
     }
 
@@ -81,15 +86,19 @@ class ContactServiceTest {
 
       assertThat(contact).isEqualTo(expectedContact)
       verify(contactRepository).save(
-        Contact(
-          id = null,
-          owner = "a-user@cjsm.net",
-          name = "John Smith",
-          prisonCode = "BXI",
-          dob = LocalDate.of(1990, 12, 20),
-          created = Instant.now(clock),
-          updated = Instant.now(clock)
-        )
+        check<Contact> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(
+            Contact(
+              id = null,
+              owner = "a-user@cjsm.net",
+              name = "John Smith",
+              prisonCode = "BXI",
+              dob = LocalDate.of(1990, 12, 20),
+              created = Instant.now(clock),
+              updated = Instant.now(clock)
+            )
+          )
+        }
       )
     }
 
@@ -106,15 +115,19 @@ class ContactServiceTest {
         contactService.createContact("a-user@cjsm.net", contactRequest)
       }
       verify(contactRepository).save(
-        Contact(
-          id = null,
-          owner = "a-user@cjsm.net",
-          name = "John Smith",
-          prisonCode = "BXI",
-          prisonNumber = "A1234BC",
-          created = Instant.now(clock),
-          updated = Instant.now(clock)
-        )
+        check<Contact> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(
+            Contact(
+              id = null,
+              owner = "a-user@cjsm.net",
+              name = "John Smith",
+              prisonCode = "BXI",
+              prisonNumber = "A1234BC",
+              created = Instant.now(clock),
+              updated = Instant.now(clock)
+            )
+          )
+        }
       )
     }
   }
@@ -143,7 +156,9 @@ class ContactServiceTest {
           updated = Instant.now(clock)
         )
       )
-      given { contactRepository.findContactByOwnerAndNameContainingIgnoreCase(any(), any()) }.willReturn(expectedContacts)
+      given { contactRepository.findContactByOwnerAndNameContainingIgnoreCase(any(), any()) }.willReturn(
+        expectedContacts
+      )
 
       val contacts = contactService.searchContactsByName("a-user@cjsm.net", "john")
 
