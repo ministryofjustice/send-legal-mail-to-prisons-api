@@ -3,14 +3,13 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.Clock
 import java.time.Instant
 
 @Service
 class ContactService(private val contactRepository: ContactRepository, private val clock: Clock) {
 
-  fun createContact(userId: String, contactRequest: ContactRequest): Contact {
+  fun createContact(userId: String, contactRequest: ContactRequest): ContactResponse {
     val now = Instant.now(clock)
     val newContactEntity = Contact(
       owner = userId,
@@ -22,26 +21,25 @@ class ContactService(private val contactRepository: ContactRepository, private v
       updated = now
     )
     try {
-      return contactRepository.save(newContactEntity)
+      return toContactResponse(contactRepository.save(newContactEntity))
     } catch (dataIntegrityViolationException: DataIntegrityViolationException) {
       throw DuplicateContactException(userId, contactRequest.prisonNumber!!)
     }
   }
 
-  fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): Contact? =
+  fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): ContactResponse? =
     contactRepository.getContactByOwnerAndId(userId, contactId)
       ?.let { existingContact -> toContact(contactRequest, existingContact) }
       ?.let { newContact -> contactRepository.save(newContact) }
+      ?.let { savedContact -> toContactResponse(savedContact) }
 
-  fun searchContactsByName(userId: String, name: String): Collection<Contact> =
+  fun searchContactsByName(userId: String, name: String): Collection<ContactResponse> =
     contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
+      .map { toContactResponse(it) }
 
-  fun getContactByPrisonNumber(userId: String, prisonNumber: String): Contact =
+  fun getContactByPrisonNumber(userId: String, prisonNumber: String): ContactResponse? =
     contactRepository.getContactByOwnerAndPrisonNumber(userId, prisonNumber)
-      ?: throw ResourceNotFoundException("Could not find a matching Contact [$userId, $prisonNumber]")
-
-  fun getContactById(id: Long): Contact? =
-    contactRepository.getById(id)
+      ?.let { toContactResponse(it) }
 
   private fun toContact(contactRequest: ContactRequest, contact: Contact) =
     with(contactRequest) {
@@ -53,4 +51,13 @@ class ContactService(private val contactRepository: ContactRepository, private v
         updated = Instant.now(clock),
       )
     }
+
+  private fun toContactResponse(contact: Contact): ContactResponse =
+    ContactResponse(
+      id = contact.id!!,
+      prisonerName = contact.name,
+      prisonId = contact.prisonCode,
+      dob = contact.dob,
+      prisonNumber = contact.prisonNumber
+    )
 }

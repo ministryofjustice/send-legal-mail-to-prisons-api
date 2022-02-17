@@ -12,10 +12,8 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.then
-import org.mockito.kotlin.verify
 import org.springframework.dao.DataIntegrityViolationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -38,7 +36,7 @@ class ContactServiceTest {
         prisonId = "BXI",
         prisonNumber = "A1234BC"
       )
-      val expectedContact = Contact(
+      val savedContact = Contact(
         id = 1,
         owner = "a-user@cjsm.net",
         name = "John Smith",
@@ -47,24 +45,20 @@ class ContactServiceTest {
         created = Instant.now(clock),
         updated = Instant.now(clock)
       )
-      given { contactRepository.save(any()) }.willReturn(expectedContact)
+      val expectedContactResponse = ContactResponse(
+        id = 1,
+        prisonerName = "John Smith",
+        prisonId = "BXI",
+        prisonNumber = "A1234BC",
+      )
+      given { contactRepository.save(any()) }.willReturn(savedContact)
 
-      val contact = contactService.createContact("a-user@cjsm.net", contactRequest)
+      val contactResponse = contactService.createContact("a-user@cjsm.net", contactRequest)
 
-      assertThat(contact).isEqualTo(expectedContact)
-      verify(contactRepository).save(
+      assertThat(contactResponse).isEqualTo(expectedContactResponse)
+      then(contactRepository).should().save(
         check<Contact> {
-          assertThat(it).usingRecursiveComparison().isEqualTo(
-            Contact(
-              id = null,
-              owner = "a-user@cjsm.net",
-              name = "John Smith",
-              prisonCode = "BXI",
-              prisonNumber = "A1234BC",
-              created = Instant.now(clock),
-              updated = Instant.now(clock)
-            )
-          )
+          assertThat(it).usingRecursiveComparison().isEqualTo(savedContact.copy(id = null))
         }
       )
     }
@@ -76,7 +70,7 @@ class ContactServiceTest {
         prisonId = "BXI",
         dob = LocalDate.of(1990, 12, 20)
       )
-      val expectedContact = Contact(
+      val savedContact = Contact(
         id = 1,
         owner = "a-user@cjsm.net",
         name = "John Smith",
@@ -85,24 +79,20 @@ class ContactServiceTest {
         created = Instant.now(clock),
         updated = Instant.now(clock)
       )
-      given { contactRepository.save(any()) }.willReturn(expectedContact)
+      val expectedContactResponse = ContactResponse(
+        id = 1,
+        prisonerName = "John Smith",
+        prisonId = "BXI",
+        dob = LocalDate.of(1990, 12, 20),
+      )
+      given { contactRepository.save(any()) }.willReturn(savedContact)
 
-      val contact = contactService.createContact("a-user@cjsm.net", contactRequest)
+      val contactResponse = contactService.createContact("a-user@cjsm.net", contactRequest)
 
-      assertThat(contact).isEqualTo(expectedContact)
-      verify(contactRepository).save(
+      assertThat(contactResponse).isEqualTo(expectedContactResponse)
+      then(contactRepository).should().save(
         check<Contact> {
-          assertThat(it).usingRecursiveComparison().isEqualTo(
-            Contact(
-              id = null,
-              owner = "a-user@cjsm.net",
-              name = "John Smith",
-              prisonCode = "BXI",
-              dob = LocalDate.of(1990, 12, 20),
-              created = Instant.now(clock),
-              updated = Instant.now(clock)
-            )
-          )
+          assertThat(it).usingRecursiveComparison().isEqualTo(savedContact.copy(id = null))
         }
       )
     }
@@ -119,7 +109,7 @@ class ContactServiceTest {
       assertThrows<DuplicateContactException> {
         contactService.createContact("a-user@cjsm.net", contactRequest)
       }
-      verify(contactRepository).save(
+      then(contactRepository).should().save(
         check<Contact> {
           assertThat(it).usingRecursiveComparison().isEqualTo(
             Contact(
@@ -148,8 +138,7 @@ class ContactServiceTest {
         dob = LocalDate.of(1999, 12, 12),
         prisonNumber = "new-prison-number"
       )
-
-    private val aContact = Contact(
+    private val existingContact = Contact(
       id = 1L,
       owner = "some-user",
       name = "some-name",
@@ -159,25 +148,32 @@ class ContactServiceTest {
       created = yesterday,
       updated = yesterday,
     )
-
     private val updatedContact = Contact(
       id = 1L,
-      owner = aContact.owner,
-      name = aContactRequest.prisonerName,
-      prisonCode = aContactRequest.prisonId,
-      dob = aContactRequest.dob,
-      prisonNumber = aContactRequest.prisonNumber,
+      owner = "some-user",
+      name = "new-name",
+      prisonCode = "new-prison-code",
+      dob = LocalDate.of(1999, 12, 12),
+      prisonNumber = "new-prison-number",
       created = yesterday,
       updated = now,
+    )
+    private val expectedContactResponse = ContactResponse(
+      id = 1L,
+      prisonerName = "new-name",
+      prisonId = "new-prison-code",
+      dob = LocalDate.of(1999, 12, 12),
+      prisonNumber = "new-prison-number",
     )
 
     @Test
     fun `should return saved contact if contact exists`() {
-      given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(aContact)
+      given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(existingContact)
       given { contactRepository.save(any()) }.willReturn(updatedContact)
 
-      assertThat(contactService.updateContact("some-user", 1L, aContactRequest)).isEqualTo(updatedContact)
+      val contactResponse = contactService.updateContact("some-user", 1L, aContactRequest)
 
+      assertThat(contactResponse).isEqualTo(expectedContactResponse)
       then(contactRepository).should().getContactByOwnerAndId("some-user", 1L)
       then(contactRepository).should().save(
         check<Contact> {
@@ -200,7 +196,7 @@ class ContactServiceTest {
   inner class SearchContactsByName {
     @Test
     fun `should return matching contacts`() {
-      val expectedContacts = listOf(
+      val existingContacts = listOf(
         Contact(
           id = 1,
           owner = "a-user@cjsm.net",
@@ -220,24 +216,38 @@ class ContactServiceTest {
           updated = Instant.now(clock)
         )
       )
+      val expectedContactResponses = listOf(
+        ContactResponse(
+          id = 1,
+          prisonerName = "John Smith",
+          prisonId = "BXI",
+          dob = LocalDate.of(1990, 12, 20),
+        ),
+        ContactResponse(
+          id = 1921,
+          prisonerName = "Barbara Johnston",
+          prisonId = "LEI",
+          prisonNumber = "B4372PC",
+        )
+      )
       given { contactRepository.findContactByOwnerAndNameContainingIgnoreCase(any(), any()) }.willReturn(
-        expectedContacts
+        existingContacts
       )
 
-      val contacts = contactService.searchContactsByName("a-user@cjsm.net", "john")
+      val contactResponses = contactService.searchContactsByName("a-user@cjsm.net", "john")
 
-      assertThat(contacts).isEqualTo(expectedContacts)
-      verify(contactRepository).findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "john")
+      assertThat(contactResponses).isEqualTo(expectedContactResponses)
+      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "john")
     }
 
     @Test
     fun `should return empty collection given no matching contacts`() {
       given { contactRepository.findContactByOwnerAndNameContainingIgnoreCase(any(), any()) }.willReturn(emptyList())
 
-      val contacts = contactService.searchContactsByName("a-user@cjsm.net", "fred")
+      val contactResponses = contactService.searchContactsByName("a-user@cjsm.net", "fred")
 
-      assertThat(contacts).isEmpty()
-      verify(contactRepository).findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "fred")
+      assertThat(contactResponses).isEmpty()
+      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "fred")
     }
   }
 
@@ -245,7 +255,7 @@ class ContactServiceTest {
   inner class GetContactByPrisonNumber {
     @Test
     fun `should return contact given contact is found on the database`() {
-      val expectedContact = Contact(
+      val existingContact = Contact(
         id = 1,
         owner = "a-user@cjsm.net",
         name = "John Smith",
@@ -254,55 +264,28 @@ class ContactServiceTest {
         created = Instant.now(clock),
         updated = Instant.now(clock)
       )
-      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(expectedContact)
+      val expectedContactResponse = ContactResponse(
+        id = 1,
+        prisonerName = "John Smith",
+        prisonId = "BXI",
+        dob = LocalDate.of(1990, 12, 20),
+      )
+      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(existingContact)
+
+      val contactResponse = contactService.getContactByPrisonNumber("a-user@cjsm.net", "A1234BC")
+
+      assertThat(contactResponse).isEqualTo(expectedContactResponse)
+      then(contactRepository).should().getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
+    }
+
+    @Test
+    fun `should return null given contact is not found on the database`() {
+      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(null)
 
       val contact = contactService.getContactByPrisonNumber("a-user@cjsm.net", "A1234BC")
 
-      assertThat(contact).isEqualTo(expectedContact)
-      verify(contactRepository).getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
-    }
-
-    @Test
-    fun `should throw ResourceNotFoundException given contact is not found on the database`() {
-      given { contactRepository.getContactByOwnerAndPrisonNumber(any(), any()) }.willReturn(null)
-
-      assertThrows<ResourceNotFoundException> {
-        contactService.getContactByPrisonNumber("a-user@cjsm.net", "A1234BC")
-      }
-      verify(contactRepository).getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
-    }
-  }
-
-  @Nested
-  inner class GetContactById {
-    @Test
-    fun `should get contact by id`() {
-      val expectedContact = Contact(
-        id = 1,
-        owner = "a-user@cjsm.net",
-        name = "John Smith",
-        prisonCode = "BXI",
-        dob = LocalDate.of(1990, 12, 20),
-        created = Instant.now(clock),
-        updated = Instant.now(clock)
-      )
-      given { contactRepository.getById(any()) }.willReturn(expectedContact)
-
-      val contact = contactService.getContactById(1)
-
-      assertThat(contact).isEqualTo(expectedContact)
-      verify(contactRepository).getById(1)
-    }
-
-    @Test
-    fun `should return null given unknown contact id`() {
-
-      given { contactRepository.getById(any()) }.willReturn(null)
-
-      val contact = contactService.getContactById(2)
-
       assertThat(contact).isNull()
-      verify(contactRepository).getById(2)
+      then(contactRepository).should().getContactByOwnerAndPrisonNumber("a-user@cjsm.net", "A1234BC")
     }
   }
 }
