@@ -125,7 +125,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
     ).id
 
     webTestClient.put()
-      .uri("/contact/1")
+      .uri("/contact/$existingContactId")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
