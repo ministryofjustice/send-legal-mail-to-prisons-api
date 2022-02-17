@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import org.hibernate.Hibernate
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 import java.time.Instant
 import java.time.LocalDate
 import javax.persistence.Column
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
 
+@Repository
 interface ContactRepository : JpaRepository<Contact, Long> {
   fun findContactByOwnerAndNameContainingIgnoreCase(owner: String, name: String): List<Contact>
 
