@@ -54,6 +54,6 @@ data class Contact(
 
   @Override
   override fun toString(): String {
-    return this::class.simpleName + "(id = $id , owner = $owner , name = $name , prisonCode = $prisonCode , dob = $dob , prisonNumber = $prisonNumber )"
+    return this::class.simpleName + "(id = $id , owner = $owner , prisonCode = $prisonCode )"
   }
 }
