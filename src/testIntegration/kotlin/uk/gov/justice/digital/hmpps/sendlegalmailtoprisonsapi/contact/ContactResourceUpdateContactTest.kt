@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
@@ -112,7 +111,6 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
   }
 
   @Test
-  @Disabled // TODO SLM-147 enable this test once ContactService#updateContact has been implemented
   fun `new contact is updated`() {
     val createdTime = Instant.now().minus(1, ChronoUnit.DAYS)
     val existingContactId = contactRepository.save(
@@ -126,8 +124,8 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       )
     ).id
 
-    webTestClient.post()
-      .uri("/contact/1")
+    webTestClient.put()
+      .uri("/contact/$existingContactId")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
@@ -135,7 +133,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .exchange()
       .expectStatus().isOk
       .expectBody()
-      .jsonPath("$.name").isEqualTo(JOHN_SMITH.prisonerName)
+      .jsonPath("$.prisonerName").isEqualTo(JOHN_SMITH.prisonerName)
       .jsonPath("$.prisonId").isEqualTo(JOHN_SMITH.prisonId)
       .jsonPath("$.prisonNumber").isEqualTo(JOHN_SMITH.prisonNumber!!)
 

@@ -4,10 +4,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.then
 import org.mockito.kotlin.verify
 import org.springframework.dao.DataIntegrityViolationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
@@ -16,6 +20,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 class ContactServiceTest {
 
@@ -129,6 +134,65 @@ class ContactServiceTest {
           )
         }
       )
+    }
+  }
+
+  @Nested
+  inner class UpdateContact {
+    private val now = Instant.now(clock)
+    private val yesterday = now.minus(1L, ChronoUnit.DAYS)
+    private val aContactRequest: ContactRequest =
+      ContactRequest(
+        prisonerName = "new-name",
+        prisonId = "new-prison-code",
+        dob = LocalDate.of(1999, 12, 12),
+        prisonNumber = "new-prison-number"
+      )
+
+    private val aContact = Contact(
+      id = 1L,
+      owner = "some-user",
+      name = "some-name",
+      prisonCode = "some-prison-code",
+      dob = LocalDate.of(1990, 1, 1),
+      prisonNumber = "some-prison-number",
+      created = yesterday,
+      updated = yesterday,
+    )
+
+    private val updatedContact = Contact(
+      id = 1L,
+      owner = aContact.owner,
+      name = aContactRequest.prisonerName,
+      prisonCode = aContactRequest.prisonId,
+      dob = aContactRequest.dob,
+      prisonNumber = aContactRequest.prisonNumber,
+      created = yesterday,
+      updated = now,
+    )
+
+    @Test
+    fun `should return saved contact if contact exists`() {
+      given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(aContact)
+      given { contactRepository.save(any()) }.willReturn(updatedContact)
+
+      assertThat(contactService.updateContact("some-user", 1L, aContactRequest)).isEqualTo(updatedContact)
+
+      then(contactRepository).should().getContactByOwnerAndId("some-user", 1L)
+      then(contactRepository).should().save(
+        check<Contact> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(updatedContact)
+        }
+      )
+    }
+
+    @Test
+    fun `should return null if contact does not exist`() {
+      given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(null)
+
+      assertThat(contactService.updateContact("some-user", 1L, aContactRequest)).isNull()
+
+      then(contactRepository).should(never()).save(any())
     }
   }
 
