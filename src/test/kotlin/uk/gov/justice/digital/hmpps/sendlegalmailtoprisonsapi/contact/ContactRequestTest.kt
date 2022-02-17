@@ -39,4 +39,32 @@ class ContactRequestTest {
       assertThat(validator.validate(aRequest(prisonerName = "abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi a"))).isNotEmpty
     }
   }
+
+  @Nested
+  inner class PrisonId {
+    @Test
+    fun `should accept valid prison Id`() {
+      assertThat(validator.validate(aRequest(prisonId = "ABC"))).isEmpty()
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["ABCD", "AB1", "AB;", "abc"])
+    fun `should reject malformed prisonId`(id: String) {
+      assertThat(validator.validate(aRequest(prisonId = id))).isNotEmpty
+    }
+  }
+
+  @Nested
+  inner class PrisonNumber {
+    @Test
+    fun `should accept valid prison number`() {
+      assertThat(validator.validate(aRequest(prisonNumber = "A1234BC"))).isEmpty()
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["1234ABC", "AB1234C", "AB12345C", "a1234bc", "A1234B"])
+    fun `should reject malformed prison number`(prisonNumber: String) {
+      assertThat(validator.validate(aRequest(prisonNumber = prisonNumber))).isNotEmpty
+    }
+  }
 }

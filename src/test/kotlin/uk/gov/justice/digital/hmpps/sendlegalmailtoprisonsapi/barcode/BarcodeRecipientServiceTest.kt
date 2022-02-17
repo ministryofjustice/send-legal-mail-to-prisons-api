@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -40,7 +41,11 @@ class BarcodeRecipientServiceTest {
       val barcodeRecipient = barcodeRecipientService.saveBarcodeRecipient(barcode, createBarcodeRequest)
 
       assertThat(barcodeRecipient).isEqualTo(expectedBarcodeRecipient)
-      verify(barcodeRecipientRepository).save(expectedBarcodeRecipient)
+      verify(barcodeRecipientRepository).save(
+        check<BarcodeRecipient> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(expectedBarcodeRecipient)
+        }
+      )
       verify(contactService).getContactById(1234)
     }
 
@@ -61,7 +66,11 @@ class BarcodeRecipientServiceTest {
       val barcodeRecipient = barcodeRecipientService.saveBarcodeRecipient(barcode, createBarcodeRequest)
 
       assertThat(barcodeRecipient).isEqualTo(expectedBarcodeRecipient)
-      verify(barcodeRecipientRepository).save(expectedBarcodeRecipient)
+      verify(barcodeRecipientRepository).save(
+        check<BarcodeRecipient> {
+          assertThat(it).usingRecursiveComparison().isEqualTo(expectedBarcodeRecipient)
+        }
+      )
       verifyNoInteractions(contactService)
     }
   }
