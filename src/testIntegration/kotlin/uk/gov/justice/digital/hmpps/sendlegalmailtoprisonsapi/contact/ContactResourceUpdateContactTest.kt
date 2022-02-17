@@ -7,7 +7,6 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -58,7 +57,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
   }
 
   @Test
-  fun `not found if no id`() {
+  fun `method not allowed if no id`() {
     webTestClient.put()
       .uri("/contact")
       .accept(MediaType.APPLICATION_JSON)
@@ -72,8 +71,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
           }"""
       )
       .exchange()
-      .expectStatus().isNotFound
-      .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
+      .expectStatus().is4xxClientError
   }
 
   @Test
