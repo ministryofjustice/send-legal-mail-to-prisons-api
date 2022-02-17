@@ -75,15 +75,7 @@ class ContactResource(private val contactService: ContactService) {
   )
   fun createContact(@Valid @RequestBody contactRequest: ContactRequest, authentication: Authentication): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
-    return contactService.createContact(authentication.name, contactRequest).let {
-      ContactResponse(
-        id = it.id!!,
-        prisonerName = it.name,
-        prisonId = it.prisonCode,
-        dob = it.dob,
-        prisonNumber = it.prisonNumber
-      )
-    }
+    return toContactResponse(contactService.createContact(authentication.name, contactRequest))
   }
 
   @PutMapping(value = ["/contact/{id}"])
@@ -130,16 +122,8 @@ class ContactResource(private val contactService: ContactService) {
   ): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
     return contactService.updateContact(authentication.name, id, contactRequest)
-      ?.let {
-        ContactResponse(
-          id = it.id!!,
-          prisonerName = it.name,
-          prisonId = it.prisonCode,
-          dob = it.dob,
-          prisonNumber = it.prisonNumber
-        )
-      }
-      ?: throw ResourceNotFoundException("")
+      ?.let { toContactResponse(it) }
+      ?: throw ResourceNotFoundException("Contact not found")
   }
 
   @GetMapping(value = ["/contact/{prisonNumber}"])
@@ -176,15 +160,7 @@ class ContactResource(private val contactService: ContactService) {
     ]
   )
   fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
-    contactService.getContactByPrisonNumber(authentication.name, prisonNumber).let {
-      return ContactResponse(
-        id = it.id!!,
-        prisonerName = it.name,
-        prisonId = it.prisonCode,
-        dob = it.dob,
-        prisonNumber = it.prisonNumber
-      )
-    }
+    toContactResponse(contactService.getContactByPrisonNumber(authentication.name, prisonNumber))
 
   @GetMapping(value = ["/contacts"])
   @ResponseBody
@@ -219,16 +195,11 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ]
   )
-  fun searchContactsByName(@RequestParam(required = true) name: String, authentication: Authentication): Collection<ContactResponse> {
-    return contactService.searchContactsByName(authentication.name, name).map {
-      ContactResponse(
-        id = it.id!!,
-        prisonerName = it.name,
-        prisonId = it.prisonCode,
-        dob = it.dob,
-        prisonNumber = it.prisonNumber
-      )
-    }
+  fun searchContactsByName(
+    @RequestParam(required = true) name: String,
+    authentication: Authentication
+  ): Collection<ContactResponse> {
+    return contactService.searchContactsByName(authentication.name, name).map { toContactResponse(it) }
   }
 }
 
@@ -268,3 +239,12 @@ data class ContactResponse(
   @Schema(description = "The prison number of the contact if known", example = "A1234BC", required = false)
   val prisonNumber: String? = null
 )
+
+private fun toContactResponse(contact: Contact): ContactResponse =
+  ContactResponse(
+    id = contact.id!!,
+    prisonerName = contact.name,
+    prisonId = contact.prisonCode,
+    dob = contact.dob,
+    prisonNumber = contact.prisonNumber
+  )
