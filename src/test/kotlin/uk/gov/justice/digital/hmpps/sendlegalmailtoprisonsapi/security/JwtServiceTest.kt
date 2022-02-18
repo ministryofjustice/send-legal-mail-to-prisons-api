@@ -21,7 +21,7 @@ class JwtServiceTest {
   @Test
   fun `can generate and validate a JWT`() {
     val jwtService = jwtService()
-    val jwt = jwtService.generateToken("some.email@company.com")
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 
     assertThat(jwtService.validateToken(jwt)).isTrue
   }
@@ -29,15 +29,32 @@ class JwtServiceTest {
   @Test
   fun `can retrieve the subject from a generated JWT`() {
     val jwtService = jwtService()
-    val jwt = jwtService.generateToken("some.email@company.com")
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 
     assertThat(jwtService.subject(jwt)).isEqualTo("some.email@company.com")
   }
 
   @Test
+  fun `can retrieve the organisation from a generated JWT`() {
+    val jwtService = jwtService()
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
+
+    assertThat(jwtService.organisation(jwt)).isEqualTo("Some Organisation")
+  }
+
+  @Test
+  fun `can validate the token if generated with a null organisation`() {
+    val jwtService = jwtService()
+    val jwt = jwtService.generateToken("some.email@company.com", null)
+
+    assertThat(jwtService.validateToken(jwt)).isTrue
+    assertThat(jwtService.organisation(jwt)).isNull()
+  }
+
+  @Test
   fun `the generated JWT should have the create barcode role`() {
     val jwtService = jwtService()
-    val jwt = jwtService.generateToken("some.email@company.com")
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 
     assertThat(jwtService.authorities(jwt)).containsExactly("ROLE_SLM_CREATE_BARCODE")
   }
@@ -48,7 +65,7 @@ class JwtServiceTest {
       expiry = Duration.of(1, ChronoUnit.DAYS),
       clock = Clock.fixed(Instant.parse("2100-11-26T12:18:05Z"), ZoneId.of("Europe/London"))
     )
-    val jwt = jwtService.generateToken("some.email@company.com")
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 
     val expiresAt = jwtService.expiresAt(jwt)
     assertThat(expiresAt).isEqualTo(Instant.parse("2100-11-28T00:00:00Z"))
@@ -57,7 +74,7 @@ class JwtServiceTest {
   @Test
   fun `an expired JWT should be invalid`() {
     val jwtService = jwtService(Duration.of(-1, ChronoUnit.DAYS))
-    val jwt = jwtService.generateToken("some.email@company.com")
+    val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 
     assertThat(jwtService.validateToken(jwt)).isFalse
   }

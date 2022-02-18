@@ -43,8 +43,8 @@ class JwtAuthHelper(private val jwtService: JwtService) {
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }
 
-  fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit {
-    val token = jwtService.generateToken(email)
+  fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net", organisation: String = "Some Organisation"): (HttpHeaders) -> Unit {
+    val token = jwtService.generateToken(email, organisation)
     return { it.set("Create-Barcode-Token", token) }
   }
 
