@@ -27,7 +27,7 @@ class BarcodeTokenClientTrackingInterceptorTest : IntegrationTest() {
   }
   @Test
   fun `should add client and username to telemetry`() {
-    val token = jwtService.generateToken("some.email@company.com")
+    val token = jwtService.generateToken("some.email@company.com", "Some Organisation")
     val req = MockHttpServletRequest()
     req.addHeader("create-barcode-token", token)
     val res = MockHttpServletResponse()
