@@ -38,7 +38,7 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
     X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString))
       .let { KeyFactory.getInstance("RSA").generatePublic(it) }
 
-  fun generateToken(email: String): String =
+  fun generateToken(email: String, organisation: String?): String =
     Jwts.builder()
       .setId(UUID.randomUUID().toString())
       .setSubject(email)
@@ -48,6 +48,7 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
           "authorities" to listOf("ROLE_SLM_CREATE_BARCODE"),
           "client_id" to "send-legal-mail",
           "user_name" to email,
+          "organisation" to organisation,
         )
       )
       .signWith(SignatureAlgorithm.RS256, privateKey)
@@ -70,6 +71,10 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   fun subject(jwt: String): String =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.subject
+
+  @Suppress("UNCHECKED_CAST")
+  fun organisation(jwt: String): String? =
+    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["organisation"] as? String
 
   @Suppress("UNCHECKED_CAST")
   fun authorities(jwt: String): List<String>? =
