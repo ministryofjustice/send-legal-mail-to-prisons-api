@@ -39,6 +39,7 @@ object EmailTooLong : MagicLinkRequestErrorCodes("EMAIL_TOO_LONG", "The email ad
 object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
 object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
+@Schema(oneOf = [DuplicateContact::class])
 sealed class ContactErrorCodes(
   @Schema(allowableValues = ["DUPLICATE_CONTACT"])
   code: String,

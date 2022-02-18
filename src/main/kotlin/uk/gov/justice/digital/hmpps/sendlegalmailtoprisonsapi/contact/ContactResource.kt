@@ -68,7 +68,7 @@ class ContactResource(private val contactService: ContactService) {
       ),
       ApiResponse(
         responseCode = "409",
-        description = "Conflict, the specified new contact already exists for this user",
+        description = "Conflict, the specified new contact already exists for this user. See ContactErrorCodes.",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ]
@@ -111,6 +111,11 @@ class ContactResource(private val contactService: ContactService) {
       ApiResponse(
         responseCode = "404",
         description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        description = "Conflict, the specified new contact already exists for this user. See ContactErrorCodes.",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ]

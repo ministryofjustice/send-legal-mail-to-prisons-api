@@ -2,9 +2,11 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContact
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -108,6 +110,52 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+  }
+
+  @Test
+  fun `cannot update prison number if it already exists`() {
+    val createdTime = Instant.now().minus(1, ChronoUnit.DAYS)
+    val existingContactId = contactRepository.save(
+      Contact(
+        owner = "some.user@company.com.cjsm.net",
+        name = "Billy Brown",
+        prisonCode = "SKI",
+        prisonNumber = "A2222ZZ",
+        created = createdTime,
+        updated = createdTime
+      )
+    ).id
+    val updateContactId = contactRepository.save(
+      Contact(
+        owner = "some.user@company.com.cjsm.net",
+        name = "Johnnie Smith",
+        prisonCode = "LEI",
+        prisonNumber = "A1111ZZ",
+        created = createdTime,
+        updated = createdTime
+      )
+    ).id
+
+    webTestClient.put()
+      .uri("/contact/$updateContactId")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setCreateBarcodeAuthorisation())
+      .bodyValue(
+        """{ 
+            "prisonerName": "Johnnie Smith",
+            "prisonId": "LEI",
+            "prisonNumber": "A2222ZZ"
+          }"""
+      )
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+      .expectBody()
+      .jsonPath("$.errorCode.code").isEqualTo(DuplicateContact.code)
+
+    val existingContact = contactRepository.getById(existingContactId)
+    val updatedContact = contactRepository.getById(updateContactId)
+    assertThat(existingContact.prisonNumber).isNotEqualTo(updatedContact.prisonNumber)
   }
 
   @Test
