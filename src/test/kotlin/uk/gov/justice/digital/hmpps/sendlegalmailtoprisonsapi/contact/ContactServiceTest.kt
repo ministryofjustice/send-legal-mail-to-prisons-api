@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -189,6 +190,21 @@ class ContactServiceTest {
       assertThat(contactService.updateContact("some-user", 1L, aContactRequest)).isNull()
 
       then(contactRepository).should(never()).save(any())
+    }
+
+    @Test
+    fun `should throw DuplicateContactException given database throws constraint violation`() {
+      given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(existingContact)
+      given { contactRepository.save(any()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
+
+      assertThatThrownBy {
+        contactService.updateContact("some-user", 1L, aContactRequest)
+      }.isInstanceOf(DuplicateContactException::class.java)
+        .extracting {
+          val ex = (it as DuplicateContactException)
+          assertThat(ex.userId).isEqualTo("some-user")
+          assertThat(ex.prisonNumber).isEqualTo("new-prison-number")
+        }
     }
   }
 

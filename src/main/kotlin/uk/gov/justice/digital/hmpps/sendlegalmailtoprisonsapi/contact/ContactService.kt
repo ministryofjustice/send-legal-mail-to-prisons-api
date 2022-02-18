@@ -28,10 +28,14 @@ class ContactService(private val contactRepository: ContactRepository, private v
   }
 
   fun updateContact(userId: String, contactId: Long, contactRequest: ContactRequest): ContactResponse? =
-    contactRepository.getContactByOwnerAndId(userId, contactId)
-      ?.let { existingContact -> toContact(contactRequest, existingContact) }
-      ?.let { newContact -> contactRepository.save(newContact) }
-      ?.let { savedContact -> toContactResponse(savedContact) }
+    try {
+      contactRepository.getContactByOwnerAndId(userId, contactId)
+        ?.let { existingContact -> toContact(contactRequest, existingContact) }
+        ?.let { newContact -> contactRepository.save(newContact) }
+        ?.let { savedContact -> toContactResponse(savedContact) }
+    } catch (ex: DataIntegrityViolationException) {
+      throw DuplicateContactException(userId, contactRequest.prisonNumber!!)
+    }
 
   fun searchContactsByName(userId: String, name: String): Collection<ContactResponse> =
     contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
