@@ -36,6 +36,50 @@ import javax.validation.constraints.Size
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class ContactResource(private val contactService: ContactService) {
 
+  // TODO SLM-63 Switch this back to /contact/{id} once we have switched the UI to use the new prisonNumber endpoint
+  @GetMapping(value = ["/contact/id/{id}"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Retrieve an existing Contact for the signed in user",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Contact udpated",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ContactResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid CJSM email link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun getContact(
+    @PathVariable id: Long,
+    authentication: Authentication
+  ): ContactResponse = contactService.getContact(authentication.name, id)
+    ?: throw ResourceNotFoundException("Contact not found")
+
   @PostMapping(value = ["/contact"])
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)

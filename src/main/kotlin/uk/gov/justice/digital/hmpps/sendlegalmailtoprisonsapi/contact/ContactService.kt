@@ -9,6 +9,10 @@ import java.time.Instant
 @Service
 class ContactService(private val contactRepository: ContactRepository, private val clock: Clock) {
 
+  fun getContact(userId: String, contactId: Long): ContactResponse? =
+    contactRepository.getContactByOwnerAndId(owner = userId, id = contactId)
+      ?.let { toContactResponse(it) }
+
   fun createContact(userId: String, contactRequest: ContactRequest): ContactResponse {
     val now = Instant.now(clock)
     val newContactEntity = Contact(
