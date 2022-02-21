@@ -15,7 +15,7 @@ class ContactResourceGetContactByIdTest : IntegrationTest() {
   @Test
   fun `unauthorised without a valid auth token`() {
     webTestClient.get()
-      .uri("/contact/id/${testContact.id}")
+      .uri("/contact/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isUnauthorized
@@ -24,7 +24,7 @@ class ContactResourceGetContactByIdTest : IntegrationTest() {
   @Test
   fun `forbidden without a valid role`() {
     webTestClient.get()
-      .uri("/contact/id/${testContact.id}")
+      .uri("/contact/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN"))
       .exchange()
@@ -35,7 +35,7 @@ class ContactResourceGetContactByIdTest : IntegrationTest() {
   @Test
   fun `not found given unknown id`() {
     webTestClient.get()
-      .uri("/contact/id/99999")
+      .uri("/contact/99999")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()
@@ -46,7 +46,7 @@ class ContactResourceGetContactByIdTest : IntegrationTest() {
   @Test
   fun `returns contact given valid prison number`() {
     webTestClient.get()
-      .uri("/contact/id/${testContact.id}")
+      .uri("/contact/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()
