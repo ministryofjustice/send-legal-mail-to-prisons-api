@@ -6,14 +6,16 @@ import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import java.time.format.DateTimeFormatter
 
-@Deprecated("@TODO SLM-63 Remove when /contact/{prisonNumber} is deleted")
 @Sql("/createContacts.sql")
-class ContactResourceGetContactTest : IntegrationTest() {
+class ContactResourceGetContactByIdTest : IntegrationTest() {
+  val testContact by lazy { contactRepository.findAll().first { it.dob != null } }
+
   @Test
   fun `unauthorised without a valid auth token`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/id/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isUnauthorized
@@ -22,7 +24,7 @@ class ContactResourceGetContactTest : IntegrationTest() {
   @Test
   fun `forbidden without a valid role`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/id/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN"))
       .exchange()
@@ -31,9 +33,9 @@ class ContactResourceGetContactTest : IntegrationTest() {
   }
 
   @Test
-  fun `not found given unknown prison number`() {
+  fun `not found given unknown id`() {
     webTestClient.get()
-      .uri("/contact/X9999ZZ")
+      .uri("/contact/id/99999")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()
@@ -44,13 +46,16 @@ class ContactResourceGetContactTest : IntegrationTest() {
   @Test
   fun `returns contact given valid prison number`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/id/${testContact.id}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()
       .expectStatus().isOk
       .expectBody()
-      .jsonPath("$.prisonNumber").isEqualTo("A1234BC")
-      .jsonPath("$.prisonerName").isEqualTo("John Smith")
+      .jsonPath("$.id").isEqualTo(testContact.id)
+      .jsonPath("$.prisonerName").isEqualTo(testContact.name)
+      .jsonPath("$.prisonNumber").isEqualTo(testContact.prisonNumber)
+      .jsonPath("$.dob").isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(testContact.dob))
+      .jsonPath("$.prisonId").isEqualTo(testContact.prisonCode)
   }
 }

@@ -7,13 +7,12 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
 
-@Deprecated("@TODO SLM-63 Remove when /contact/{prisonNumber} is deleted")
 @Sql("/createContacts.sql")
-class ContactResourceGetContactTest : IntegrationTest() {
+class ContactResourceGetContactByPrisonNumberTest : IntegrationTest() {
   @Test
   fun `unauthorised without a valid auth token`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/prisonNumber/A1234BC")
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isUnauthorized
@@ -22,7 +21,7 @@ class ContactResourceGetContactTest : IntegrationTest() {
   @Test
   fun `forbidden without a valid role`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/prisonNumber/A1234BC")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN"))
       .exchange()
@@ -33,7 +32,7 @@ class ContactResourceGetContactTest : IntegrationTest() {
   @Test
   fun `not found given unknown prison number`() {
     webTestClient.get()
-      .uri("/contact/X9999ZZ")
+      .uri("/contact/prisonNumber/X9999ZZ")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()
@@ -44,7 +43,7 @@ class ContactResourceGetContactTest : IntegrationTest() {
   @Test
   fun `returns contact given valid prison number`() {
     webTestClient.get()
-      .uri("/contact/A1234BC")
+      .uri("/contact/prisonNumber/A1234BC")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
       .exchange()

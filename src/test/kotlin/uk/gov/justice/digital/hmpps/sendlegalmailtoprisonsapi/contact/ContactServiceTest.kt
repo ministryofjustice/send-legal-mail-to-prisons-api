@@ -13,6 +13,8 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.then
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.dao.DataIntegrityViolationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.DuplicateContactException
 import java.time.Clock
@@ -26,6 +28,45 @@ class ContactServiceTest {
   private val contactRepository = mock<ContactRepository>()
   private val clock = Clock.fixed(Instant.now(), ZoneId.of("Europe/London"))
   private val contactService = ContactService(contactRepository, clock)
+
+  @Nested
+  inner class GetContactById {
+    private val existingContact = Contact(
+      id = 1L,
+      owner = "some-user",
+      name = "some-name",
+      prisonCode = "some-prison-code",
+      dob = LocalDate.of(1990, 1, 1),
+      prisonNumber = "some-prison-number",
+      created = Instant.now(),
+      updated = Instant.now(),
+    )
+    private val expectedContactResponse = ContactResponse(
+      id = 1L,
+      prisonerName = "some-name",
+      prisonId = "some-prison-code",
+      dob = LocalDate.of(1990, 1, 1),
+      prisonNumber = "some-prison-number"
+    )
+
+    @Test
+    fun `should return contact response if contact found`() {
+      whenever(contactRepository.getContactByOwnerAndId(anyString(), anyLong())).thenReturn(existingContact)
+
+      assertThat(contactService.getContact("some-user", 1L)).isEqualTo(expectedContactResponse)
+
+      verify(contactRepository).getContactByOwnerAndId("some-user", 1L)
+    }
+
+    @Test
+    fun `should return null if contact not found`() {
+      whenever(contactRepository.getContactByOwnerAndId(anyString(), anyLong())).thenReturn(null)
+
+      assertThat(contactService.getContact("some-user", 1L)).isNull()
+
+      verify(contactRepository).getContactByOwnerAndId("some-user", 1L)
+    }
+  }
 
   @Nested
   inner class CreateContact {
