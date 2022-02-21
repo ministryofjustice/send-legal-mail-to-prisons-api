@@ -36,6 +36,50 @@ import javax.validation.constraints.Size
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class ContactResource(private val contactService: ContactService) {
 
+  // TODO SLM-63 Switch this back to /contact/{id} once we have switched the UI to use the new prisonNumber endpoint
+  @GetMapping(value = ["/contact/id/{id}"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Retrieve an existing Contact for the signed in user",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Contact udpated",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ContactResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid CJSM email link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun getContact(
+    @PathVariable id: Long,
+    authentication: Authentication
+  ): ContactResponse = contactService.getContact(authentication.name, id)
+    ?: throw ResourceNotFoundException("Contact not found")
+
   @PostMapping(value = ["/contact"])
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
@@ -130,7 +174,45 @@ class ContactResource(private val contactService: ContactService) {
       ?: throw ResourceNotFoundException("Contact not found")
   }
 
+  @Deprecated("TODO SLM-63 to be replaced by /contact/prisonNumber/{prisonNumber}")
   @GetMapping(value = ["/contact/{prisonNumber}"])
+  @ResponseBody
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
+  @Operation(
+    summary = "Retrieve a Contact by prisonNumber for the logged in user",
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
+    parameters = [Parameter(`in` = ParameterIn.PATH, name = "prisonNumber", example = "A1234BC", description = "The prison number of the Contact to return.")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Contact returned",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ContactResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid magic link token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Contact not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun getContactByPrisonNumberOld(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
+    contactService.getContactByPrisonNumber(authentication.name, prisonNumber)
+      ?: throw ResourceNotFoundException("Could not find a matching Contact [${authentication.name}, $prisonNumber]")
+
+  @GetMapping(value = ["/contact/prisonNumber/{prisonNumber}"])
   @ResponseBody
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
