@@ -16,6 +16,10 @@ generic-service:
     APP_BARCODE_EXPIRY: 2d
     APP_BARCODE_RANDOM_CHECK_PERCENTAGE: 25
 
+  allowlist:
+    bsi-1: "54.37.241.156/30"
+    bsi-2: "167.71.136.237/32"
+
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
