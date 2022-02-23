@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,6 +28,7 @@ class MagicLinkResource(
 ) {
 
   @PostMapping(value = ["/link/email"])
+  @PreAuthorize("hasRole('ROLE_SLM_EMAIL_LINK')")
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
     summary = "Create and send a CJSM email link",
@@ -59,6 +61,7 @@ class MagicLinkResource(
   }
 
   @PostMapping(value = ["/link/verify"])
+  @PreAuthorize("hasRole('ROLE_SLM_EMAIL_LINK')")
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
     summary = "Verify a CJSM email link secret",
