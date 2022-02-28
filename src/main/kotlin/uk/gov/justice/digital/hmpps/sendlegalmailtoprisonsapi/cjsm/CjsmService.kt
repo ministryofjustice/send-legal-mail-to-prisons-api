@@ -29,7 +29,7 @@ class CjsmService(
   fun saveCjsmDirectoryCsv() =
     try {
       amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
-        .also { log.info("Found CJSM directory upgrade for S3Object ${it.key}") }
+        .also { log.info("Found CJSM directory file upgrade for S3Object ${it.key}") }
         .objectContent
         .let { saveCjsmDirectoryStream(it) }
     } catch (ex: AmazonS3Exception) {
@@ -41,14 +41,16 @@ class CjsmService(
 
   private fun archiveCjsmDirectoryFile() {
     val archiveFileName = """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
-    log.info("Attempting to archive CJSM directory file to $archiveFileName")
+    log.info("Attempting to archive CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.copyObject(
       s3Config.bucketName,
       s3Config.cjsmDirectoryCsvName,
       s3Config.bucketName,
       archiveFileName
     )
+    log.info("Copied the existing CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
+    log.info("Deleted the existing ${s3Config.cjsmDirectoryCsvName}")
   }
 
   @Throws(IOException::class)
