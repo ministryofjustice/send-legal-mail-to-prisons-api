@@ -9,10 +9,12 @@ import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
+import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.transaction.Transactional
+import kotlin.jvm.Throws
 
 private val log = KotlinLogging.logger {}
 
@@ -27,27 +29,36 @@ class CjsmService(
   fun saveCjsmDirectoryCsv() =
     try {
       amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
+        .also { log.info("Found CJSM directory file upgrade for S3Object ${it.key}") }
         .objectContent
         .let { saveCjsmDirectoryStream(it) }
     } catch (ex: AmazonS3Exception) {
+      throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
+    } catch (ex: IOException) {
       throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
     }
       .also { archiveCjsmDirectoryFile() }
 
   private fun archiveCjsmDirectoryFile() {
+    val archiveFileName = """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
+    log.info("Attempting to archive CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.copyObject(
       s3Config.bucketName,
       s3Config.cjsmDirectoryCsvName,
       s3Config.bucketName,
-      """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
+      archiveFileName
     )
+    log.info("Copied the existing CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
+    log.info("Deleted the existing ${s3Config.cjsmDirectoryCsvName}")
   }
 
+  @Throws(IOException::class)
   fun saveCjsmDirectoryStream(inputStream: InputStream) {
     cjsmDirectoryRepository.deleteAll()
     cjsmDirectoryRepository.flush()
     CSVParser.parse(inputStream, Charsets.UTF_8, CSVFormat.DEFAULT)
+      .asSequence()
       .forEach { csvRecord ->
         takeIf { !csvRecord.secureEmail().contains("Secure Email") }
           ?.takeIf { csvRecord.secureEmail().isNotBlank() }
