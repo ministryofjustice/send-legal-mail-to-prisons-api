@@ -33,8 +33,10 @@ class CjsmService(
         .objectContent
         .let { saveCjsmDirectoryStream(it) }
     } catch (ex: AmazonS3Exception) {
+      log.error("Failed CJSM directory upload due to AmazonS3Exception", ex)
       throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
     } catch (ex: IOException) {
+      log.error("Failed CJSM directory upload due to IOException", ex)
       throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
     }
       .also { archiveCjsmDirectoryFile() }
