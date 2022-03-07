@@ -29,7 +29,7 @@ class BarcodeReportingResourceTest(
       .expectStatus().isCreated
 
     val recipients = getEmailRecipients()
-    assertThat(recipients).containsExactlyInAnyOrder("auser@company.com", "anotheruser@anothercompany.com")
+    assertThat(recipients).containsExactlyInAnyOrder("<auser@company.com>", "<anotheruser@anothercompany.com>")
   }
 
   @Test
