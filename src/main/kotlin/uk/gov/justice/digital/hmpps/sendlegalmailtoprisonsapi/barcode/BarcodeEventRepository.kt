@@ -22,6 +22,21 @@ interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
 
   @Query("select be from BarcodeEvent as be where be.barcode = :barcode and be.eventType = 'CREATED'")
   fun findByBarcodeAndEventTypeCreated(barcode: Barcode): BarcodeEvent?
+
+  @Query("select count(*) from BarcodeEvent as be where be.eventType = :eventType")
+  fun countAllEventsByType(eventType: BarcodeEventType): Long
+
+  @Query("select count(distinct(be.barcode)) from BarcodeEvent as be where be.eventType = :eventType")
+  fun countDistinctBarcodesWithEvent(eventType: BarcodeEventType): Long
+
+  @Query("select count(*) from BarcodeEvent as be where be.eventType = :eventType and be.createdDateTime between :fromTime and :toTime")
+  fun countAllEventsBetweenTimes(eventType: BarcodeEventType, fromTime: Instant, toTime: Instant): Long
+
+  @Query("select count(distinct(be.barcode)) from BarcodeEvent as be where be.eventType = :eventType and be.createdDateTime between :fromTime and :toTime")
+  fun countDistinctBarcodesWithEventBetweenTimes(eventType: BarcodeEventType, fromTime: Instant, toTime: Instant): Long
+
+  @Query("select count(distinct(be.userId)) from BarcodeEvent as be where be.eventType = :eventType")
+  fun countDistinctUsersWithEvent(eventType: BarcodeEventType): Long
 }
 
 @Entity
