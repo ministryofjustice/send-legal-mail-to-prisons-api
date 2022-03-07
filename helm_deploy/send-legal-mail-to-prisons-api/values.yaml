@@ -34,6 +34,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     SPRING_REDIS_SSL: "true"
+    BARCODE_STATS_REPORT_RECIPIENT_EMAILS: mike.halma@digital.justice.gov.uk, mike_halma@yahoo.co.uk
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
