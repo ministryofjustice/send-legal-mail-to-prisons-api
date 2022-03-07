@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -10,6 +11,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.then
 import org.springframework.mail.javamail.JavaMailSender
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.mail.Session
@@ -45,10 +47,12 @@ class BarcodeReportingServiceTest {
   }
 
   @Test
-  fun `should do nothing if no email recipients configured`() {
+  fun `should throw if no email recipients configured`() {
     given(barcodeReportingConfig.recipientEmails).willReturn(listOf())
 
-    barcodeReportingService.distributeBarcodeStats()
+    assertThatThrownBy {
+      barcodeReportingService.distributeBarcodeStats()
+    }.isInstanceOf(ResourceNotFoundException::class.java)
 
     then(barcodeStatsService).should(never()).countBarcodesCreated()
     then(javaMailSender).should(never()).createMimeMessage()
