@@ -1,0 +1,1 @@
+create index barcode_events_type_created_idx on barcode_events(event_type, created_date_time);
