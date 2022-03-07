@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -15,7 +16,7 @@ class BarcodeReportingService(
 
   fun distributeBarcodeStats() {
     if (barcodeReportingConfig.recipientEmails.isEmpty()) {
-      return
+      throw ResourceNotFoundException("No recipients configured for the Barcode Stats Report")
     }
 
     val reportDate = LocalDate.now().minusDays(1)

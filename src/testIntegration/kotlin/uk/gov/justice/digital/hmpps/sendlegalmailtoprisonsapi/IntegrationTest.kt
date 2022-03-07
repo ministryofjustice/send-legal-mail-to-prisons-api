@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeCon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipientRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeReportingConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.RandomCheckService
@@ -101,6 +102,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var barcodeService: BarcodeService
+
+  @SpyBean
+  protected lateinit var barcodeReportingConfig: BarcodeReportingConfig
 
   @BeforeEach
   fun `turn off random checks`() {
