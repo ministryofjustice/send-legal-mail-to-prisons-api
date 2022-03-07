@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
-import java.time.Instant
+import java.time.LocalDate
 
 @Sql("/barcode/barcodeStatsServiceTest.sql")
 class BarcodeStatsServiceTest : IntegrationTest() {
@@ -22,9 +22,9 @@ class BarcodeStatsServiceTest : IntegrationTest() {
 
   @Test
   fun `should count number of barcodes created on a particular day`() {
-    val dayOfTest = Instant.ofEpochMilli(1646222400000) // 2022-03-02 12:00:00
+    val day = LocalDate.of(2022, 3, 2)
 
-    val count = barcodeStatsService.countBarcodesCreatedOnDay(dayOfTest)
+    val count = barcodeStatsService.countBarcodesCreatedOnDay(day)
 
     assertThat(count).isEqualTo(4L)
   }
@@ -38,9 +38,9 @@ class BarcodeStatsServiceTest : IntegrationTest() {
 
   @Test
   fun `should count number of barcodes scanned on a particular day`() {
-    val dayOfTest = Instant.ofEpochMilli(1646222400000) // 2022-03-02 12:00:00
+    val day = LocalDate.of(2022, 3, 2)
 
-    val count = barcodeStatsService.countBarcodesScannedOnDay(dayOfTest)
+    val count = barcodeStatsService.countBarcodesScannedOnDay(day)
 
     assertThat(count).isEqualTo(2L)
   }
