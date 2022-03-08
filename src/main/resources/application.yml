@@ -95,6 +95,7 @@ app:
   barcode:
     expiry: 28d
     random-check-percentage: 10
+  // Default to no recipients of the stats report - override in values files if required
   barcode-stats-report:
     recipient-emails:
   s3:
