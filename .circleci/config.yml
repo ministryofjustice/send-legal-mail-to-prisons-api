@@ -77,7 +77,6 @@ workflows:
             branches:
               only:
                 - main
-                - mh-SLM-186-barcode-stats-endpoint
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -86,7 +85,6 @@ workflows:
             branches:
               only:
                 - main
-                - mh-SLM-186-barcode-stats-endpoint
           requires:
             - helm_lint
             - validate
