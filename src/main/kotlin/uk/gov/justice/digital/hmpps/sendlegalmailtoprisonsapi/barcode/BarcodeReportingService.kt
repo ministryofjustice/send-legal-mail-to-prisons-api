@@ -4,6 +4,7 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
+import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -12,6 +13,7 @@ class BarcodeReportingService(
   private val barcodeStatsService: BarcodeStatsService,
   private val javaMailSender: JavaMailSender,
   private val barcodeReportingConfig: BarcodeReportingConfig,
+  private val clock: Clock,
 ) {
 
   fun distributeBarcodeStats() {
@@ -19,8 +21,8 @@ class BarcodeReportingService(
       throw ResourceNotFoundException("No recipients configured for the Barcode Stats Report")
     }
 
-    val reportDate = LocalDate.now().minusDays(1)
-    val formattedReportDate = DateTimeFormatter.ofPattern("YYYY-MM-DD").format(reportDate)
+    val reportDate = LocalDate.now(clock).minusDays(1)
+    val formattedReportDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(reportDate)
     val emailContents = """
       Total barcodes created: ${barcodeStatsService.countBarcodesCreated()}
       Total barcodes scanned: ${barcodeStatsService.countBarcodesScanned()}

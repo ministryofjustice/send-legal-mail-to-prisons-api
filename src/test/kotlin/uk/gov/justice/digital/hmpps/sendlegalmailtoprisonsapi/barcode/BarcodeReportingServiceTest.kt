@@ -12,8 +12,10 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.then
 import org.springframework.mail.javamail.JavaMailSender
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 import javax.mail.Session
 import javax.mail.internet.MimeMessage
 import javax.mail.internet.MimeMultipart
@@ -23,9 +25,11 @@ class BarcodeReportingServiceTest {
   private val barcodeStatsService = mock<BarcodeStatsService>()
   private val javaMailSender = mock<JavaMailSender>()
   private val barcodeReportingConfig = mock<BarcodeReportingConfig>()
-  private val barcodeReportingService = BarcodeReportingService(barcodeStatsService, javaMailSender, barcodeReportingConfig)
+  private val clock = Clock.fixed(Instant.parse("2022-03-06T12:18:05Z"), ZoneId.of("Europe/London"))
+  private val barcodeReportingService = BarcodeReportingService(barcodeStatsService, javaMailSender, barcodeReportingConfig, clock)
 
-  private val reportDate = LocalDate.now().minusDays(1)
+  private val expectedReportDate = LocalDate.of(2022, 3, 5)
+  private val expectedReportDateString = "2022-03-05"
 
   @BeforeEach
   fun `stub stats`() {
@@ -64,8 +68,8 @@ class BarcodeReportingServiceTest {
 
     then(barcodeStatsService).should().countBarcodesCreated()
     then(barcodeStatsService).should().countBarcodesScanned()
-    then(barcodeStatsService).should().countBarcodesCreatedOnDay(reportDate)
-    then(barcodeStatsService).should().countBarcodesScannedOnDay(reportDate)
+    then(barcodeStatsService).should().countBarcodesCreatedOnDay(expectedReportDate)
+    then(barcodeStatsService).should().countBarcodesScannedOnDay(expectedReportDate)
     then(barcodeStatsService).should().countUniqueUsersCreatedBarcodes()
   }
 
@@ -84,21 +88,17 @@ class BarcodeReportingServiceTest {
 
   @Test
   fun `should include report date in the subject`() {
-    val expectedDate = DateTimeFormatter.ofPattern("YYYY-MM-DD").format(reportDate)
-
     barcodeReportingService.distributeBarcodeStats()
 
     then(javaMailSender).should().send(
       check<MimeMessage> { message ->
-        assertThat(message.subject).contains(expectedDate)
+        assertThat(message.subject).contains(expectedReportDateString)
       }
     )
   }
 
   @Test
   fun `should include stats in email body`() {
-    val expectedDate = DateTimeFormatter.ofPattern("YYYY-MM-DD").format(reportDate)
-
     barcodeReportingService.distributeBarcodeStats()
 
     then(javaMailSender).should().send(
@@ -106,8 +106,8 @@ class BarcodeReportingServiceTest {
         val body = (message.content as MimeMultipart).getBodyPartContents()["text/plain"]
         assertThat(body).contains(": 1")
         assertThat(body).contains(": 2")
-        assertThat(body).contains("on $expectedDate: 3")
-        assertThat(body).contains("on $expectedDate: 4")
+        assertThat(body).contains("on $expectedReportDateString: 3")
+        assertThat(body).contains("on $expectedReportDateString: 4")
         assertThat(body).contains(": 5")
       }
     )
