@@ -15,6 +15,7 @@ generic-service:
     APP_JWT_EXPIRY: 1d
     APP_BARCODE_EXPIRY: 2d
     APP_BARCODE_RANDOM_CHECK_PERCENTAGE: 25
+    APP_BARCODE_STATS_REPORT_RECIPIENT_EMAILS: mike.halma@digital.justice.gov.uk, nathan.russell@digital.justice.gov.uk
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
