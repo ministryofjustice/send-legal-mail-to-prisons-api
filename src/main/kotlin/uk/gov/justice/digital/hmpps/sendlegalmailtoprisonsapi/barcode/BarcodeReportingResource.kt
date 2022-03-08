@@ -21,7 +21,7 @@ class BarcodeReportingResource(private val barcodeReportingService: BarcodeRepor
         description = "Report created and emailed"
       ), ApiResponse(
         responseCode = "404",
-        description = "No recipients configured. Add a comma separated list of email addresses to helm values file entry env/BARCODE_STATS_REPORT_RECIPIENT_EMAILS."
+        description = "No recipients configured. Add a comma separated list of email addresses to helm values file entry env.APP_BARCODE_STATS_REPORT_RECIPIENT_EMAILS."
       )
     ]
   )
