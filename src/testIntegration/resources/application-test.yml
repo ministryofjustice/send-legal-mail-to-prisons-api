@@ -39,6 +39,8 @@ app:
     localstack-url: http://127.0.0.1:4566
     region: eu-west-2
     bucket-name: ${random.uuid}
+  barcode-stats-report:
+    recipient-emails: auser@company.com, anotheruser@anothercompany.com
 
 # Wiremock auth server
 hmpps:
