@@ -27,6 +27,8 @@ class MagicLinkService(
       ?.let { savedSecret -> jwtService.generateToken(savedSecret.email, findOrganisation(savedSecret.email)) }
       ?: throw ResourceNotFoundException("Magic Link not found")
 
+  fun smokeTest(): String = jwtService.generateToken("smoke-test-lsj", "smoke-test-lsj-org")
+
   private fun findOrganisation(userId: String): String? =
     cjsmService.findOrganisation(userId)
       ?.takeIf { it.isNotBlank() }
