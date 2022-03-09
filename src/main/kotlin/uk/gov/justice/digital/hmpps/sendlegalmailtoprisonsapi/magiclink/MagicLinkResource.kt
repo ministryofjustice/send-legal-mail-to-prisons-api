@@ -87,11 +87,7 @@ class MagicLinkResource(
     ]
   )
   fun verifyMagicLink(@RequestBody request: VerifyLinkRequest) =
-    if (request.secret == "smoke-test-lsj") {
-      VerifyLinkResponse(magicLinkService.smokeTest())
-    } else {
-      VerifyLinkResponse(magicLinkService.verifyMagicLinkSecret(request.secret))
-    }
+    VerifyLinkResponse(magicLinkService.verifyMagicLinkSecret(request.secret))
 }
 
 data class MagicLinkRequest(

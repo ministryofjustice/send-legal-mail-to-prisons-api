@@ -72,6 +72,15 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
   }
+  fun stubFailToGetUserDetails() {
+    stubFor(
+      get(WireMock.urlEqualTo("/auth/api/user/me"))
+        .willReturn(
+          aResponse()
+            .withStatus(500)
+        )
+    )
+  }
 
   fun stubHealthPing(status: Int) {
     stubFor(

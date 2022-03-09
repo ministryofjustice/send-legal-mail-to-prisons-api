@@ -24,7 +24,7 @@ import java.util.UUID
 private val log = KotlinLogging.logger {}
 
 @Service
-class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
+class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestConfig, private val clock: Clock) {
 
   private val privateKey: PrivateKey = readPrivateKey(jwtConfig.privateKey)
   private val publicKey: PublicKey = readPublicKey(jwtConfig.publicKey)
@@ -89,7 +89,7 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
 
   fun isSmokeTestUserToken(authToken: String?) =
     authToken?.isNotBlank()
-      ?.and(getUser(authToken) == "SMOKE-TEST-MSJ")
+      ?.and(getUser(authToken)?.lowercase() == smokeTestConfig.msjSecret?.lowercase())
       ?: false
 
   fun isNomisUserToken(authToken: String?) =

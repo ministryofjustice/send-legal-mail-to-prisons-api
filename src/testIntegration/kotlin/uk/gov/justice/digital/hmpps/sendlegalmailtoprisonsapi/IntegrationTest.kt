@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLin
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
@@ -106,6 +107,9 @@ abstract class IntegrationTest {
   @SpyBean
   protected lateinit var barcodeReportingConfig: BarcodeReportingConfig
 
+  @SpyBean
+  protected lateinit var smokeTestConfig: SmokeTestConfig
+
   @BeforeEach
   fun `turn off random checks`() {
     doReturn(false).whenever(randomCheckService).requiresRandomCheck()
@@ -123,7 +127,7 @@ abstract class IntegrationTest {
 
   @AfterEach
   fun `reset mocks and spies`() {
-    reset(barcodeRecipientRepository, amazonS3, randomCheckService, barcodeConfig, barcodeGeneratorService, barcodeEventRepository, barcodeRepository)
+    reset(barcodeRecipientRepository, amazonS3, randomCheckService, barcodeConfig, barcodeGeneratorService, barcodeEventRepository, barcodeRepository, smokeTestConfig)
   }
 
   internal fun setAuthorisation(
