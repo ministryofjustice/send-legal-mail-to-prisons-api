@@ -87,10 +87,17 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
   fun expiresAt(jwt: String): Instant =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
 
+  fun isSmokeTestUserToken(authToken: String?) =
+    authToken?.isNotBlank()
+      ?.and(getUser(authToken) == "SMOKE-TEST-MSJ")
+      ?: false
+
   fun isNomisUserToken(authToken: String?) =
     authToken?.isNotBlank()
-      ?.and((getClaimsFromJWT(authToken).getClaim("user_name") as String?).isNullOrBlank().not())
+      ?.and(getUser(authToken).isNullOrBlank().not())
       ?: false
+
+  private fun getUser(authToken: String): String? = getClaimsFromJWT(authToken).getClaim("user_name") as String?
 
   @Throws(ParseException::class)
   private fun getClaimsFromJWT(token: String): JWTClaimsSet =

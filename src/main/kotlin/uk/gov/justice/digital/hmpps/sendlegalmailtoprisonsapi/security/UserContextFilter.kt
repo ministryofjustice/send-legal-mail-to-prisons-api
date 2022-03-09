@@ -24,7 +24,10 @@ class UserContextFilter(
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val httpServletRequest = servletRequest as HttpServletRequest
     val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
-    if (jwtService.isNomisUserToken(authToken)) {
+    if (jwtService.isSmokeTestUserToken(authToken)) {
+      userContext.authToken = authToken
+      userContext.caseload = "SKI"
+    } else if (jwtService.isNomisUserToken(authToken)) {
       userContext.authToken = authToken
       userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
     }
