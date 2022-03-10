@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -23,13 +24,16 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorRespon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validateRequestHasDobOrPrisonNumber
 import java.time.LocalDate
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
+private val log = KotlinLogging.logger {}
+
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-class BarcodeResource(private val barcodeService: BarcodeService, private val userContext: UserContext) {
+class BarcodeResource(private val barcodeService: BarcodeService, private val userContext: UserContext, private val request: HttpServletRequest) {
 
   @PostMapping(value = ["/barcode"])
   @ResponseBody
@@ -62,6 +66,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
     @Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails,
     @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest
   ): CreateBarcodeResponse {
+    log.info { "Client IP to be recorded in barcode record is ${request.remoteAddr}" }
     validateRequestHasDobOrPrisonNumber(createBarcodeRequest)
     return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, createBarcodeRequest))
   }
