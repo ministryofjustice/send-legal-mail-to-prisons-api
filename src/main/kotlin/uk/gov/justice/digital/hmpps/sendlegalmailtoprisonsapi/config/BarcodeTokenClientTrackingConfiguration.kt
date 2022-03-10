@@ -31,7 +31,7 @@ class BarcodeTokenClientTrackingInterceptor(private val jwtService: JwtService) 
       ?.let { jwtService.clientId(it) }
       ?.also { properties["clientId"] = it }
 
-    properties["client_IP"] = request.remoteAddr
+    properties["slm_Client_IP"] = request.getHeader("x-slm-client-ip") ?: ""
 
     return true
   }
