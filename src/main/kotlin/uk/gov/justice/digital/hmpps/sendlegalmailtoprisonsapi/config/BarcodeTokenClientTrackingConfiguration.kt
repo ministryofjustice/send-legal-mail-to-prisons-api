@@ -31,8 +31,7 @@ class BarcodeTokenClientTrackingInterceptor(private val jwtService: JwtService) 
       ?.let { jwtService.clientId(it) }
       ?.also { properties["clientId"] = it }
 
-    properties["remoteIp"] = request.remoteAddr
-    properties["x-forwarded-for"] = request.getHeader("x-forwarded-for") ?: "Not Set"
+    properties["client_IP"] = request.remoteAddr
 
     return true
   }
