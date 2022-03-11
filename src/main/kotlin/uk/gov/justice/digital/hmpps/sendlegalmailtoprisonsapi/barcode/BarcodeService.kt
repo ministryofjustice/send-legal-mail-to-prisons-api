@@ -12,9 +12,9 @@ class BarcodeService(
 ) {
 
   @Transactional
-  fun createBarcode(userId: String, createBarcodeRequest: CreateBarcodeRequest): String =
+  fun createBarcode(userId: String, sourceIp: String, createBarcodeRequest: CreateBarcodeRequest): String =
     createBarcode()
-      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED) }
+      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp) }
       .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
       .code
 
@@ -26,24 +26,24 @@ class BarcodeService(
     return barcodeRepository.save(Barcode(barcode))
   }
 
-  fun checkBarcode(userId: String, code: String, location: String): String =
+  fun checkBarcode(userId: String, code: String, location: String, sourceIp: String): String =
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
       .also { barcode ->
         with(barcodeEventService) {
-          createEvent(barcode, userId, BarcodeEventType.CHECKED, location)
+          createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
           checkForCreated(barcode)
-          checkForDuplicate(barcode, userId, location)
-          checkForExpired(barcode, userId, location)
-          checkForRandomSecurityCheck(barcode, userId, location)
+          checkForDuplicate(barcode, userId, location, sourceIp)
+          checkForExpired(barcode, userId, location, sourceIp)
+          checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
         }
       }
       .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
 
-  fun registerEvent(userId: String, location: String, code: String, barcodeEventType: BarcodeEventType) {
+  fun registerEvent(userId: String, location: String, sourceIp: String, code: String, barcodeEventType: BarcodeEventType) {
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
       .also { barcode ->
         with(barcodeEventService) {
-          createEvent(barcode, userId, barcodeEventType, location)
+          createEvent(barcode, userId, barcodeEventType, location, sourceIp)
           checkForCreated(barcode)
         }
       }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.time.Instant
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -58,6 +59,9 @@ data class BarcodeEvent(
   val createdDateTime: Instant = Instant.now(),
 
   val location: String = "",
+
+  @Column(name = "ip_address")
+  val ipAddress: String,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -70,7 +74,7 @@ data class BarcodeEvent(
   override fun hashCode(): Int = barcode.hashCode() * createdDateTime.hashCode()
 
   override fun toString(): String {
-    return "BarcodeEvent(barcode=$barcode, userId='$userId', eventType=$eventType, dateTime=$createdDateTime, location=$location)"
+    return "BarcodeEvent(barcode=$barcode, userId='$userId', eventType=$eventType, dateTime=$createdDateTime, location=$location, ipAddress=$ipAddress)"
   }
 }
 

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -16,6 +16,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .uri("/barcode")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isUnauthorized
@@ -28,6 +29,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN"))
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isForbidden
@@ -43,6 +45,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -50,13 +53,8 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .jsonPath("$.barcode").isEqualTo("SOME_CODE")
 
     val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
-    Assertions.assertThat(
-      barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(
-        barcode,
-        BarcodeEventType.CREATED
-      )
-    ).isNotEmpty
-    Assertions.assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
+    assertBarcodeEventCreated(barcode, BarcodeEventType.CREATED)
+    assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
   }
 
   @Test
@@ -71,11 +69,15 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
       .expectBody()
       .jsonPath("$.barcode").isEqualTo("ANOTHER_CODE")
+
+    val barcode = barcodeRepository.findById("ANOTHER_CODE").orElseThrow()
+    assertBarcodeEventCreated(barcode, BarcodeEventType.CREATED)
   }
 
   @Test
@@ -85,6 +87,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(
         """{ 
             "prisonerName": "John Smith",
@@ -103,6 +106,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(
         """{ 
             "prisonerName": "<John Smith>",

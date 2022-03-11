@@ -19,7 +19,7 @@ class BarcodeServiceTest : IntegrationTest() {
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
       given { barcodeGeneratorService.generateBarcode() }.willReturn("SOME_CODE")
 
-      barcodeService.createBarcode("a-user@cjsm.net", createBarcodeRequest)
+      barcodeService.createBarcode("a-user@cjsm.net", "127.0.0.1", createBarcodeRequest)
 
       val barcode = barcodeRepository.getById("SOME_CODE")
       assertThat(barcode).isNotNull
@@ -34,7 +34,7 @@ class BarcodeServiceTest : IntegrationTest() {
       doThrow(CannotAcquireLockException("some exception saving to the database")).`when`(barcodeRepository).save(any())
 
       assertThatExceptionOfType(CannotAcquireLockException::class.java).isThrownBy {
-        barcodeService.createBarcode("a-user@cjsm.net", createBarcodeRequest)
+        barcodeService.createBarcode("a-user@cjsm.net", "127.0.0.1", createBarcodeRequest)
       }
       assertThat(barcodeRepository.findById("SOME_CODE")).isNotPresent
       assertThat(barcodeEventRepository.findAll()).isEmpty()
@@ -48,7 +48,7 @@ class BarcodeServiceTest : IntegrationTest() {
       doThrow(CannotAcquireLockException("some exception saving to the database")).`when`(barcodeEventRepository).save(any())
 
       assertThatExceptionOfType(CannotAcquireLockException::class.java).isThrownBy {
-        barcodeService.createBarcode("a-user@cjsm.net", createBarcodeRequest)
+        barcodeService.createBarcode("a-user@cjsm.net", "127.0.0.1", createBarcodeRequest)
       }
       assertThat(barcodeRepository.findById("SOME_CODE")).isNotPresent
       assertThat(barcodeEventRepository.findAll()).isEmpty()
@@ -62,7 +62,7 @@ class BarcodeServiceTest : IntegrationTest() {
       doThrow(CannotAcquireLockException("some exception saving to the database")).`when`(barcodeRecipientRepository).save(any())
 
       assertThatExceptionOfType(CannotAcquireLockException::class.java).isThrownBy {
-        barcodeService.createBarcode("a-user@cjsm.net", createBarcodeRequest)
+        barcodeService.createBarcode("a-user@cjsm.net", "127.0.0.1", createBarcodeRequest)
       }
       assertThat(barcodeRepository.findById("SOME_CODE")).isNotPresent
       assertThat(barcodeEventRepository.findAll()).isEmpty()

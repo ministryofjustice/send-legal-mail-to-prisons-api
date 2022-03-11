@@ -29,6 +29,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isUnauthorized
@@ -41,6 +42,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "any.user@domain.com"))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "any-barcode" }"""))
       .exchange()
       .expectStatus().isForbidden
@@ -54,6 +56,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "any.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "not-expecting-this": "missing-barcode" }"""))
       .exchange()
       .expectStatus().isBadRequest
@@ -67,6 +70,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "any.user@domain.com", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
@@ -79,6 +83,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "doesnt-exist" }"""))
       .exchange()
       .expectStatus().isNotFound
@@ -94,6 +99,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -103,10 +109,14 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isOk
       .expectBody().jsonPath("$.createdBy").isEqualTo("Some Company")
+
+    val barcode = Barcode("SOME_BARCODE")
+    assertBarcodeEventCreated(barcode, BarcodeEventType.CHECKED)
   }
 
   @Test
@@ -119,6 +129,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -128,6 +139,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isOk
@@ -143,6 +155,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -152,6 +165,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isOk
@@ -162,6 +176,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isBadRequest
@@ -173,6 +188,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .jsonPath("$.errorCode.recipientName").isEqualTo("Fred Bloggs")
       .jsonPath("$.errorCode.recipientPrisonNumber").isEqualTo("A1234BC")
       .jsonPath("$.errorCode.recipientDob").doesNotExist()
+
+    val barcode = Barcode("SOME_BARCODE")
+    assertBarcodeEventCreated(barcode, BarcodeEventType.DUPLICATE)
   }
 
   @Test
@@ -185,6 +203,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -195,6 +214,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isBadRequest
@@ -203,6 +223,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .jsonPath("$.errorCode.barcodeExpiryDays").isEqualTo("0")
       .jsonPath("$.errorCode.createdDate").value<String> { Assertions.assertThat(it).contains(expiredDayString) }
       .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
+
+    val barcode = Barcode("SOME_BARCODE")
+    assertBarcodeEventCreated(barcode, BarcodeEventType.EXPIRED)
   }
 
   @Test
@@ -215,6 +238,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation())
+      .headers(setSlmClientIp())
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isCreated
@@ -224,11 +248,15 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(user = "AUSER_GEN", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
+      .headers(setSlmClientIp())
       .body(BodyInserters.fromValue("""{ "barcode": "SOME_BARCODE" }"""))
       .exchange()
       .expectStatus().isBadRequest
       .expectBody()
       .jsonPath("$.errorCode.code").isEqualTo("RANDOM_CHECK")
       .jsonPath("$.errorCode.createdBy").isEqualTo("Some Company")
+
+    val barcode = Barcode("SOME_BARCODE")
+    assertBarcodeEventCreated(barcode, BarcodeEventType.RANDOM_CHECK)
   }
 }

@@ -132,6 +132,8 @@ abstract class IntegrationTest {
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
 
+  internal fun setSlmClientIp(): (HttpHeaders) -> Unit = { it.set("x-slm-client-ip", "127.0.0.1") }
+
   internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit =
     jwtAuthHelper.setCreateBarcodeAuthorisation(email)
 
