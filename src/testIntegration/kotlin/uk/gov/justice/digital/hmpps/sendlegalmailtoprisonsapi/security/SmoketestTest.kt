@@ -94,7 +94,7 @@ class SmoketestTest : BarcodeResourceTest() {
         .headers(setAuthorisation(user = "some-msj-user", roles = listOf("ROLE_SLM_SCAN_BARCODE")))
         .body(BodyInserters.fromValue("""{ "barcode": "no-smoketest" }"""))
         .exchange()
-        .expectStatus().is5xxServerError
+        .expectStatus().isUnauthorized
 
       val checkedEvents = barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode, BarcodeEventType.CHECKED)
 

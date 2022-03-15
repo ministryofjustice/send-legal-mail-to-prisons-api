@@ -97,7 +97,7 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
       ?.and(getUser(authToken).isNullOrBlank().not())
       ?: false
 
-  private fun getUser(authToken: String): String? = getClaimsFromJWT(authToken).getClaim("user_name") as String?
+  fun getUser(authToken: String): String? = getClaimsFromJWT(authToken).getClaim("user_name") as String?
 
   @Throws(ParseException::class)
   private fun getClaimsFromJWT(token: String): JWTClaimsSet =

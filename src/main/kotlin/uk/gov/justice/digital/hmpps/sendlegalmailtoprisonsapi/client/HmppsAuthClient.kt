@@ -17,4 +17,4 @@ class HmppsAuthClient(private val hmppsAuthWebClient: WebClient) {
       .block()!!
 }
 
-data class UserDetails(val activeCaseLoadId: String)
+data class UserDetails(val activeCaseLoadId: String? = null)

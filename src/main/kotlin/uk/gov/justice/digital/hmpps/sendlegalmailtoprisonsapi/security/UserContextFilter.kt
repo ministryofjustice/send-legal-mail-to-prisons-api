@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.HmppsAuthClient
 import java.io.IOException
@@ -30,6 +31,9 @@ class UserContextFilter(
     } else if (jwtService.isNomisUserToken(authToken)) {
       userContext.authToken = authToken
       userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
+        ?: let {
+          throw InsufficientAuthenticationException("User ${jwtService.getUser(authToken)} does not have an active caseload")
+        }
     }
     filterChain.doFilter(httpServletRequest, servletResponse)
   }

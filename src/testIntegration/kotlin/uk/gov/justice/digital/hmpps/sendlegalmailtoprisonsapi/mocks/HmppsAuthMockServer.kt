@@ -72,12 +72,20 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
   }
+  // If the user is not known then this endpoint still returns the username, just not the active caseload
   fun stubFailToGetUserDetails() {
     stubFor(
       get(WireMock.urlEqualTo("/auth/api/user/me"))
         .willReturn(
           aResponse()
-            .withStatus(500)
+            .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
+            .withBody(
+              """
+              {
+                "username": "you"
+              }
+              """.trimIndent()
+            )
         )
     )
   }
