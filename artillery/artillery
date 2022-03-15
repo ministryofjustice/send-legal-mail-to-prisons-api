@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -o allexport
+source .env
+set +o allexport
+
+docker run --rm -it \
+  -v ${PWD}:/scripts:rw \
+  --env SEND_LEGAL_MAIL_TO_PRISONS_API=${SEND_LEGAL_MAIL_TO_PRISONS_API} \
+  --env HMPPS_AUTH_URL=${HMPPS_AUTH_URL} \
+  --env APP_SMOKETEST_LSJSECRET=${APP_SMOKETEST_LSJSECRET} \
+  --env APP_SMOKETEST_MSJSECRET=${APP_SMOKETEST_MSJSECRET} \
+  --env HMPPS_SYSTEM_CLIENT_ID=${HMPPS_SYSTEM_CLIENT_ID} \
+  --env HMPPS_SYSTEM_CLIENT_SECRET=${HMPPS_SYSTEM_CLIENT_SECRET} \
+  --add-host=host.docker.internal:host-gateway \
+  artilleryio/artillery:latest \
+  run --output /scripts/test-run-report.json /scripts/artillery.yml
+
+docker run --rm -it \
+  -v ${PWD}:/scripts:rw \
+  artilleryio/artillery:latest \
+  report /scripts/test-run-report.json
