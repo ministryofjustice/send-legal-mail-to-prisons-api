@@ -32,7 +32,7 @@ class SmoketestTest : BarcodeResourceTest() {
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "secret": "some-lsj-secret" }"""))
         .exchange()
         .expectStatus().isCreated
@@ -49,7 +49,7 @@ class SmoketestTest : BarcodeResourceTest() {
     @Test
     fun `A mailroom staff smoke test can check barcodes without an auth error`() {
       val barcode = barcodeRepository.save(Barcode(code = "some-barcode"))
-      barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED))
+      barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
 
       webTestClient.post()
         .uri("/barcode/check")
@@ -75,7 +75,7 @@ class SmoketestTest : BarcodeResourceTest() {
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "secret": "some-lsj-secret" }"""))
         .exchange()
         .expectStatus().isNotFound
@@ -85,7 +85,7 @@ class SmoketestTest : BarcodeResourceTest() {
     fun `A mailroom staff smoke test checking barcodes receives an error because the user doesn't exist`() {
       HmppsAuthExtension.hmppsAuthApi.stubFailToGetUserDetails()
       val barcode = barcodeRepository.save(Barcode(code = "no-smoketest"))
-      barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED))
+      barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
 
       webTestClient.post()
         .uri("/barcode/check")

@@ -131,7 +131,7 @@ abstract class IntegrationTest {
   }
 
   internal fun setAuthorisation(
-    user: String = "send-legal-mail-client",
+    user: String? = "send-legal-mail-client",
     roles: List<String> = listOf("ROLE_SLM_EMAIL_LINK"),
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles, scopes)
