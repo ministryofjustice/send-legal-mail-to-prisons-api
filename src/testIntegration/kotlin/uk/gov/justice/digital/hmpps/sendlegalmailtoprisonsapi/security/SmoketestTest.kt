@@ -27,7 +27,7 @@ class SmoketestTest : BarcodeResourceTest() {
     }
 
     @Test
-    fun `A legal sender smoke test can sign in using the back door`() {
+    fun `A legal sender smoke test can sign in as a smoke test user`() {
       val jwt = webTestClient.post()
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ class SmoketestTest : BarcodeResourceTest() {
   inner class SmokeTestDisallowed {
 
     @Test
-    fun `A legal sender smoke test cannot sign in using the back door`() {
+    fun `A legal sender smoke test cannot sign in as a smoke test user`() {
       webTestClient.post()
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
