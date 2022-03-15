@@ -46,7 +46,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .exchange()
         .expectStatus().isBadRequest
         .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
@@ -58,7 +58,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -71,7 +71,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "email": "" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -86,7 +86,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "email": "invalid@email" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -101,7 +101,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "email": "some.email@company.com" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -116,7 +116,7 @@ class MagicLinkResourceTest(
         .uri("/link/email")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net" }"""))
         .exchange()
         .expectStatus().isCreated
@@ -166,7 +166,7 @@ class MagicLinkResourceTest(
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some-secret-value" }"""))
         .exchange()
         .expectStatus().isBadRequest
@@ -179,7 +179,7 @@ class MagicLinkResourceTest(
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "secret": "" }"""))
         .exchange()
         .expectStatus().isNotFound
@@ -193,7 +193,7 @@ class MagicLinkResourceTest(
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
         .exchange()
         .expectStatus().isCreated
@@ -216,7 +216,7 @@ class MagicLinkResourceTest(
         .uri("/link/verify")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "secret": "some-secret" }"""))
         .exchange()
         .expectStatus().isNotFound
