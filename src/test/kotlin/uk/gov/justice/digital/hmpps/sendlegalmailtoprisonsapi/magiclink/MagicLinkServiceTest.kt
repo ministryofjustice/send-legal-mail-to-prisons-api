@@ -14,6 +14,7 @@ import org.mockito.kotlin.verifyNoInteractions
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import java.util.Optional
 import java.util.UUID
 
@@ -23,7 +24,8 @@ class MagicLinkServiceTest {
   private val magicLinkSecretRepository = mock<MagicLinkSecretRepository>()
   private val jwtService = mock<JwtService>()
   private val cjsmService = mock<CjsmService>()
-  private val magicLinkService = MagicLinkService(magicLinkEmailSender, magicLinkSecretRepository, jwtService, cjsmService)
+  private val smokeTestConfig = mock<SmokeTestConfig>()
+  private val magicLinkService = MagicLinkService(magicLinkEmailSender, magicLinkSecretRepository, jwtService, cjsmService, smokeTestConfig)
 
   @Nested
   inner class CreateAndSendMagicLink {

@@ -24,7 +24,7 @@ import java.util.UUID
 private val log = KotlinLogging.logger {}
 
 @Service
-class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
+class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestConfig, private val clock: Clock) {
 
   private val privateKey: PrivateKey = readPrivateKey(jwtConfig.privateKey)
   private val publicKey: PublicKey = readPublicKey(jwtConfig.publicKey)
@@ -87,10 +87,17 @@ class JwtService(jwtConfig: JwtConfig, private val clock: Clock) {
   fun expiresAt(jwt: String): Instant =
     Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
 
+  fun isSmokeTestUserToken(authToken: String?) =
+    authToken?.isNotBlank()
+      ?.and(getUser(authToken)?.lowercase() == smokeTestConfig.msjSecret?.lowercase())
+      ?: false
+
   fun isNomisUserToken(authToken: String?) =
     authToken?.isNotBlank()
-      ?.and((getClaimsFromJWT(authToken).getClaim("user_name") as String?).isNullOrBlank().not())
+      ?.and(getUser(authToken).isNullOrBlank().not())
       ?: false
+
+  fun getUser(authToken: String): String? = getClaimsFromJWT(authToken).getClaim("user_name") as String?
 
   @Throws(ParseException::class)
   private fun getClaimsFromJWT(token: String): JWTClaimsSet =

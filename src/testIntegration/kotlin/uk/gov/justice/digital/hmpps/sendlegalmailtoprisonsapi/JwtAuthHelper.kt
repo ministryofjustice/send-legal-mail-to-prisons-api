@@ -29,7 +29,7 @@ class JwtAuthHelper(private val jwtService: JwtService) {
   fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withPublicKey(keyPair.public as RSAPublicKey).build()
 
   fun setAuthorisation(
-    user: String = "send-legal-mail-client",
+    user: String? = "send-legal-mail-client",
     roles: List<String> = listOf(),
     scopes: List<String> = listOf()
   ): (HttpHeaders) -> Unit {
