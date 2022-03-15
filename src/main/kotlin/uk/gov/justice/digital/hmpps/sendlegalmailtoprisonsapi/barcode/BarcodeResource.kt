@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -30,6 +31,10 @@ import javax.validation.constraints.Size
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class BarcodeResource(private val barcodeService: BarcodeService, private val userContext: UserContext) {
+
+  private companion object {
+    const val SLM_CLIENT_IP_HEADER = "x-slm-client-ip"
+  }
 
   @PostMapping(value = ["/barcode"])
   @ResponseBody
@@ -60,10 +65,11 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   )
   fun createBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails,
+    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
     @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest
   ): CreateBarcodeResponse {
     validateRequestHasDobOrPrisonNumber(createBarcodeRequest)
-    return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, createBarcodeRequest))
+    return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, sourceIp, createBarcodeRequest))
   }
 
   @PostMapping(value = ["/barcode/check"])
@@ -104,8 +110,9 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   )
   fun checkBarcode(
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
+    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
     @RequestBody request: CheckBarcodeRequest,
-  ) = CheckBarcodeResponse(barcodeService.checkBarcode(userId, request.barcode, userContext.caseload))
+  ) = CheckBarcodeResponse(barcodeService.checkBarcode(userId, request.barcode, userContext.caseload, sourceIp))
 
   @PostMapping(value = ["/barcode/event/more-checks-requested"])
   @ResponseBody
@@ -146,8 +153,9 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   )
   fun createBarcodeMoreChecksRequestedEvent(
     @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
+    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
     @RequestBody request: CheckBarcodeRequest,
-  ) = barcodeService.registerEvent(userId, userContext.caseload, request.barcode, BarcodeEventType.MORE_CHECKS_REQUESTED)
+  ) = barcodeService.registerEvent(userId, userContext.caseload, sourceIp, request.barcode, BarcodeEventType.MORE_CHECKS_REQUESTED)
 }
 
 data class CreateBarcodeRequest(
