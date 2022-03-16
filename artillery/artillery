@@ -1,5 +1,68 @@
 #!/bin/bash
 
+WARM_UP_DURATION=10
+RAMP_UP_DURATION=30
+SUSTAINED_LOAD_DURATION=300
+WARM_UP_VUSERS=1
+WARM_UP_TARGET_VUSERS=1
+RAMP_UP_TARGET_VUSERS=20
+SUSTAINED_LOAD_VUSERS=20
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --warm-up-duration)
+      WARM_UP_DURATION=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --ramp-up-duration)
+      RAMP_UP_DURATION=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --sustained-load-duration)
+      SUSTAINED_LOAD_DURATION=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --warm-up-vusers)
+      WARM_UP_VUSERS=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --warm-up-target-vusers)
+      WARM_UP_TARGET_VUSERS=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --ramp-up-target-vusers)
+      RAMP_UP_TARGET_VUSERS=$2
+      shift # past argument
+      shift # past value
+      ;;
+    --sustained-load-vusers)
+      SUSTAINED_LOAD_VUSERS=$2
+      shift # past argument
+      shift # past value
+      ;;
+  esac
+done
+
+printf "
+\e[1;34mArtillery Load/Stress Tests for SLM API\e[0m
+------------------------------------------------------------------------------
+  \e[1;34mStep/Metric\t\t\t\tValue\tCLI Option\e[0m
+------------------------------------------------------------------------------
+  Warm up duration (seconds)\t\t${WARM_UP_DURATION}\t--warm-up-duration
+  Warm up with users\t\t\t${WARM_UP_VUSERS}\t--warm-up-vusers
+  Ramp up duration (seconds)\t\t${RAMP_UP_DURATION}\t--ramp-up-duration
+  Exit ramp up with users\t\t${RAMP_UP_TARGET_VUSERS}\t--ramp-up-target-vusers
+  Sustained load duration (seconds)\t${SUSTAINED_LOAD_DURATION}\t--sustained-load-duration
+  Sustained load users\t\t\t${SUSTAINED_LOAD_VUSERS}\t--sustained-load-vusers
+------------------------------------------------------------------------------
+
+"
+
 echo Starting SLM API and supporting containers via docker-compose
 docker-compose up -d
 
@@ -7,9 +70,17 @@ printf "\nWaiting for SLM API to be ready to accept traffic."
 while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:10080/health)" != "200" ]]; do printf "."; sleep 5; done
 printf "\nWaiting for hmpps-auth to be ready to accept traffic."
 while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:10081/auth/health)" != "200" ]]; do printf "."; sleep 5; done
+printf "\n"
 
 docker run --rm -it \
   -v ${PWD}:/scripts:rw \
+  --env WARM_UP_DURATION=${WARM_UP_DURATION} \
+  --env RAMP_UP_DURATION=${RAMP_UP_DURATION} \
+  --env SUSTAINED_LOAD_DURATION=${SUSTAINED_LOAD_DURATION} \
+  --env WARM_UP_VUSERS=${WARM_UP_VUSERS} \
+  --env WARM_UP_TARGET_VUSERS=${WARM_UP_TARGET_VUSERS} \
+  --env RAMP_UP_TARGET_VUSERS=${RAMP_UP_TARGET_VUSERS} \
+  --env SUSTAINED_LOAD_VUSERS=${SUSTAINED_LOAD_VUSERS} \
   --env SEND_LEGAL_MAIL_TO_PRISONS_API=http://host.docker.internal:10080 \
   --env HMPPS_AUTH_URL=http://host.docker.internal:10081/auth \
   --env APP_SMOKETEST_LSJSECRET=LSJ_SECRET \

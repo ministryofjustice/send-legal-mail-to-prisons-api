@@ -7,15 +7,15 @@ config:
     app_smoketest_lsjsecret: '{{ $processEnvironment.APP_SMOKETEST_LSJSECRET }}'
     app_smoketest_msjsecret: '{{ $processEnvironment.APP_SMOKETEST_MSJSECRET }}'
   phases:
-    - duration: 10
-      arrivalRate: 1
+    - duration: '{{ $processEnvironment.WARM_UP_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.WARM_UP_VUSERS }}'
       name: Warm Up
-    - duration: 30
-      arrivalRate: 1
-      rampTo: 20
+    - duration: '{{ $processEnvironment.RAMP_UP_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.WARM_UP_VUSERS }}'
+      rampTo: '{{ $processEnvironment.RAMP_UP_TARGET_VUSERS }}'
       name: Ramp Up
-    - duration: 300
-      arrivalRate: 20
+    - duration: '{{ $processEnvironment.SUSTAINED_LOAD_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.SUSTAINED_LOAD_VUSERS }}'
       name: Sustained Load
   processor: './artillery-support.js'
 
