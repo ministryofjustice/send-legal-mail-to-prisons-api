@@ -1,17 +1,21 @@
 #!/bin/bash
 
-set -o allexport
-source .env
-set +o allexport
+echo Starting SLM API and supporting containers via docker-compose
+docker-compose up -d
+
+printf "\nWaiting for SLM API to be ready to accept traffic."
+while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:10080/health)" != "200" ]]; do printf "."; sleep 5; done
+printf "\nWaiting for hmpps-auth to be ready to accept traffic."
+while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:10081/auth/health)" != "200" ]]; do printf "."; sleep 5; done
 
 docker run --rm -it \
   -v ${PWD}:/scripts:rw \
-  --env SEND_LEGAL_MAIL_TO_PRISONS_API=${SEND_LEGAL_MAIL_TO_PRISONS_API} \
-  --env HMPPS_AUTH_URL=${HMPPS_AUTH_URL} \
-  --env APP_SMOKETEST_LSJSECRET=${APP_SMOKETEST_LSJSECRET} \
-  --env APP_SMOKETEST_MSJSECRET=${APP_SMOKETEST_MSJSECRET} \
-  --env HMPPS_SYSTEM_CLIENT_ID=${HMPPS_SYSTEM_CLIENT_ID} \
-  --env HMPPS_SYSTEM_CLIENT_SECRET=${HMPPS_SYSTEM_CLIENT_SECRET} \
+  --env SEND_LEGAL_MAIL_TO_PRISONS_API=http://host.docker.internal:10080 \
+  --env HMPPS_AUTH_URL=http://host.docker.internal:10081/auth \
+  --env APP_SMOKETEST_LSJSECRET=LSJ_SECRET \
+  --env APP_SMOKETEST_MSJSECRET=MSJ_SECRET \
+  --env HMPPS_SYSTEM_CLIENT_ID=send-legal-mail-to-prisons-client \
+  --env HMPPS_SYSTEM_CLIENT_SECRET=clientsecret \
   --add-host=host.docker.internal:host-gateway \
   artilleryio/artillery:latest \
   run --output /scripts/test-run-report.json /scripts/artillery.yml
@@ -20,3 +24,6 @@ docker run --rm -it \
   -v ${PWD}:/scripts:rw \
   artilleryio/artillery:latest \
   report /scripts/test-run-report.json
+
+echo Stopping hmpps-auth and removing the docker-compose containers
+docker-compose down && docker-compose rm -f
