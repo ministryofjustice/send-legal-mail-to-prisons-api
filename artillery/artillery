@@ -4,9 +4,9 @@ WARM_UP_DURATION=10
 RAMP_UP_DURATION=30
 SUSTAINED_LOAD_DURATION=300
 WARM_UP_VUSERS=1
-WARM_UP_TARGET_VUSERS=1
 RAMP_UP_TARGET_VUSERS=20
 SUSTAINED_LOAD_VUSERS=20
+QUIET=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -30,11 +30,6 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --warm-up-target-vusers)
-      WARM_UP_TARGET_VUSERS=$2
-      shift # past argument
-      shift # past value
-      ;;
     --ramp-up-target-vusers)
       RAMP_UP_TARGET_VUSERS=$2
       shift # past argument
@@ -44,6 +39,10 @@ while [[ $# -gt 0 ]]; do
       SUSTAINED_LOAD_VUSERS=$2
       shift # past argument
       shift # past value
+      ;;
+    --quiet)
+      QUIET="--quiet"
+      shift # past argument
       ;;
   esac
 done
@@ -64,6 +63,7 @@ printf "
 "
 
 echo Starting SLM API and supporting containers via docker-compose
+docker-compose pull ${QUIET}
 docker-compose up -d
 
 printf "\nWaiting for SLM API to be ready to accept traffic."
@@ -78,7 +78,6 @@ docker run --rm -it \
   --env RAMP_UP_DURATION=${RAMP_UP_DURATION} \
   --env SUSTAINED_LOAD_DURATION=${SUSTAINED_LOAD_DURATION} \
   --env WARM_UP_VUSERS=${WARM_UP_VUSERS} \
-  --env WARM_UP_TARGET_VUSERS=${WARM_UP_TARGET_VUSERS} \
   --env RAMP_UP_TARGET_VUSERS=${RAMP_UP_TARGET_VUSERS} \
   --env SUSTAINED_LOAD_VUSERS=${SUSTAINED_LOAD_VUSERS} \
   --env SEND_LEGAL_MAIL_TO_PRISONS_API=http://host.docker.internal:10080 \
@@ -89,7 +88,7 @@ docker run --rm -it \
   --env HMPPS_SYSTEM_CLIENT_SECRET=clientsecret \
   --add-host=host.docker.internal:host-gateway \
   artilleryio/artillery:latest \
-  run --output /scripts/test-run-report.json /scripts/artillery.yml
+  run --output /scripts/test-run-report.json /scripts/artillery.yml ${QUIET}
 
 docker run --rm -it \
   -v ${PWD}:/scripts:rw \
