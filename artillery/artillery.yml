@@ -1,0 +1,123 @@
+config:
+  target: '{{ $processEnvironment.SEND_LEGAL_MAIL_TO_PRISONS_API }}'
+  variables:
+    hmpps_auth_url: '{{ $processEnvironment.HMPPS_AUTH_URL }}'
+    hmpps_system_client_id: '{{ $processEnvironment.HMPPS_SYSTEM_CLIENT_ID }}'
+    hmpps_system_client_secret: '{{ $processEnvironment.HMPPS_SYSTEM_CLIENT_SECRET }}'
+    app_smoketest_lsjsecret: '{{ $processEnvironment.APP_SMOKETEST_LSJSECRET }}'
+    app_smoketest_msjsecret: '{{ $processEnvironment.APP_SMOKETEST_MSJSECRET }}'
+  phases:
+    - duration: '{{ $processEnvironment.WARM_UP_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.WARM_UP_VUSERS }}'
+      name: Warm Up
+    - duration: '{{ $processEnvironment.RAMP_UP_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.WARM_UP_VUSERS }}'
+      rampTo: '{{ $processEnvironment.RAMP_UP_TARGET_VUSERS }}'
+      name: Ramp Up
+    - duration: '{{ $processEnvironment.SUSTAINED_LOAD_DURATION }}'
+      arrivalRate: '{{ $processEnvironment.SUSTAINED_LOAD_VUSERS }}'
+      name: Sustained Load
+  processor: './artillery-support.js'
+
+before:
+  flow:
+    - log: 'Get HMPPS Auth System Token'
+    - post:
+        beforeRequest: 'setHmppsBasicAuthDigest'
+        url: '{{ hmpps_auth_url }}/oauth/token'
+        headers:
+          'Content-Type': 'application/x-www-form-urlencoded'
+          'authorization': 'Basic {{ hmpps_basic_auth_digest }}'
+        form:
+          grant_type: 'client_credentials'
+        capture:
+          json: '$.access_token'
+          as: 'hmpps_system_access_token'
+    - log: 'Validate LSJ smoke test secret to get Legal Sender token'
+    - post:
+        url: '/link/verify'
+        json:
+          secret: '{{ app_smoketest_lsjsecret }}'
+        headers:
+          'Content-Type': 'application/json'
+          'authorization': 'Bearer {{ hmpps_system_access_token }}'
+          'x-slm-client-ip': '127.0.0.1'
+        capture:
+          json: '$.token'
+          as: 'slm_token'
+    - log: 'Create a contact for the Legal Sender to use as the recipient for a barcode'
+    - post:
+        url: '/contact'
+        json:
+          prisonerName: 'Arry Ardnut'
+          prisonId: 'SKI'
+          prisonNumber: 'A1234BC'
+        headers:
+          'Content-Type': 'application/json'
+          'Create-Barcode-Token': '{{ slm_token }}'
+          'x-slm-client-ip': '127.0.0.1'
+    - log: 'Get an auth token using the MSJ smoke test secret'
+    - post:
+        url: '{{ hmpps_auth_url }}/oauth/token'
+        headers:
+          'Content-Type': 'application/x-www-form-urlencoded'
+          'authorization': 'Basic {{ hmpps_basic_auth_digest }}'
+        form:
+          grant_type: 'client_credentials'
+          username: '{{ app_smoketest_msjsecret }}'
+        capture:
+          json: '$.access_token'
+          as: 'hmpps_token'
+
+scenarios:
+  - name: Lookup a contact, create a barcode for the contact, scan the barcode, indicate more checks needed for the barcode
+    flow:
+      # LSJ - get contact by prison number
+      - get:
+          url: /contact/prisonNumber/A1234BC
+          headers:
+            'Content-Type': 'application/json'
+            'Create-Barcode-Token': '{{ slm_token }}'
+            'x-slm-client-ip': '127.0.0.1'
+          capture:
+            - json: '$.id'
+              as: 'contactId'
+            - json: '$.prisonNumber'
+              as: 'prisonNumber'
+            - json: '$.prisonerName'
+              as: 'prisonerName'
+            - json: '$.prisonId'
+              as: 'prisonId'
+      # LSJ - create barcode for returned recipient
+      - post:
+          url: /barcode
+          json:
+            prisonerName: '{{ prisonerName }}'
+            prisonId: '{{ prisonId }}'
+            prisonNumber: '{{ prisonNumber }}'
+            contactId: '{{ contactId }}'
+          headers:
+            'Content-Type': 'application/json'
+            'Create-Barcode-Token': '{{ slm_token }}'
+            'x-slm-client-ip': '127.0.0.1'
+          capture:
+            json: '$.barcode'
+            as: 'barcode'
+      # Mail Room Journey - scan the barcode
+      - post:
+          url: /barcode/check
+          json:
+            barcode: '{{ barcode }}'
+          headers:
+            'Content-Type': 'application/json'
+            authorization: 'Bearer {{ hmpps_token }}'
+            'x-slm-client-ip': '127.0.0.1'
+      # Mail Room Journey - indicate further checks are needed for the barcode
+      - post:
+          url: /barcode/event/more-checks-requested
+          json:
+            barcode: '{{ barcode }}'
+          headers:
+            'Content-Type': 'application/json'
+            authorization: 'Bearer {{ hmpps_token }}'
+            'x-slm-client-ip': '127.0.0.1'

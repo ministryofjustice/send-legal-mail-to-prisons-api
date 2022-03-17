@@ -1,0 +1,90 @@
+# docker-compose file that brings up send-legal-mail-to-prisons-api and hmpps-auth (and supporting containers)
+# specifically to support the artillery tests.
+# Refer to the readme and the shell script `artillery` in this folder.
+#
+# Exposed ports
+# The ports exposed are deliberately different to our other docker-compose environments. This is to prevent port clashes
+# with containers that may be running for other reasons:
+#
+# * send-legal-mail-to-prisons-api - 10080
+# * hmpps-auth - 10081
+# * mailcatcher - 10082
+
+version: '3.1'
+services:
+
+  send-legal-mail-to-prisons-api:
+    image: quay.io/hmpps/send-legal-mail-to-prisons-api:latest
+    networks:
+      - artillery
+    ports:
+      - "10080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev,stdout,postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://send-legal-mail-api-db:5432/send_legal_mail_api_db
+      - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
+      - SPRING_MAIL_HOST=mailcatcher
+      - APP_S3_LOCALSTACKURL=localstack
+      - SPRING_REDIS_HOST=send-legal-mail-api-cache
+      - APP_SMOKETEST_LSJSECRET=LSJ_SECRET
+      - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
+
+  send-legal-mail-api-db:
+    image: postgres:13.3
+    networks:
+      - artillery
+    environment:
+      - POSTGRES_PASSWORD=admin_password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=send_legal_mail_api_db
+
+  send-legal-mail-api-cache:
+    image: redis
+    networks:
+      - artillery
+    command: --port 6378
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    networks:
+      - artillery
+    ports:
+      - '10082:1080'
+
+  localstack:
+    image: localstack/localstack:0.13.1
+    networks:
+      - artillery
+    environment:
+      - SERVICES=s3
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DEFAULT_REGION=eu-west-2
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - artillery
+    ports:
+      - "10081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev,nomis
+      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
+      - NOMIS_ENDPOINT_URL=http://nomis-user-roles-api:8080
+
+  nomis-user-roles-api:
+    image: quay.io/hmpps/nomis-user-roles-api:latest
+    networks:
+      - artillery
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
+
+networks:
+  artillery:
