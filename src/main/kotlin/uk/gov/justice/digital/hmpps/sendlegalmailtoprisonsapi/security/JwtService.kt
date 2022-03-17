@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import mu.KotlinLogging
@@ -64,9 +63,7 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
     runCatching {
       Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt)
     }.onFailure {
-      if ((it is ExpiredJwtException).not()) {
-        log.warn("Found an invalid JWT: $jwt", it)
-      }
+      log.warn("Found an invalid JWT: $jwt", it)
     }.isSuccess
 
   fun subject(jwt: String): String =
