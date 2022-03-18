@@ -61,6 +61,21 @@ jobs:
       - store_artifacts:
           path: build/reports/jacoco
 
+  artillery:
+    machine:
+      image: ubuntu-2004:202201-02
+    steps:
+      - checkout
+      - run:
+          name: Execute load tests
+          command: |
+            cd artillery
+            ./artillery --ramp-up-target-vusers 25 --sustained-load-vusers 25 --sustained-load-duration 600 --quiet
+      - store_artifacts:
+          path: artillery/test-run-report.json
+      - store_artifacts:
+          path: artillery/test-run-report.json.html
+
 workflows:
   version: 2
   build-test-and-deploy:
@@ -152,5 +167,17 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
+
+  artillery-nightly:
+    triggers:
+      - schedule:
+          cron: "0 3 * * 1-5" # 3am Monday-Friday
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - artillery:
+          name: Artillery Tests
 
 

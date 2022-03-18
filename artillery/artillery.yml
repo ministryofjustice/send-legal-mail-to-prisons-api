@@ -68,6 +68,7 @@ before:
         capture:
           json: '$.access_token'
           as: 'hmpps_token'
+    - log: 'Setup complete - starting the main scenario under test'
 
 scenarios:
   - name: Lookup a contact, create a barcode for the contact, scan the barcode, indicate more checks needed for the barcode
