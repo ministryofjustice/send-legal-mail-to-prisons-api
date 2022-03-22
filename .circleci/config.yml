@@ -98,7 +98,7 @@ jobs:
       - run:
           name: Run smoke tests in << parameters.env >>
           command: |
-            cd smoke_tests
+            cd send-legal-mail-to-prisons/smoke_tests
             ./run-smoke-test.sh \
               --env << parameters.env >> \
               --lsj-secret $(kubectl -n send-legal-mail-to-prisons-<< parameters.env >> get secret smoke-test --template={{.data.APP_SMOKETEST_LSJSECRET}} | base64 -d) \
