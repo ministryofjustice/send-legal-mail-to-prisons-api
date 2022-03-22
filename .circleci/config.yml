@@ -35,6 +35,11 @@ executors:
       _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
     working_directory: ~/app
 
+  smoke-test:
+    docker:
+      - image: cypress/included:8.7.0
+    working_directory: ~/tests
+
 jobs:
   validate:
     executor: integration-test-validator
@@ -76,6 +81,40 @@ jobs:
       - store_artifacts:
           path: artillery/test-run-report.json.html
 
+  run_smoke_test:
+    executor: smoke-test
+    parameters:
+      env:
+        type: string
+        default: dev
+    steps:
+      - run:
+          name: Checkout UI project
+          command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
+      - hmpps/k8s_setup
+      - run:
+          name: Install jq
+          command: apt install -y jq
+      - run:
+          name: Run smoke tests in << parameters.env >>
+          command: |
+            cd send-legal-mail-to-prisons/smoke_tests
+            ./run-smoke-test.sh \
+              --env << parameters.env >> \
+              --lsj-secret $(kubectl -n send-legal-mail-to-prisons-<< parameters.env >> get secret smoke-test --template={{.data.APP_SMOKETEST_LSJSECRET}} | base64 -d) \
+              --msj-secret $(kubectl -n send-legal-mail-to-prisons-<< parameters.env >> get secret smoke-test --template={{.data.APP_SMOKETEST_MSJSECRET}} | base64 -d) \
+              --lsj-url https://send-legal-mail-<< parameters.env >>.prison.service.justice.gov.uk \
+              --msj-url https://check-rule39-mail-<< parameters.env >>.prison.service.justice.gov.uk \
+              --cypress-exe cypress
+      - store_test_results:
+          path: /tmp/slm-smoke-test-<< parameters.env >>/test_results
+      - store_artifacts:
+          path: /tmp/slm-smoke-test-<< parameters.env >>/videos
+      - store_artifacts:
+          path: /tmp/slm-smoke-test-<< parameters.env >>/screenshots
+      - store_artifacts:
+          path: /tmp/slm-smoke-test-<< parameters.env >>/downloads
+
 workflows:
   version: 2
   build-test-and-deploy:
@@ -104,8 +143,9 @@ workflows:
             - helm_lint
             - validate
             - build_docker
-      - request-preprod-approval:
-          type: approval
+      - run_smoke_test:
+          name: smoke_test_dev
+          env: dev
           requires:
             - deploy_dev
       - hmpps/deploy_env:
@@ -115,11 +155,16 @@ workflows:
             - hmpps-common-vars
             - send-legal-mail-to-prisons-api-preprod
           requires:
-            - request-preprod-approval
+            - smoke_test_dev
+      - run_smoke_test:
+          name: smoke_test_preprod
+          env: preprod
+          requires:
+            - deploy_preprod
       - request-prod-approval:
           type: approval
           requires:
-            - deploy_preprod
+            - smoke_test_preprod
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
