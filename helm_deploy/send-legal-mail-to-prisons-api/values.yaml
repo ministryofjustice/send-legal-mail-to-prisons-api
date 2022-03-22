@@ -70,5 +70,11 @@ generic-service:
     cloudplatform-live1-2: "3.8.51.207/32"
     cloudplatform-live1-3: "35.177.252.54/32"
 
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
 generic-prometheus-alerts:
   targetApplication: send-legal-mail-to-prisons-api
