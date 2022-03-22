@@ -119,60 +119,62 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
+      - validate:
+          filters:
+            tags:
+              ignore: /.*/
+      - hmpps/helm_lint:
+          name: helm_lint
+      - hmpps/build_docker:
+          name: build_docker
+          filters:
+            branches:
+              only:
+                - main
+      - hmpps/deploy_env:
+          name: deploy_dev
+          env: "dev"
+          context: hmpps-common-vars
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - helm_lint
+            - validate
+            - build_docker
       - run_smoke_test:
           name: smoke-test-dev
           env: dev
-
-#      - validate:
-#          filters:
-#            tags:
-#              ignore: /.*/
-#      - hmpps/helm_lint:
-#          name: helm_lint
-#      - hmpps/build_docker:
-#          name: build_docker
-#          filters:
-#            branches:
-#              only:
-#                - main
-#      - hmpps/deploy_env:
-#          name: deploy_dev
-#          env: "dev"
-#          context: hmpps-common-vars
-#          filters:
-#            branches:
-#              only:
-#                - main
-#          requires:
-#            - helm_lint
-#            - validate
-#            - build_docker
-#      - request-preprod-approval:
-#          type: approval
-#          requires:
-#            - deploy_dev
-#      - hmpps/deploy_env:
-#          name: deploy_preprod
-#          env: "preprod"
-#          context:
-#            - hmpps-common-vars
-#            - send-legal-mail-to-prisons-api-preprod
-#          requires:
-#            - request-preprod-approval
-#      - request-prod-approval:
-#          type: approval
-#          requires:
-#            - deploy_preprod
-#      - hmpps/deploy_env:
-#          name: deploy_prod
-#          env: "prod"
-#          slack_notification: true
-#          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-#          context:
-#            - hmpps-common-vars
-#            - send-legal-mail-to-prisons-api-prod
-#          requires:
-#            - request-prod-approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-api-preprod
+          requires:
+            - smoke_test_dev
+      - run_smoke_test:
+          name: smoke-test-preprod
+          env: preprod
+          requires:
+            - deploy_preprod
+      - request-prod-approval:
+          type: approval
+          requires:
+            - smoke_test_preprod
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-api-prod
+          requires:
+            - request-prod-approval
 
   security:
     triggers:
