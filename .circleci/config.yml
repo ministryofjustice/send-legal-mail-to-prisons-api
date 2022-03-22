@@ -161,6 +161,9 @@ workflows:
           env: preprod
           requires:
             - deploy_preprod
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-preprod
       - request-prod-approval:
           type: approval
           requires:
