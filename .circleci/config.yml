@@ -88,7 +88,9 @@ jobs:
         type: string
         default: dev
     steps:
-      - run: git clone git@github.com:ministryofjustice/send-legal-mail-to-prisons.git
+      - run:
+          name: Checkout UI project
+          command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
       - hmpps/k8s_setup
       - run:
           name: Install jq
