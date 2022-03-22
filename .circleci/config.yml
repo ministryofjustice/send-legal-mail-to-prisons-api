@@ -144,7 +144,7 @@ workflows:
             - validate
             - build_docker
       - run_smoke_test:
-          name: smoke-test-dev
+          name: smoke_test_dev
           env: dev
           requires:
             - deploy_dev
@@ -157,7 +157,7 @@ workflows:
           requires:
             - smoke_test_dev
       - run_smoke_test:
-          name: smoke-test-preprod
+          name: smoke_test_preprod
           env: preprod
           requires:
             - deploy_preprod
