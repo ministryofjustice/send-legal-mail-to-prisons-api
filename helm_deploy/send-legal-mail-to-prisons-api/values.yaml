@@ -72,7 +72,7 @@ generic-service:
 
   resources:
     requests:
-      memory: 768Mi
+      memory: 512Mi
     limits:
       memory: 1Gi
 
