@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRepository
 
 @Service
@@ -19,4 +20,8 @@ class BarcodeRecipientService(
     ).let {
       barcodeRecipientRepository.save(it)
     }
+
+  fun getBarcodeRecipient(barcode: Barcode): BarcodeRecipient =
+    barcodeRecipientRepository.getByBarcode(barcode)
+      ?: throw ResourceNotFoundException("Barcode recipient not found for barcode ${barcode.code}")
 }

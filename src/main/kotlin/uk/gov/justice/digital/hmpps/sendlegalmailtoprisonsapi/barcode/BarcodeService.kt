@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchService
 
 @Service
 class BarcodeService(
@@ -9,6 +10,7 @@ class BarcodeService(
   private val barcodeEventService: BarcodeEventService,
   private val barcodeGeneratorService: BarcodeGeneratorService,
   private val barcodeRecipientService: BarcodeRecipientService,
+  private val prisonerSearchService: PrisonerSearchService,
 ) {
 
   @Transactional
@@ -32,6 +34,9 @@ class BarcodeService(
         with(barcodeEventService) {
           createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
           checkForCreated(barcode)
+
+          barcodeRecipientService.getBarcodeRecipient(barcode).lookupRecipient()
+
           checkForDuplicate(barcode, userId, location, sourceIp)
           checkForExpired(barcode, userId, location, sourceIp)
           checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
@@ -47,5 +52,9 @@ class BarcodeService(
           checkForCreated(barcode)
         }
       }
+  }
+
+  private fun BarcodeRecipient.lookupRecipient() {
+    prisonerSearchService.lookupPrisoner(this)
   }
 }
