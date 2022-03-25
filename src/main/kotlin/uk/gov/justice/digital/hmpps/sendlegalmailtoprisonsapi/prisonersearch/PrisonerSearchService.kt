@@ -22,6 +22,8 @@ class PrisonerSearchService(private val prisonerSearchClient: PrisonerSearchClie
       } else {
         log.error { "Failed to call prisoner-search - statusCode ${webClientResponseException.statusCode}" }
       }
+    } catch (exception: Exception) {
+      log.error("Failed to call prisoner-search", exception)
     }
   }
 

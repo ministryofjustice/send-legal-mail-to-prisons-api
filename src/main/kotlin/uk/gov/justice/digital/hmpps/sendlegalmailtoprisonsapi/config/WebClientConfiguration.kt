@@ -26,6 +26,11 @@ class WebClientConfiguration(
   }
 
   @Bean
+  fun oauthApiHealthWebClient(): WebClient {
+    return WebClient.builder().baseUrl(oauthApiUrl).build()
+  }
+
+  @Bean
   fun prisonerSearchWebClient(): WebClient {
     return WebClient.builder()
       .baseUrl(prisonerSearchApiUrl)
