@@ -11,9 +11,11 @@ import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEvent
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeResourceTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
 class SmoketestTest : BarcodeResourceTest() {
 
@@ -50,6 +52,8 @@ class SmoketestTest : BarcodeResourceTest() {
     fun `A mailroom staff smoke test can check barcodes without an auth error`() {
       val barcode = barcodeRepository.save(Barcode(code = "some-barcode"))
       barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
+      barcodeRecipientRepository.save(BarcodeRecipient(barcode = barcode, name = "John Smith", prisonCode = "BXI"))
+      PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
 
       webTestClient.post()
         .uri("/barcode/check")
@@ -86,6 +90,7 @@ class SmoketestTest : BarcodeResourceTest() {
       HmppsAuthExtension.hmppsAuthApi.stubFailToGetUserDetails()
       val barcode = barcodeRepository.save(Barcode(code = "no-smoketest"))
       barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
+      barcodeRecipientRepository.save(BarcodeRecipient(barcode = barcode, name = "John Smith", prisonCode = "BXI"))
 
       webTestClient.post()
         .uri("/barcode/check")

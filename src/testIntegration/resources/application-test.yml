@@ -46,3 +46,6 @@ app:
 hmpps:
   auth:
     url: http://localhost:8090/auth
+prisoner:
+  search:
+    url: http://localhost:8091

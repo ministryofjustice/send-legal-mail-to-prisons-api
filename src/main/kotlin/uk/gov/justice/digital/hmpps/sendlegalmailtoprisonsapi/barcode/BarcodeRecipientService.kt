@@ -19,4 +19,7 @@ class BarcodeRecipientService(
     ).let {
       barcodeRecipientRepository.save(it)
     }
+
+  fun getBarcodeRecipient(barcode: Barcode): BarcodeRecipient? =
+    barcodeRecipientRepository.getByBarcode(barcode)
 }

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarc
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
 class E2eTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -24,6 +25,11 @@ class E2eTest(
   @BeforeEach
   fun `add the user's organisation to the CJSM directory`() {
     cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some.email@company.com.cjsm.net", "anyfirstname", "anylastname", "Some Company", "Anytown", "Any type"))
+  }
+
+  @BeforeEach
+  fun `mock prisoner search response`() {
+    PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
   }
 
   @AfterEach

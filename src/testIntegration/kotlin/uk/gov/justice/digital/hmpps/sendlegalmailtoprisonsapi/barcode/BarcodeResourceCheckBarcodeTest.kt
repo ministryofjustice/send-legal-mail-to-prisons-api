@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.NotFound
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -21,6 +22,11 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
   @BeforeEach
   fun `add the user's organisation to the CJSM directory`() {
     cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some.user@company.com.cjsm.net", "anyfirstname", "anylastname", "Some Company", "Anytown", "Any type"))
+  }
+
+  @BeforeEach
+  fun `mock prisoner search response`() {
+    PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
   }
 
   @Test
