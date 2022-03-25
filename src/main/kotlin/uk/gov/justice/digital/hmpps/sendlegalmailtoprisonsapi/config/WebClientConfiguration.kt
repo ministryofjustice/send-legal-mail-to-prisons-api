@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserConte
 @Configuration
 class WebClientConfiguration(
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
+  @Value("\${prisoner.search.url}") private val prisonerSearchApiUrl: String,
   private val userContext: UserContext,
 ) {
 
@@ -24,6 +25,19 @@ class WebClientConfiguration(
       .build()
   }
 
+  @Bean
+  fun oauthApiHealthWebClient(): WebClient {
+    return WebClient.builder().baseUrl(oauthApiUrl).build()
+  }
+
+  @Bean
+  fun prisonerSearchWebClient(): WebClient {
+    return WebClient.builder()
+      .baseUrl(prisonerSearchApiUrl)
+      .filter(addAuthHeaderFilterFunction())
+      .build()
+  }
+
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
     return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
       val filtered = ClientRequest.from(request)
@@ -31,10 +45,5 @@ class WebClientConfiguration(
         .build()
       next.exchange(filtered)
     }
-  }
-
-  @Bean
-  fun oauthApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(oauthApiUrl).build()
   }
 }

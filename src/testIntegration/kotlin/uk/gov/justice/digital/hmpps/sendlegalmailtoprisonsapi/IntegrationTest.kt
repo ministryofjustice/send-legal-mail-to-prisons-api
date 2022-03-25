@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRep
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
@@ -48,7 +49,7 @@ import javax.annotation.PreDestroy
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTest.RedisConfig::class)
-@ExtendWith(HmppsAuthExtension::class)
+@ExtendWith(HmppsAuthExtension::class, PrisonerSearchExtension::class)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
 
