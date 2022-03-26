@@ -5,12 +5,13 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Mono
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Component
 class PrisonerSearchClient(private val prisonerSearchWebClient: WebClient) {
-  fun matchPrisoners(prisonerSearchRequest: PrisonerSearchRequest): MatchPrisonersResponse {
+  fun matchPrisoners(prisonerSearchRequest: PrisonerSearchRequest): Mono<MatchPrisonersResponse> {
     return prisonerSearchWebClient
       .post()
       .uri("/match-prisoners")
@@ -24,8 +25,7 @@ class PrisonerSearchClient(private val prisonerSearchWebClient: WebClient) {
         )
       )
       .retrieve()
-      .bodyToMono<MatchPrisonersResponse>()
-      .block()!!
+      .bodyToMono()
   }
 }
 
@@ -55,8 +55,8 @@ enum class MatchedBy {
 
 data class PrisonerSearchRequest(
   val prisonNumber: String? = null,
-  val firstName: String,
-  val lastName: String?,
+  val firstName: String?,
+  val lastName: String,
   val dob: LocalDate? = null
 )
 
