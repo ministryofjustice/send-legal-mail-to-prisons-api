@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
+import java.util.concurrent.TimeUnit.SECONDS
 
 class E2eTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -47,6 +49,7 @@ class E2eTest(
 
     requestCheckBarcodeOk(barcode)
     requestCheckBarcodeDuplicate(barcode)
+    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 
   private fun requestMagicLink(email: String) {

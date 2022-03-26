@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.VerificationException
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -49,4 +51,12 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_CONFIG) {
         )
     )
   }
+
+  fun matchPrisonersHasBeenCalled(): Boolean =
+    try {
+      verify(postRequestedFor(WireMock.urlEqualTo("/match-prisoners")))
+      true
+    } catch (verificationException: VerificationException) {
+      false
+    }
 }

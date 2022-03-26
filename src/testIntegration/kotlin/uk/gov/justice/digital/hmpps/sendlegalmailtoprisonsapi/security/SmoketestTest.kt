@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRes
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
+import java.util.concurrent.TimeUnit.SECONDS
 
 class SmoketestTest : BarcodeResourceTest() {
 
@@ -67,6 +69,7 @@ class SmoketestTest : BarcodeResourceTest() {
       val checkedEvent = barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode, BarcodeEventType.CHECKED).first()
 
       assertThat(checkedEvent.location).isEqualTo("SKI") // LEI is stubbed by Auth but SKI is hardcoded for smoke tests
+      await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
     }
   }
 
