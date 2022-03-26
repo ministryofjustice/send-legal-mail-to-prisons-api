@@ -86,8 +86,9 @@ class CjsmService(
       }
   }
 
-  fun findOrganisation(secureEmail: String): String? =
-    cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.organisation
+  fun findOrganisation(secureEmail: String): String? = findUser(secureEmail)?.organisation
+
+  fun findUser(secureEmail: String): CjsmDirectoryEntry? = cjsmDirectoryRepository.findBySecureEmail(secureEmail)
 
   private fun CSVRecord.firstName() = this[0]
   private fun CSVRecord.lastName() = this[1]
