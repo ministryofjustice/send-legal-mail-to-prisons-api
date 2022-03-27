@@ -181,7 +181,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isOk
 
-    val today = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(Instant.now()).removeSuffix("Z")
+    val today = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(Instant.now().atZone(ZoneId.systemDefault()))
     webTestClient.post()
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
@@ -220,7 +220,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isCreated
 
-    val expiredDayString = DateTimeFormatter.ISO_DATE.withZone(ZoneId.systemDefault()).format(Instant.now()).removeSuffix("Z")
+    val expiredDayString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(Instant.now().atZone(ZoneId.systemDefault()))
     webTestClient.post()
       .uri("/barcode/check")
       .accept(MediaType.APPLICATION_JSON)
