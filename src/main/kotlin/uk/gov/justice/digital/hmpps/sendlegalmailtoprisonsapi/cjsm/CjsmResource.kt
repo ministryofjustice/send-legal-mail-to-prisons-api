@@ -61,11 +61,9 @@ class CjsmResource(private val cjsmService: CjsmService) {
   )
   fun getUserDetails(
     @Parameter(hidden = true) @AuthenticationPrincipal principalUserDetails: PrincipalUserDetails,
-  ): UserDetails {
-    return cjsmService.findUser(principalUserDetails.username)
-      ?.let { UserDetails(it) }
+  ): UserDetails =
+    cjsmService.findUser(principalUserDetails.username)
       ?: throw ResourceNotFoundException("User ${principalUserDetails.username} not in CJSM directory")
-  }
 }
 
 data class UserDetails(
@@ -80,11 +78,4 @@ data class UserDetails(
 
   @Schema(description = "The user's town or city", example = "London")
   val townOrCity: String? = null,
-) {
-  constructor(cjsmDirectoryEntry: CjsmDirectoryEntry) : this(
-    cjsmDirectoryEntry.secureEmail,
-    cjsmDirectoryEntry.organisation,
-    cjsmDirectoryEntry.businessType,
-    cjsmDirectoryEntry.townCity
-  )
-}
+)

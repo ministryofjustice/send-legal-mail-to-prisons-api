@@ -42,7 +42,8 @@ class CjsmService(
       .also { archiveCjsmDirectoryFile() }
 
   private fun archiveCjsmDirectoryFile() {
-    val archiveFileName = """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
+    val archiveFileName =
+      """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
     log.info("Attempting to archive CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.copyObject(
       s3Config.bucketName,
@@ -88,7 +89,8 @@ class CjsmService(
 
   fun findOrganisation(secureEmail: String): String? = findUser(secureEmail)?.organisation
 
-  fun findUser(secureEmail: String): CjsmDirectoryEntry? = cjsmDirectoryRepository.findBySecureEmail(secureEmail)
+  fun findUser(secureEmail: String): UserDetails? =
+    cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.let { toUserDetails(it) }
 
   private fun CSVRecord.firstName() = this[0]
   private fun CSVRecord.lastName() = this[1]
@@ -97,3 +99,11 @@ class CjsmService(
   private fun CSVRecord.townCity() = this[7]
   private fun CSVRecord.businessType() = this[12]
 }
+
+private fun toUserDetails(cjsmDirectoryEntry: CjsmDirectoryEntry): UserDetails =
+  UserDetails(
+    cjsmDirectoryEntry.secureEmail,
+    cjsmDirectoryEntry.organisation,
+    cjsmDirectoryEntry.businessType,
+    cjsmDirectoryEntry.townCity
+  )
