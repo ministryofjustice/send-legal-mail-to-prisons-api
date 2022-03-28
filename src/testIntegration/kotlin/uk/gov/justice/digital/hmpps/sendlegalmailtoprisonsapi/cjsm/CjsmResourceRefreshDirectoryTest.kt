@@ -13,7 +13,7 @@ import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
-class CjsmResourceTest : IntegrationTest() {
+class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
 
   @Value("classpath:cjsm/cjsm-directory.csv")
   private lateinit var cjsmCsvResource: Resource
