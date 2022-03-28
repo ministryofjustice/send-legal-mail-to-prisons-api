@@ -16,14 +16,7 @@ class PrisonerSearchClient(private val prisonerSearchWebClient: WebClient) {
       .post()
       .uri("/match-prisoners")
       .accept(MediaType.APPLICATION_JSON)
-      .bodyValue(
-        mapOf(
-          "nomsNumber" to prisonerSearchRequest.prisonNumber,
-          "firstName" to prisonerSearchRequest.firstName,
-          "lastName" to prisonerSearchRequest.lastName,
-          "dateOfBirth" to prisonerSearchRequest.dob?.format(DateTimeFormatter.BASIC_ISO_DATE)
-        )
-      )
+      .bodyValue(prisonerSearchRequest.toRequestBody())
       .retrieve()
       .bodyToMono()
   }
@@ -58,7 +51,15 @@ data class PrisonerSearchRequest(
   val firstName: String?,
   val lastName: String,
   val dob: LocalDate? = null
-)
+) {
+  fun toRequestBody(): Map<String, String?> =
+    mapOf(
+      "nomsNumber" to prisonNumber,
+      "firstName" to firstName,
+      "lastName" to lastName,
+      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    )
+}
 
 data class PrisonerSearchResult(
   var prisonNumber: String,
