@@ -4,6 +4,8 @@ plugins {
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
   id("jacoco")
+  id("org.openapi.generator") version "5.4.0"
+  id("de.undercouch.download") version "5.0.2"
 }
 
 testSets {
@@ -85,5 +87,42 @@ tasks.register<JacocoReport>("combineJacocoReports") {
   sourceDirectories.setFrom(files(project.sourceSets.main.get().allSource))
   reports {
     html.required.set(true)
+  }
+}
+
+openApiGenerate {
+  download.run {
+    src("https://prisoner-offender-search.prison.service.justice.gov.uk/v3/api-docs")
+    dest("$buildDir/tmp/prisoner-offender-search.yml")
+  }
+  generatorName.set("kotlin")
+  inputSpec.set("$buildDir/tmp/prisoner-offender-search.yml")
+  outputDir.set("$buildDir/generated")
+  modelPackage.set("uk.gov.justice.digital.hmpps.prisonersearch.model")
+  configOptions.set(
+    mapOf(
+      "dateLibrary" to "java8",
+      "serializationLibrary" to "jackson"
+    )
+  )
+  globalProperties.set(
+    mapOf(
+      "models" to ""
+    )
+  )
+}
+tasks.named("compileKotlin") {
+  dependsOn("openApiGenerate")
+}
+kotlin {
+  sourceSets["main"].apply {
+    kotlin.srcDir("$buildDir/generated/src/main/kotlin")
+  }
+}
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+  filter {
+    exclude {
+      it.file.path.contains("build/generated/src/main/")
+    }
   }
 }
