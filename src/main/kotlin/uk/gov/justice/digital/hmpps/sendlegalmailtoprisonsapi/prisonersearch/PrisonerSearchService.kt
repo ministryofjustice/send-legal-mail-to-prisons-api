@@ -12,7 +12,7 @@ private val log = KotlinLogging.logger {}
 @Service
 class PrisonerSearchService(private val prisonerSearchClient: PrisonerSearchClient) {
   fun lookupPrisoner(barcodeRecipient: BarcodeRecipient) {
-    val prisonerSearchRequest = PrisonerSearchRequest.fromBarcodeRecipient(barcodeRecipient)
+    val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
     prisonerSearchClient.matchPrisoners(prisonerSearchRequest)
       .onErrorResume {
         with(it) {

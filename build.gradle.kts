@@ -5,7 +5,6 @@ plugins {
   kotlin("plugin.jpa") version "1.6.10"
   id("jacoco")
   id("org.openapi.generator") version "5.4.0"
-  id("de.undercouch.download") version "5.0.2"
 }
 
 testSets {
@@ -91,12 +90,8 @@ tasks.register<JacocoReport>("combineJacocoReports") {
 }
 
 openApiGenerate {
-  download.run {
-    src("https://prisoner-offender-search.prison.service.justice.gov.uk/v3/api-docs")
-    dest("$buildDir/tmp/prisoner-offender-search.yml")
-  }
   generatorName.set("kotlin")
-  inputSpec.set("$buildDir/tmp/prisoner-offender-search.yml")
+  inputSpec.set("$projectDir/src/main/resources/prisoner-offender-search-open-api.yml")
   outputDir.set("$buildDir/generated")
   modelPackage.set("uk.gov.justice.digital.hmpps.prisonersearch.model")
   configOptions.set(

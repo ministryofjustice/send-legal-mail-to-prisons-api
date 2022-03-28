@@ -7,10 +7,76 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
 import java.time.LocalDate
 
-class PrisonerSearchDtosTest {
+class PrisonerSearchRequestTest {
 
   @Nested
-  inner class PrisonerSearchRequest_ToRequestBody {
+  inner class BarcodeRecipientConstructor {
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with prisonNumber`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = "A1234BC",
+        name = "John Smith",
+        dob = null
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with DOB`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = null,
+        name = "John Smith",
+        dob = LocalDate.MIN
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.MIN)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with many components`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = "A1234BC",
+        name = "John Bobby Smith",
+        dob = null
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Bobby Smith", dob = null)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with just one component`() {
+      val barcodeRecipient =
+        BarcodeRecipient(barcode = aBarcode(), prisonCode = "BXI", prisonNumber = "A1234BC", name = "John", dob = null)
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "John", dob = null)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+  }
+
+  @Nested
+  inner class ToRequestBody {
     @Test
     fun `should convert to request body given request with all fields`() {
       val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
@@ -61,72 +127,6 @@ class PrisonerSearchDtosTest {
       )
 
       assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
-    }
-  }
-
-  @Nested
-  inner class PrisonerSearchRequest_FromBarcodeRecipient {
-    @Test
-    fun `should create PrisonerSearchRequest given BarcodeRecipient with prisonNumber`() {
-      val barcodeRecipient = BarcodeRecipient(
-        barcode = aBarcode(),
-        prisonCode = "BXI",
-        prisonNumber = "A1234BC",
-        name = "John Smith",
-        dob = null
-      )
-      val expectedPrisonSearchRequest =
-        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
-
-      val prisonerSearchRequest = PrisonerSearchRequest.fromBarcodeRecipient(barcodeRecipient)
-
-      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
-    }
-
-    @Test
-    fun `should create PrisonerSearchRequest given BarcodeRecipient with DOB`() {
-      val barcodeRecipient = BarcodeRecipient(
-        barcode = aBarcode(),
-        prisonCode = "BXI",
-        prisonNumber = null,
-        name = "John Smith",
-        dob = LocalDate.MIN
-      )
-      val expectedPrisonSearchRequest =
-        PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.MIN)
-
-      val prisonerSearchRequest = PrisonerSearchRequest.fromBarcodeRecipient(barcodeRecipient)
-
-      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
-    }
-
-    @Test
-    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with many components`() {
-      val barcodeRecipient = BarcodeRecipient(
-        barcode = aBarcode(),
-        prisonCode = "BXI",
-        prisonNumber = "A1234BC",
-        name = "John Bobby Smith",
-        dob = null
-      )
-      val expectedPrisonSearchRequest =
-        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Bobby Smith", dob = null)
-
-      val prisonerSearchRequest = PrisonerSearchRequest.fromBarcodeRecipient(barcodeRecipient)
-
-      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
-    }
-
-    @Test
-    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with just one component`() {
-      val barcodeRecipient =
-        BarcodeRecipient(barcode = aBarcode(), prisonCode = "BXI", prisonNumber = "A1234BC", name = "John", dob = null)
-      val expectedPrisonSearchRequest =
-        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "John", dob = null)
-
-      val prisonerSearchRequest = PrisonerSearchRequest.fromBarcodeRecipient(barcodeRecipient)
-
-      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
     }
   }
 
