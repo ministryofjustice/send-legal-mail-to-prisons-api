@@ -82,6 +82,7 @@ docker run --rm -it \
   --env SUSTAINED_LOAD_VUSERS=${SUSTAINED_LOAD_VUSERS} \
   --env SEND_LEGAL_MAIL_TO_PRISONS_API=http://host.docker.internal:10080 \
   --env HMPPS_AUTH_URL=http://host.docker.internal:10081/auth \
+  --env PRISONER_SEARCH_URL=http://host.docker.internal:10083 \
   --env APP_SMOKETEST_LSJSECRET=LSJ_SECRET \
   --env APP_SMOKETEST_MSJSECRET=MSJ_SECRET \
   --env HMPPS_SYSTEM_CLIENT_ID=send-legal-mail-to-prisons-client \
