@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.assertj.core.api.Assertions
-import org.awaitility.Awaitility.await
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.until
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -17,7 +18,6 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit.SECONDS
 
 @Nested
 class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
@@ -125,7 +125,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.CHECKED)
-    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 
   @Test
@@ -154,7 +154,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .expectStatus().isOk
       .expectBody().jsonPath("$.createdBy").isEqualTo("some.user@company.com.cjsm.net")
 
-    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 
   @Test
@@ -202,7 +202,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.DUPLICATE)
-    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 
   @Test
@@ -238,7 +238,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.EXPIRED)
-    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 
   @Test
@@ -271,6 +271,6 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.RANDOM_CHECK)
-    await().atMost(5, SECONDS).until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
   }
 }

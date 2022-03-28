@@ -44,7 +44,7 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:4.4.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.31")
   testImplementation("org.testcontainers:localstack:1.16.3")
-  testImplementation("org.awaitility:awaitility:4.2.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 }
 
 // Language versions

@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import com.amazonaws.services.s3.AmazonS3
 import io.lettuce.core.ClientOptions
+import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.doReturn
@@ -44,6 +46,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
+import java.util.concurrent.TimeUnit.SECONDS
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -196,6 +199,12 @@ abstract class IntegrationTest {
             registry.add("app.s3.region") { signingRegion }
           }
       }
+    }
+
+    @JvmStatic
+    @BeforeAll
+    fun `set defaults`() {
+      Awaitility.setDefaultTimeout(5, SECONDS)
     }
   }
 }
