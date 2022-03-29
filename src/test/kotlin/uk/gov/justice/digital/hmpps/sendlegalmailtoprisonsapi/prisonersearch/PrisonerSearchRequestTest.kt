@@ -76,18 +76,19 @@ class PrisonerSearchRequestTest {
   }
 
   @Nested
-  inner class ToRequestBody {
+  inner class ToMatchPrisonersRequestBody {
     @Test
     fun `should convert to request body given request with all fields`() {
       val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
       val expectedRequestBody = mapOf(
-        "nomsNumber" to "A1234BC",
+        "prisonerIdentifier" to "A1234BC",
         "firstName" to "John",
         "lastName" to "Smith",
-        "dateOfBirth" to "1965-02-16"
+        "dateOfBirth" to "1965-02-16",
+        "includeAliases" to "true"
       )
 
-      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
     }
 
     @Test
@@ -100,7 +101,7 @@ class PrisonerSearchRequestTest {
         "dateOfBirth" to "1965-02-16"
       )
 
-      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
     }
 
     @Test
@@ -113,7 +114,7 @@ class PrisonerSearchRequestTest {
         "dateOfBirth" to null
       )
 
-      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
     }
 
     @Test
@@ -126,7 +127,66 @@ class PrisonerSearchRequestTest {
         "dateOfBirth" to null
       )
 
-      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
+    }
+  }
+
+  @Nested
+  inner class ToGlobalSearchRequestBody {
+    @Test
+    fun `should convert to request body given request with all fields`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
+      val expectedRequestBody = mapOf(
+        "prisonerIdentifier" to "A1234BC",
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to "1965-02-16",
+        "includeAliases" to "true"
+      )
+
+      assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request with date of birth`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
+      val expectedRequestBody = mapOf(
+        "prisonerIdentifier" to null,
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to "1965-02-16",
+        "includeAliases" to "true"
+      )
+
+      assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request with prison number`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
+      val expectedRequestBody = mapOf(
+        "prisonerIdentifier" to "A1234BC",
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to null,
+        "includeAliases" to "true"
+      )
+
+      assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request without firstname`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "Smith", dob = null)
+      val expectedRequestBody = mapOf(
+        "prisonerIdentifier" to "A1234BC",
+        "firstName" to null,
+        "lastName" to "Smith",
+        "dateOfBirth" to null,
+        "includeAliases" to "true"
+      )
+
+      assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
     }
   }
 

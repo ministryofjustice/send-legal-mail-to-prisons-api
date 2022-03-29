@@ -13,29 +13,35 @@ data class PrisonerSearchRequest(
 ) {
   constructor(barcodeRecipient: BarcodeRecipient) : this(
     barcodeRecipient.prisonNumber,
-    barcodeRecipient.firstName,
-    barcodeRecipient.lastName,
+    barcodeRecipient.names.first,
+    barcodeRecipient.names.second,
     barcodeRecipient.dob
   )
 
-  fun toRequestBody(): Map<String, String?> =
+  fun toMatchPrisonersRequestBody(): Map<String, String?> =
     mapOf(
       "nomsNumber" to prisonNumber,
       "firstName" to firstName,
       "lastName" to lastName,
       "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE)
     )
+
+  fun toGlobalSearchRequestBody(): Map<String, String?> =
+    mapOf(
+      "prisonerIdentifier" to prisonNumber,
+      "firstName" to firstName,
+      "lastName" to lastName,
+      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
+      "includeAliases" to "true"
+    )
 }
 
-private val BarcodeRecipient.firstName: String?
-  get() = this.name.split(" ").firstElementIfMoreThan1ElementElseNull()
-
-private val BarcodeRecipient.lastName: String
-  get() = this.name.split(" ").secondAndBeyondElementsIfMoreThan1ElementElseAllElements()
-
-private fun List<String>.firstElementIfMoreThan1ElementElseNull(): String? =
-  if (this.size > 1) this[0] else null
-
-private fun List<String>.secondAndBeyondElementsIfMoreThan1ElementElseAllElements(): String =
-  if (this.size > 1) this.stream().skip(1).collect(Collectors.joining(" ")) else this.stream()
-    .collect(Collectors.joining(" "))
+private val BarcodeRecipient.names: Pair<String?, String>
+  get() = name.split(" ")
+    .let {
+      if (it.size > 1) {
+        it[0] to it.stream().skip(1).collect(Collectors.joining(" "))
+      } else {
+        null to it.stream().collect(Collectors.joining(" "))
+      }
+    }
