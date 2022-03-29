@@ -14,7 +14,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev,stdout,postgres
       - SPRING_DATASOURCE_URL=jdbc:postgresql://send-legal-mail-api-db:5432/send_legal_mail_api_db
       - HMPPS_AUTH_URL=http://hmpps-auth:9090/auth
-      - PRISONER_SEARCH_URL=http://prisoner-search:8080
+      - PRISONER_SEARCH_URL=http://send-legal-mail-api-wiremock:8080
       - SPRING_MAIL_HOST=send-legal-mail-to-prisons-api_mailcatcher_1
       - APP_S3_LOCALSTACKURL=localstack
       - SPRING_REDIS_HOST=send-legal-mail-api-cache
@@ -64,6 +64,14 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+
+  wiremock:
+    image: wiremock/wiremock:2.32.0
+    container_name: send-legal-mail-api-wiremock
+    networks:
+      - hmpps
+    ports:
+      - "9092:8080"
 
 networks:
   hmpps:
