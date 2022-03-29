@@ -52,9 +52,28 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_CONFIG) {
     )
   }
 
+  fun stubGlobalSearch() {
+    stubFor(
+      post(WireMock.urlEqualTo("/global-search"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBodyFile("prisoner-search/global-search-response.json")
+        )
+    )
+  }
+
   fun matchPrisonersHasBeenCalled(): Boolean =
     try {
       verify(postRequestedFor(WireMock.urlEqualTo("/match-prisoners")))
+      true
+    } catch (verificationException: VerificationException) {
+      false
+    }
+
+  fun globalSearchHasBeenCalled(): Boolean =
+    try {
+      verify(postRequestedFor(WireMock.urlEqualTo("/global-search")))
       true
     } catch (verificationException: VerificationException) {
       false

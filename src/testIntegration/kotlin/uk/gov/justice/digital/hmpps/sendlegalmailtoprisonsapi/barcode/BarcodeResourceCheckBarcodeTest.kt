@@ -29,6 +29,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
   @BeforeEach
   fun `mock prisoner search response`() {
     PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
+    PrisonerSearchExtension.prisonerSearchApi.stubGlobalSearch()
   }
 
   @Test
@@ -125,7 +126,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.CHECKED)
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 
   @Test
@@ -154,7 +157,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .expectStatus().isOk
       .expectBody().jsonPath("$.createdBy").isEqualTo("some.user@company.com.cjsm.net")
 
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 
   @Test
@@ -202,7 +207,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.DUPLICATE)
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 
   @Test
@@ -238,7 +245,9 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.EXPIRED)
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 
   @Test
@@ -271,6 +280,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
     val barcode = Barcode("SOME_BARCODE")
     assertBarcodeEventCreated(barcode, BarcodeEventType.RANDOM_CHECK)
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 }
