@@ -20,11 +20,11 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorRespon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import org.springframework.security.core.userdetails.UserDetails as PrincipalUserDetails
 
-@Hidden
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class CjsmResource(private val cjsmService: CjsmService) {
 
+  @Hidden
   @PostMapping(value = ["/cjsm/directory/refresh"])
   fun refreshCjsmDirectory() = cjsmService.saveCjsmDirectoryCsv()
 
