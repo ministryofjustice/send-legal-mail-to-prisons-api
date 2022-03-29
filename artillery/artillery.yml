@@ -2,6 +2,7 @@ config:
   target: '{{ $processEnvironment.SEND_LEGAL_MAIL_TO_PRISONS_API }}'
   variables:
     hmpps_auth_url: '{{ $processEnvironment.HMPPS_AUTH_URL }}'
+    prisoner_search_auth_url: '{{ $processEnvironment.PRISONER_SEARCH_URL }}'
     hmpps_system_client_id: '{{ $processEnvironment.HMPPS_SYSTEM_CLIENT_ID }}'
     hmpps_system_client_secret: '{{ $processEnvironment.HMPPS_SYSTEM_CLIENT_SECRET }}'
     app_smoketest_lsjsecret: '{{ $processEnvironment.APP_SMOKETEST_LSJSECRET }}'
@@ -21,6 +22,22 @@ config:
 
 before:
   flow:
+    - log: 'Setup wiremock stubs for prisoner-search'
+    - post:
+        url: '{{ prisoner_search_auth_url }}/__admin/mappings'
+        headers:
+          'Content-Type': 'application/json'
+        json:
+          name: 'Return no matching prisoners'
+          request:
+            urlPath: '/match-prisoners'
+          response:
+            status: 200
+            headers:
+              'Content-Type': 'application/json'
+            jsonBody:
+              matchedBy: NOTHING
+              matches: []
     - log: 'Get HMPPS Auth System Token'
     - post:
         beforeRequest: 'setHmppsBasicAuthDigest'
