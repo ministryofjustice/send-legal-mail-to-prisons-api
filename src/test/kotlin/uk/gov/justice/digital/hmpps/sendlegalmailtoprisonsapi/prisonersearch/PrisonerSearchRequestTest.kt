@@ -1,60 +1,134 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
 import java.time.LocalDate
 
 class PrisonerSearchRequestTest {
 
-  @Test
-  fun `should convert to request body given request with all fields`() {
-    val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
-    val expectedRequestBody = mapOf(
-      "nomsNumber" to "A1234BC",
-      "firstName" to "John",
-      "lastName" to "Smith",
-      "dateOfBirth" to "1965-02-16"
-    )
+  @Nested
+  inner class BarcodeRecipientConstructor {
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with prisonNumber`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = "A1234BC",
+        name = "John Smith",
+        dob = null
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
 
-    assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with DOB`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = null,
+        name = "John Smith",
+        dob = LocalDate.MIN
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.MIN)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with many components`() {
+      val barcodeRecipient = BarcodeRecipient(
+        barcode = aBarcode(),
+        prisonCode = "BXI",
+        prisonNumber = "A1234BC",
+        name = "John Bobby Smith",
+        dob = null
+      )
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Bobby Smith", dob = null)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
+
+    @Test
+    fun `should create PrisonerSearchRequest given BarcodeRecipient with name with just one component`() {
+      val barcodeRecipient =
+        BarcodeRecipient(barcode = aBarcode(), prisonCode = "BXI", prisonNumber = "A1234BC", name = "John", dob = null)
+      val expectedPrisonSearchRequest =
+        PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "John", dob = null)
+
+      val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
+
+      assertThat(prisonerSearchRequest).isEqualTo(expectedPrisonSearchRequest)
+    }
   }
 
-  @Test
-  fun `should convert to request body given request with date of birth`() {
-    val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
-    val expectedRequestBody = mapOf(
-      "nomsNumber" to null,
-      "firstName" to "John",
-      "lastName" to "Smith",
-      "dateOfBirth" to "1965-02-16"
-    )
+  @Nested
+  inner class ToRequestBody {
+    @Test
+    fun `should convert to request body given request with all fields`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
+      val expectedRequestBody = mapOf(
+        "nomsNumber" to "A1234BC",
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to "1965-02-16"
+      )
 
-    assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request with date of birth`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.of(1965, 2, 16))
+      val expectedRequestBody = mapOf(
+        "nomsNumber" to null,
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to "1965-02-16"
+      )
+
+      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request with prison number`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
+      val expectedRequestBody = mapOf(
+        "nomsNumber" to "A1234BC",
+        "firstName" to "John",
+        "lastName" to "Smith",
+        "dateOfBirth" to null
+      )
+
+      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+    }
+
+    @Test
+    fun `should convert to request body given request without firstname`() {
+      val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "Smith", dob = null)
+      val expectedRequestBody = mapOf(
+        "nomsNumber" to "A1234BC",
+        "firstName" to null,
+        "lastName" to "Smith",
+        "dateOfBirth" to null
+      )
+
+      assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
+    }
   }
 
-  @Test
-  fun `should convert to request body given request with prison number`() {
-    val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
-    val expectedRequestBody = mapOf(
-      "nomsNumber" to "A1234BC",
-      "firstName" to "John",
-      "lastName" to "Smith",
-      "dateOfBirth" to null
-    )
-
-    assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
-  }
-
-  @Test
-  fun `should convert to request body given request without firstname`() {
-    val prisonerSearchRequest = PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = null, lastName = "Smith", dob = null)
-    val expectedRequestBody = mapOf(
-      "nomsNumber" to "A1234BC",
-      "firstName" to null,
-      "lastName" to "Smith",
-      "dateOfBirth" to null
-    )
-
-    assertThat(prisonerSearchRequest.toRequestBody()).isEqualTo(expectedRequestBody)
-  }
+  private fun aBarcode() = Barcode("SOME_BARCODE")
 }
