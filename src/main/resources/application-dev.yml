@@ -23,6 +23,9 @@ mailcatcher.api.port: 1080
 hmpps:
   auth:
     url: http://localhost:9090/auth
+prisoner:
+  search:
+    url: http://localhost:9092
 
 app:
   jwt:

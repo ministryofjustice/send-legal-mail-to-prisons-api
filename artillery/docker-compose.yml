@@ -9,6 +9,7 @@
 # * send-legal-mail-to-prisons-api - 10080
 # * hmpps-auth - 10081
 # * mailcatcher - 10082
+# * prisoner-search (wiremock) - 10083
 
 version: '3.1'
 services:
@@ -24,6 +25,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev,stdout,postgres
       - SPRING_DATASOURCE_URL=jdbc:postgresql://send-legal-mail-api-db:5432/send_legal_mail_api_db
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
+      - PRISONER_SEARCH_URL=http://wiremock:8080
       - SPRING_MAIL_HOST=mailcatcher
       - APP_S3_LOCALSTACKURL=localstack
       - SPRING_REDIS_HOST=send-legal-mail-api-cache
@@ -85,6 +87,13 @@ services:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
       - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
+
+  wiremock:
+    image: wiremock/wiremock:2.32.0
+    networks:
+      - artillery
+    ports:
+      - "10083:8080"
 
 networks:
   artillery:
