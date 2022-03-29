@@ -6,14 +6,13 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
-import java.util.stream.Collectors
 
 private val log = KotlinLogging.logger {}
 
 @Service
 class PrisonerSearchService(private val prisonerSearchClient: PrisonerSearchClient) {
   fun lookupPrisoner(barcodeRecipient: BarcodeRecipient) {
-    val prisonerSearchRequest = prisonerSearchRequest(barcodeRecipient)
+    val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
     prisonerSearchClient.matchPrisoners(prisonerSearchRequest)
       .onErrorResume {
         with(it) {
@@ -38,16 +37,3 @@ class PrisonerSearchService(private val prisonerSearchClient: PrisonerSearchClie
       }
   }
 }
-
-fun prisonerSearchRequest(barcodeRecipient: BarcodeRecipient): PrisonerSearchRequest {
-  val names = barcodeRecipient.name.split(" ")
-  val firstName: String? = names.firstElementIfMoreThan1ElementElseNull()
-  val lastName: String = names.secondAndBeyondElementsIfMoreThan1ElementElseAllElements()
-  return PrisonerSearchRequest(barcodeRecipient.prisonNumber, firstName, lastName, barcodeRecipient.dob)
-}
-
-private fun List<String>.firstElementIfMoreThan1ElementElseNull(): String? =
-  if (this.size > 1) this[0] else null
-
-private fun List<String>.secondAndBeyondElementsIfMoreThan1ElementElseAllElements(): String =
-  if (this.size > 1) this.stream().skip(1).collect(Collectors.joining(" ")) else this.stream().collect(Collectors.joining(" "))
