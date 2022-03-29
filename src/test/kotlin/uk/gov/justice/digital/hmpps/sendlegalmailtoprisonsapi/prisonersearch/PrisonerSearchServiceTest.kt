@@ -13,11 +13,13 @@ import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatches
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatches.MatchedBy.aLLSUPPLIED
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.Barcode
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
 import java.time.LocalDate
 
 class PrisonerSearchServiceTest {
   val prisonerSearchClient = mock<PrisonerSearchClient>()
-  val prisonerSearchService = PrisonerSearchService(prisonerSearchClient)
+  val userContext = mock<UserContext>()
+  val prisonerSearchService = PrisonerSearchService(prisonerSearchClient, userContext)
 
   @Nested
   inner class LookupPrisoner {
