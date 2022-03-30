@@ -7,6 +7,7 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.springframework.web.reactive.function.client.WebClientResponseException.create
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.prisonersearch.model.PagePrisoner
 import uk.gov.justice.digital.hmpps.prisonersearch.model.Prisoner
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatch
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatches
@@ -35,6 +36,10 @@ class PrisonerSearchServiceTest {
       given { prisonerSearchClient.matchPrisoners(any()) }.willReturn(
         Mono.just(aMatchPrisonersResponse())
       )
+      given { prisonerSearchClient.globalSearch(any()) }.willReturn(
+        Mono.just(aGlobalSearchResponse())
+      )
+      given { userContext.caseload }.willReturn("BXI")
 
       prisonerSearchService.lookupPrisoner(barcodeRecipient)
       // nothing to assert at this stage
@@ -50,6 +55,9 @@ class PrisonerSearchServiceTest {
         dob = null
       )
       given { prisonerSearchClient.matchPrisoners(any()) }.willReturn(
+        Mono.error(create(403, "Forbidden", null, null, null))
+      )
+      given { prisonerSearchClient.globalSearch(any()) }.willReturn(
         Mono.error(create(403, "Forbidden", null, null, null))
       )
 
@@ -74,6 +82,23 @@ class PrisonerSearchServiceTest {
           status = "ACTIVE IN",
           restrictedPatient = false
         )
+      )
+    )
+  )
+
+  private fun aGlobalSearchResponse() = PagePrisoner(
+    totalElements = 1,
+    totalPages = 1,
+    content = listOf(
+      Prisoner(
+        prisonerNumber = "A1234BC",
+        firstName = "John",
+        lastName = "Smith",
+        dateOfBirth = LocalDate.MIN,
+        prisonId = "BXI",
+        cellLocation = "2-2-015",
+        status = "ACTIVE IN",
+        restrictedPatient = false
       )
     )
   )

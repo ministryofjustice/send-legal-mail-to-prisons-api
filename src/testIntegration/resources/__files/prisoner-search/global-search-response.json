@@ -1,0 +1,71 @@
+{
+  "content": [
+    {
+      "prisonerNumber": "A1234AA",
+      "bookingId": "1201102",
+      "bookNumber": "38518A",
+      "firstName": "DOUGAL",
+      "lastName": "WOW",
+      "dateOfBirth": "1940-12-20",
+      "gender": "Male",
+      "youthOffender": false,
+      "status": "ACTIVE IN",
+      "lastMovementTypeCode": "ADM",
+      "lastMovementReasonCode": "24",
+      "inOutStatus": "IN",
+      "prisonId": "MDI",
+      "prisonName": "Moorland (HMP & YOI)",
+      "cellLocation": "2-2-015",
+      "aliases": [
+        {
+          "firstName": "DOUGLAS",
+          "lastName": "ADORNO",
+          "dateOfBirth": "1939-11-19",
+          "gender": "Male",
+          "ethnicity": "Asian/Asian British: Indian"
+        }
+      ],
+      "alerts": [
+        {
+          "alertType": "H",
+          "alertCode": "HA2",
+          "active": true,
+          "expired": false
+        }
+      ],
+      "legalStatus": "RECALL",
+      "imprisonmentStatus": "CUR_ORA",
+      "imprisonmentStatusDescription": "ORA Recalled from Curfew Conditions",
+      "recall": true,
+      "indeterminateSentence": false,
+      "receptionDate": "2021-01-08",
+      "locationDescription": "Moorland (HMP & YOI)",
+      "restrictedPatient": false
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "offset": 0,
+    "pageSize": 10,
+    "pageNumber": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": true,
+  "totalElements": 1,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0,
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "first": true,
+  "numberOfElements": 1,
+  "empty": false
+}

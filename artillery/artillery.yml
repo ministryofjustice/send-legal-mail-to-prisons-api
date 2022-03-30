@@ -28,7 +28,7 @@ before:
         headers:
           'Content-Type': 'application/json'
         json:
-          name: 'Return no matching prisoners'
+          name: 'match-prisoners - Return no matching prisoners'
           request:
             urlPath: '/match-prisoners'
           response:
@@ -38,6 +38,22 @@ before:
             jsonBody:
               matchedBy: NOTHING
               matches: []
+    - post:
+        url: '{{ prisoner_search_auth_url }}/__admin/mappings'
+        headers:
+          'Content-Type': 'application/json'
+        json:
+          name: 'global-search - Return no matching prisoners'
+          request:
+            urlPath: '/global-search'
+          response:
+            status: 200
+            headers:
+              'Content-Type': 'application/json'
+            jsonBody:
+              totalElements: 0
+              totalPages: 1
+              content: []
     - log: 'Get HMPPS Auth System Token'
     - post:
         beforeRequest: 'setHmppsBasicAuthDigest'

@@ -56,6 +56,7 @@ class SmoketestTest : BarcodeResourceTest() {
       barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
       barcodeRecipientRepository.save(BarcodeRecipient(barcode = barcode, prisonNumber = "A1234BC", name = "John Smith", prisonCode = "BXI"))
       PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
+      PrisonerSearchExtension.prisonerSearchApi.stubGlobalSearch()
 
       webTestClient.post()
         .uri("/barcode/check")
@@ -69,7 +70,9 @@ class SmoketestTest : BarcodeResourceTest() {
       val checkedEvent = barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(barcode, BarcodeEventType.CHECKED).first()
 
       assertThat(checkedEvent.location).isEqualTo("SKI") // LEI is stubbed by Auth but SKI is hardcoded for smoke tests
-      await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+      with(PrisonerSearchExtension.prisonerSearchApi) {
+        await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+      }
     }
   }
 

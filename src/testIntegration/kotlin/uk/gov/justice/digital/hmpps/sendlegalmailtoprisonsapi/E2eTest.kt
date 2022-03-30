@@ -32,6 +32,7 @@ class E2eTest(
   @BeforeEach
   fun `mock prisoner search response`() {
     PrisonerSearchExtension.prisonerSearchApi.stubMatchPrisoners()
+    PrisonerSearchExtension.prisonerSearchApi.stubGlobalSearch()
   }
 
   @AfterEach
@@ -49,7 +50,9 @@ class E2eTest(
 
     requestCheckBarcodeOk(barcode)
     requestCheckBarcodeDuplicate(barcode)
-    await until { PrisonerSearchExtension.prisonerSearchApi.matchPrisonersHasBeenCalled() }
+    with(PrisonerSearchExtension.prisonerSearchApi) {
+      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
+    }
   }
 
   private fun requestMagicLink(email: String) {
