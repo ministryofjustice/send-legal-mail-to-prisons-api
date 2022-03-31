@@ -104,7 +104,7 @@ class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler
   }
 }
 
-class ValidationException(val errorCode: ErrorCode) : RuntimeException()
+class ValidationException(val errorCode: ErrorCode) : RuntimeException(errorCode.code)
 
 class DuplicateContactException(val userId: String, val prisonNumber: String) : RuntimeException()
 
