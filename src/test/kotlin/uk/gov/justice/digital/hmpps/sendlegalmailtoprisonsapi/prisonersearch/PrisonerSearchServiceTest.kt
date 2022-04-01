@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.springframework.web.reactive.function.client.WebClientResponseException.create
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PagePrisoner
@@ -19,8 +21,9 @@ import java.time.LocalDate
 
 class PrisonerSearchServiceTest {
   val prisonerSearchClient = mock<PrisonerSearchClient>()
+  val prisonerSearchResultsProcessor = mock<PrisonerSearchResultsProcessor>()
   val userContext = mock<UserContext>()
-  val prisonerSearchService = PrisonerSearchService(prisonerSearchClient, userContext)
+  val prisonerSearchService = PrisonerSearchService(prisonerSearchClient, prisonerSearchResultsProcessor, userContext)
 
   @Nested
   inner class LookupPrisoner {
@@ -40,9 +43,12 @@ class PrisonerSearchServiceTest {
         Mono.just(aGlobalSearchResponse())
       )
       given { userContext.caseload }.willReturn("BXI")
+      val expectedPrisonerSearchRequest = PrisonerSearchRequest("A1234BC", "John", "Smith", null)
 
       prisonerSearchService.lookupPrisoner(barcodeRecipient)
-      // nothing to assert at this stage
+
+      verify(prisonerSearchResultsProcessor).processSearchResults(aMatchPrisonersResponse(), expectedPrisonerSearchRequest, "BXI")
+      verify(prisonerSearchResultsProcessor).processSearchResults(aGlobalSearchResponse(), expectedPrisonerSearchRequest, "BXI")
     }
 
     @Test
@@ -62,7 +68,8 @@ class PrisonerSearchServiceTest {
       )
 
       prisonerSearchService.lookupPrisoner(barcodeRecipient)
-      // nothing to assert at this stage
+
+      verifyNoInteractions(prisonerSearchResultsProcessor)
     }
   }
 
