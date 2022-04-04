@@ -19,9 +19,9 @@ class PrisonerMatchCountTest {
         aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH")
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 1, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 1, aliasDetailsCount = 0, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -38,9 +38,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 1))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 1, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -57,9 +57,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 1, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 1, aliasDetailsCount = 0, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -74,9 +74,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
     }
 
     @Test
@@ -85,9 +85,9 @@ class PrisonerMatchCountTest {
         aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH")
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
     }
   }
 
@@ -102,9 +102,9 @@ class PrisonerMatchCountTest {
         aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH", dateOfBirth = dob)
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 1, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 1, aliasDetailsCount = 0, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -115,9 +115,9 @@ class PrisonerMatchCountTest {
         aPrisoner.copy(prisonerNumber = "C1234BC", firstName = "JOHN", lastName = "SMITH", dateOfBirth = LocalDate.MAX),
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 1, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 1, aliasDetailsCount = 0, bestMatch = prisoners[1]))
     }
 
     @Test
@@ -134,9 +134,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 1))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 1, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -151,9 +151,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 1))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 1, bestMatch = prisoners[0]))
     }
 
     @Test
@@ -189,9 +189,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 1, aliasDetailsCount = 2))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 1, aliasDetailsCount = 2, bestMatch = null))
     }
 
     @Test
@@ -206,9 +206,9 @@ class PrisonerMatchCountTest {
         )
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
     }
 
     @Test
@@ -217,9 +217,26 @@ class PrisonerMatchCountTest {
         aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
       )
 
-      val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-      assertThat(prisonerMatchCount).isEqualTo(PrisonerMatchCount(mainDetailsCount = 0, aliasDetailsCount = 0))
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
+    }
+
+    @Test
+    fun `alias has dob that doesnt match but name does, and another alias that matches the dob but not the name`() {
+      val prisoners = listOf(
+        aPrisoner.copy(
+          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          aliases = listOf(
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+            PrisonerAlias("John", lastName = "SMITHSON", dateOfBirth = dob)
+          )
+        )
+      )
+
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
+
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
     }
   }
 
