@@ -221,6 +221,23 @@ class PrisonerMatchCountTest {
 
       assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
     }
+
+    @Test
+    fun `alias has dob that doesnt match but name does, and another alias that matches the dob but not the name`() {
+      val prisoners = listOf(
+        aPrisoner.copy(
+          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          aliases = listOf(
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+            PrisonerAlias("John", lastName = "SMITHSON", dateOfBirth = dob)
+          )
+        )
+      )
+
+      val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
+
+      assertThat(prisonerMatch).isEqualTo(PrisonerMatch(mainDetailsCount = 0, aliasDetailsCount = 0, bestMatch = null))
+    }
   }
 
   private val aPrisoner = Prisoner(restrictedPatient = false)
