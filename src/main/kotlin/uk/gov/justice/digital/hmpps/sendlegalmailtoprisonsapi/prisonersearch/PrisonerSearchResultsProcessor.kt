@@ -28,7 +28,8 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
         searchType = prisonerSearchRequest.searchType,
         numberOfResults = prisoners.size,
         exactMatchCount = prisonerMatch.mainDetailsCount,
-        aliasExactMatchCount = prisonerMatch.aliasDetailsCount
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount,
+        matchedBy = prisonerMatches.matchedBy.value
       )
     ) {
       telemetryClient.trackEvent("prisoner-search-summary", this, null)

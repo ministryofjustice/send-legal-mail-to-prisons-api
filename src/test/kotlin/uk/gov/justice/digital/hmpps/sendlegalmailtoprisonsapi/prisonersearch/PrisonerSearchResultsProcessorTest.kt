@@ -32,7 +32,8 @@ class PrisonerSearchResultsProcessorTest {
       "numberOfResults" to "1",
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
-      "singleResultIdentified" to "true"
+      "singleResultIdentified" to "true",
+      "matchedBy" to "ALL_SUPPLIED"
     )
     val expectedBestMatchCustomDimensions = mapOf(
       "status" to null,
@@ -63,7 +64,8 @@ class PrisonerSearchResultsProcessorTest {
       "numberOfResults" to "1",
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
-      "singleResultIdentified" to "true"
+      "singleResultIdentified" to "true",
+      "matchedBy" to null
     )
     val expectedBestMatchCustomDimensions = mapOf(
       "status" to null,
