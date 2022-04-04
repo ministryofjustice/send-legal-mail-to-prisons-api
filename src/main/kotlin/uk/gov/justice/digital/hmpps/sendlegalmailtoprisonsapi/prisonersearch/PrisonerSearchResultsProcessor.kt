@@ -64,7 +64,7 @@ private val PrisonerSearchRequest.searchType: PrisonerSearchType
 data class PrisonerMatch(
   val mainDetailsCount: Int,
   val aliasDetailsCount: Int,
-  val bestMatch: Prisoner? = null
+  val bestMatch: Prisoner?
 ) {
   companion object {
     fun of(prisoners: List<Prisoner>, prisonerSearchRequest: PrisonerSearchRequest): PrisonerMatch {
@@ -83,7 +83,8 @@ data class PrisonerMatch(
 
         return PrisonerMatch(
           mainDetailsCount = prisonersMatchingMainDetails.size,
-          aliasDetailsCount = prisonersMatchingAliasDetails.size
+          aliasDetailsCount = prisonersMatchingAliasDetails.size,
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
         )
       } else {
         // Match prisoners on main name and DOB, or alias name and DOB
@@ -98,7 +99,8 @@ data class PrisonerMatch(
 
         return PrisonerMatch(
           mainDetailsCount = prisonersMatchingMainDetails.size,
-          aliasDetailsCount = prisonersMatchingAliasDetails.size
+          aliasDetailsCount = prisonersMatchingAliasDetails.size,
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
         )
       }
     }
@@ -117,5 +119,12 @@ data class PrisonerMatch(
 
     private fun PrisonerAlias.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
       dateOfBirth == prisonerSearchRequest.dob
+
+    private fun bestPrisonerMatch(prisonersMatchingMainDetails: Collection<Prisoner>, prisonersMatchingAliasDetails: Collection<Prisoner>): Prisoner? =
+      if (prisonersMatchingMainDetails.size + prisonersMatchingAliasDetails.size != 1) {
+        null
+      } else {
+        if (prisonersMatchingMainDetails.isNotEmpty()) prisonersMatchingMainDetails.first() else prisonersMatchingAliasDetails.first()
+      }
   }
 }
