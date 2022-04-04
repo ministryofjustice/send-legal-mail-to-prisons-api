@@ -13,8 +13,7 @@ import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatches.Matched
 class PrisonerSearchResultsProcessorTest {
 
   private val telemetryClient = mock<TelemetryClient>()
-  private val prisonerSearchResultsLogger = mock<PrisonerSearchResultsLogger>()
-  private val prisonerSearchResultsProcessor = PrisonerSearchResultsProcessor(telemetryClient, prisonerSearchResultsLogger)
+  private val prisonerSearchResultsProcessor = PrisonerSearchResultsProcessor(telemetryClient)
 
   val prisonerSearchRequest = PrisonerSearchRequest("A1234BC", "John", "Smith", null)
   val caseload = "BXI"
@@ -33,13 +32,23 @@ class PrisonerSearchResultsProcessorTest {
       "numberOfResults" to "1",
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
-      "singleResultIdentified" to "true"
+      "singleResultIdentified" to "true",
+      "matchedBy" to "ALL_SUPPLIED"
+    )
+    val expectedBestMatchCustomDimensions = mapOf(
+      "status" to null,
+      "inOutStatus" to null,
+      "legalStatus" to null,
+      "lastMovementTypeCode" to null,
+      "lastMovementReasonCode" to null,
+      "forwardingRequired" to "true",
+      "hasCellLocation" to "false"
     )
 
     prisonerSearchResultsProcessor.processSearchResults(prisonerMatches, prisonerSearchRequest, caseload)
 
-    verify(telemetryClient).trackEvent("prisoner-search", expectedCustomDimensions, null)
-    verify(prisonerSearchResultsLogger).logResults(prisonerMatches, prisonerSearchRequest, caseload)
+    verify(telemetryClient).trackEvent("prisoner-search-summary", expectedCustomDimensions, null)
+    verify(telemetryClient).trackEvent("prisoner-search-best-match", expectedBestMatchCustomDimensions, null)
   }
 
   @Test
@@ -49,18 +58,28 @@ class PrisonerSearchResultsProcessorTest {
         Prisoner(restrictedPatient = false, prisonerNumber = "A1234BC", firstName = "John", lastName = "Smith")
       )
     )
-    val expectedCustomDimensions = mapOf(
+    val expectedSummaryCustomDimensions = mapOf(
       "dataSource" to "GLOBAL_SEARCH",
       "searchType" to "PRISON_NUMBER",
       "numberOfResults" to "1",
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
-      "singleResultIdentified" to "true"
+      "singleResultIdentified" to "true",
+      "matchedBy" to null
+    )
+    val expectedBestMatchCustomDimensions = mapOf(
+      "status" to null,
+      "inOutStatus" to null,
+      "legalStatus" to null,
+      "lastMovementTypeCode" to null,
+      "lastMovementReasonCode" to null,
+      "forwardingRequired" to "true",
+      "hasCellLocation" to "false"
     )
 
     prisonerSearchResultsProcessor.processSearchResults(pagePrisoner, prisonerSearchRequest, caseload)
 
-    verify(telemetryClient).trackEvent("prisoner-search", expectedCustomDimensions, null)
-    verify(prisonerSearchResultsLogger).logResults(pagePrisoner, prisonerSearchRequest, caseload)
+    verify(telemetryClient).trackEvent("prisoner-search-summary", expectedSummaryCustomDimensions, null)
+    verify(telemetryClient).trackEvent("prisoner-search-best-match", expectedBestMatchCustomDimensions, null)
   }
 }

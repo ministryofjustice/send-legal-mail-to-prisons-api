@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PagePrisoner
 import uk.gov.justice.digital.hmpps.prisonersearch.model.Prisoner
+import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerAlias
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PrisonerMatches
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchDataSource.GLOBAL_SEARCH
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchDataSource.MATCH_PRISONERS
@@ -11,29 +12,34 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.Pri
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchType.PRISON_NUMBER
 
 @Component
-class PrisonerSearchResultsProcessor(
-  private val telemetryClient: TelemetryClient,
-  private val prisonerSearchResultsLogger: PrisonerSearchResultsLogger,
-) {
+class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClient) {
 
   fun processSearchResults(
     prisonerMatches: PrisonerMatches,
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String
   ) {
-    prisonerSearchResultsLogger.logResults(prisonerMatches, prisonerSearchRequest, caseload)
-
     val prisoners = prisonerMatches.matches.map { it.prisoner }
-    val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
-    val customDimensions = PrisonerSearchCustomDimensions(
-      dataSource = MATCH_PRISONERS,
-      searchType = prisonerSearchRequest.searchType,
-      numberOfResults = prisoners.size,
-      exactMatchCount = prisonerMatchCount.mainDetailsCount,
-      aliasExactMatchCount = prisonerMatchCount.aliasDetailsCount
-    ).asMap()
+    val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-    telemetryClient.trackEvent("prisoner-search", customDimensions, null)
+    with(
+      prisonerSearchSummaryCustomDimensions(
+        dataSource = MATCH_PRISONERS,
+        searchType = prisonerSearchRequest.searchType,
+        numberOfResults = prisoners.size,
+        exactMatchCount = prisonerMatch.mainDetailsCount,
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount,
+        matchedBy = prisonerMatches.matchedBy.value
+      )
+    ) {
+      telemetryClient.trackEvent("prisoner-search-summary", this, null)
+    }
+
+    prisonerMatch.bestMatch?.also {
+      with(prisonerSearchBestMatchCustomDimensions(it, caseload)) {
+        telemetryClient.trackEvent("prisoner-search-best-match", this, null)
+      }
+    }
   }
 
   fun processSearchResults(
@@ -41,64 +47,96 @@ class PrisonerSearchResultsProcessor(
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String
   ) {
-    prisonerSearchResultsLogger.logResults(pagePrisoner, prisonerSearchRequest, caseload)
-
     val prisoners = pagePrisoner.content ?: emptyList()
-    val prisonerMatchCount = PrisonerMatchCount.of(prisoners, prisonerSearchRequest)
-    val customDimensions = PrisonerSearchCustomDimensions(
-      dataSource = GLOBAL_SEARCH,
-      searchType = prisonerSearchRequest.searchType,
-      numberOfResults = prisoners.size,
-      exactMatchCount = prisonerMatchCount.mainDetailsCount,
-      aliasExactMatchCount = prisonerMatchCount.aliasDetailsCount
-    ).asMap()
+    val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
-    telemetryClient.trackEvent("prisoner-search", customDimensions, null)
+    with(
+      prisonerSearchSummaryCustomDimensions(
+        dataSource = GLOBAL_SEARCH,
+        searchType = prisonerSearchRequest.searchType,
+        numberOfResults = prisoners.size,
+        exactMatchCount = prisonerMatch.mainDetailsCount,
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount
+      )
+    ) {
+      telemetryClient.trackEvent("prisoner-search-summary", this, null)
+    }
+
+    prisonerMatch.bestMatch?.also {
+      with(prisonerSearchBestMatchCustomDimensions(it, caseload)) {
+        telemetryClient.trackEvent("prisoner-search-best-match", this, null)
+      }
+    }
   }
 }
 
 private val PrisonerSearchRequest.searchType: PrisonerSearchType
   get() = if (prisonNumber != null) PRISON_NUMBER else NAME_DOB
 
-data class PrisonerMatchCount(
+data class PrisonerMatch(
   val mainDetailsCount: Int,
-  val aliasDetailsCount: Int
+  val aliasDetailsCount: Int,
+  val bestMatch: Prisoner?
 ) {
   companion object {
-    fun of(prisoners: List<Prisoner>, prisonerSearchRequest: PrisonerSearchRequest): PrisonerMatchCount {
+    fun of(prisoners: List<Prisoner>, prisonerSearchRequest: PrisonerSearchRequest): PrisonerMatch {
       val totalPrisoners = prisoners.size
 
       if (prisonerSearchRequest.searchType == PRISON_NUMBER) {
-        // Count the prisoners with a match on prison number & main name, or prison number & alias name
-        val prisonersNotMatchingMainDetails = prisoners.filterNot {
-          it.prisonerNumber == prisonerSearchRequest.prisonNumber &&
-            it.firstName?.uppercase() == prisonerSearchRequest.firstName?.uppercase() && it.lastName?.uppercase() == prisonerSearchRequest.lastName.uppercase()
+        // Match prisoners on prison number & main name, or prison number & alias name
+        val prisonersMatchingMainDetails = prisoners.filter {
+          it.matchesName(prisonerSearchRequest) && it.matchesPrisonNumber(prisonerSearchRequest)
+        }.toSet()
+        val prisonersMatchingAliasDetails = (prisoners - prisonersMatchingMainDetails).filter {
+          it.aliases?.any { alias ->
+            it.matchesPrisonNumber(prisonerSearchRequest) && alias.matchesName(prisonerSearchRequest)
+          } == true
         }
-        return PrisonerMatchCount(
-          mainDetailsCount = totalPrisoners - prisonersNotMatchingMainDetails.size,
-          aliasDetailsCount = prisonersNotMatchingMainDetails.count {
-            it.aliases?.any { alias ->
-              it.prisonerNumber == prisonerSearchRequest.prisonNumber &&
-                alias.firstName.uppercase() == prisonerSearchRequest.firstName?.uppercase() && alias.lastName.uppercase() == prisonerSearchRequest.lastName.uppercase()
-            } == true
-          }
+
+        return PrisonerMatch(
+          mainDetailsCount = prisonersMatchingMainDetails.size,
+          aliasDetailsCount = prisonersMatchingAliasDetails.size,
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
         )
       } else {
-        // Count the prisoners with a match on main name and DOB, or alias name and DOB
-        val prisonersNotMatchingMainDetails = prisoners.filterNot {
-          it.firstName?.uppercase() == prisonerSearchRequest.firstName?.uppercase() && it.lastName?.uppercase() == prisonerSearchRequest.lastName.uppercase() &&
-            it.dateOfBirth == prisonerSearchRequest.dob
+        // Match prisoners on main name and DOB, or alias name and DOB
+        val prisonersMatchingMainDetails = prisoners.filter {
+          it.matchesName(prisonerSearchRequest) && it.matchesDateOfBirth(prisonerSearchRequest)
+        }.toSet()
+        val prisonersMatchingAliasDetails = (prisoners - prisonersMatchingMainDetails).filter {
+          it.aliases?.any { alias ->
+            alias.matchesName(prisonerSearchRequest) && alias.matchesDateOfBirth(prisonerSearchRequest)
+          } == true
         }
-        return PrisonerMatchCount(
-          mainDetailsCount = totalPrisoners - prisonersNotMatchingMainDetails.size,
-          aliasDetailsCount = prisonersNotMatchingMainDetails.count {
-            it.aliases?.any { alias ->
-              alias.firstName.uppercase() == prisonerSearchRequest.firstName?.uppercase() && alias.lastName.uppercase() == prisonerSearchRequest.lastName.uppercase() &&
-                alias.dateOfBirth == prisonerSearchRequest.dob
-            } == true
-          }
+
+        return PrisonerMatch(
+          mainDetailsCount = prisonersMatchingMainDetails.size,
+          aliasDetailsCount = prisonersMatchingAliasDetails.size,
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
         )
       }
     }
+
+    private fun Prisoner.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
+      firstName?.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName?.uppercase() == prisonerSearchRequest.lastName.uppercase()
+
+    private fun Prisoner.matchesPrisonNumber(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
+      prisonerNumber == prisonerSearchRequest.prisonNumber
+
+    private fun Prisoner.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
+      dateOfBirth == prisonerSearchRequest.dob
+
+    private fun PrisonerAlias.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
+      firstName.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName.uppercase() == prisonerSearchRequest.lastName.uppercase()
+
+    private fun PrisonerAlias.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
+      dateOfBirth == prisonerSearchRequest.dob
+
+    private fun bestPrisonerMatch(prisonersMatchingMainDetails: Collection<Prisoner>, prisonersMatchingAliasDetails: Collection<Prisoner>): Prisoner? =
+      if (prisonersMatchingMainDetails.size + prisonersMatchingAliasDetails.size != 1) {
+        null
+      } else {
+        if (prisonersMatchingMainDetails.isNotEmpty()) prisonersMatchingMainDetails.first() else prisonersMatchingAliasDetails.first()
+      }
   }
 }
