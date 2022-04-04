@@ -12,29 +12,33 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.Pri
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchType.PRISON_NUMBER
 
 @Component
-class PrisonerSearchResultsProcessor(
-  private val telemetryClient: TelemetryClient,
-  private val prisonerSearchResultsLogger: PrisonerSearchResultsLogger,
-) {
+class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClient) {
 
   fun processSearchResults(
     prisonerMatches: PrisonerMatches,
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String
   ) {
-    prisonerSearchResultsLogger.logResults(prisonerMatches, prisonerSearchRequest, caseload)
-
     val prisoners = prisonerMatches.matches.map { it.prisoner }
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
-    val customDimensions = PrisonerSearchCustomDimensions(
-      dataSource = MATCH_PRISONERS,
-      searchType = prisonerSearchRequest.searchType,
-      numberOfResults = prisoners.size,
-      exactMatchCount = prisonerMatch.mainDetailsCount,
-      aliasExactMatchCount = prisonerMatch.aliasDetailsCount
-    ).asMap()
 
-    telemetryClient.trackEvent("prisoner-search", customDimensions, null)
+    with(
+      prisonerSearchSummaryCustomDimensions(
+        dataSource = MATCH_PRISONERS,
+        searchType = prisonerSearchRequest.searchType,
+        numberOfResults = prisoners.size,
+        exactMatchCount = prisonerMatch.mainDetailsCount,
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount
+      )
+    ) {
+      telemetryClient.trackEvent("prisoner-search-summary", this, null)
+    }
+
+    prisonerMatch.bestMatch?.also {
+      with(prisonerSearchBestMatchCustomDimensions(it, caseload)) {
+        telemetryClient.trackEvent("prisoner-search-best-match", this, null)
+      }
+    }
   }
 
   fun processSearchResults(
@@ -42,19 +46,26 @@ class PrisonerSearchResultsProcessor(
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String
   ) {
-    prisonerSearchResultsLogger.logResults(pagePrisoner, prisonerSearchRequest, caseload)
-
     val prisoners = pagePrisoner.content ?: emptyList()
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
-    val customDimensions = PrisonerSearchCustomDimensions(
-      dataSource = GLOBAL_SEARCH,
-      searchType = prisonerSearchRequest.searchType,
-      numberOfResults = prisoners.size,
-      exactMatchCount = prisonerMatch.mainDetailsCount,
-      aliasExactMatchCount = prisonerMatch.aliasDetailsCount
-    ).asMap()
 
-    telemetryClient.trackEvent("prisoner-search", customDimensions, null)
+    with(
+      prisonerSearchSummaryCustomDimensions(
+        dataSource = GLOBAL_SEARCH,
+        searchType = prisonerSearchRequest.searchType,
+        numberOfResults = prisoners.size,
+        exactMatchCount = prisonerMatch.mainDetailsCount,
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount
+      )
+    ) {
+      telemetryClient.trackEvent("prisoner-search-summary", this, null)
+    }
+
+    prisonerMatch.bestMatch?.also {
+      with(prisonerSearchBestMatchCustomDimensions(it, caseload)) {
+        telemetryClient.trackEvent("prisoner-search-best-match", this, null)
+      }
+    }
   }
 }
 
