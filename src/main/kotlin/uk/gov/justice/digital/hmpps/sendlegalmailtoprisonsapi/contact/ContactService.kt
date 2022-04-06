@@ -42,7 +42,8 @@ class ContactService(private val contactRepository: ContactRepository, private v
     }
 
   fun searchContactsByName(userId: String, name: String): Collection<ContactResponse> =
-    contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name)
+    // We have to uppercase the name due to a deficiency in jpql - see the ContactRepository for more details
+    contactRepository.findContactByOwnerAndNameContainingIgnoreCase(userId, name.uppercase())
       .map { toContactResponse(it) }
 
   fun getContactByPrisonNumber(userId: String, prisonNumber: String): ContactResponse? =
