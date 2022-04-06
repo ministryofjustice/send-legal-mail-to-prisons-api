@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.3"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.6.10"
-  kotlin("plugin.jpa") version "1.6.10"
+  kotlin("plugin.spring") version "1.6.20"
+  kotlin("plugin.jpa") version "1.6.20"
   id("jacoco")
   id("org.openapi.generator") version "5.4.0"
 }
@@ -33,7 +33,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.183")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.192")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -43,7 +43,7 @@ dependencies {
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:4.4.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.31")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.32")
   testImplementation("org.testcontainers:localstack:1.16.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 }

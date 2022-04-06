@@ -294,7 +294,7 @@ class ContactServiceTest {
       val contactResponses = contactService.searchContactsByName("a-user@cjsm.net", "john")
 
       assertThat(contactResponses).isEqualTo(expectedContactResponses)
-      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "john")
+      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "JOHN")
     }
 
     @Test
@@ -304,7 +304,7 @@ class ContactServiceTest {
       val contactResponses = contactService.searchContactsByName("a-user@cjsm.net", "fred")
 
       assertThat(contactResponses).isEmpty()
-      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "fred")
+      then(contactRepository).should().findContactByOwnerAndNameContainingIgnoreCase("a-user@cjsm.net", "FRED")
     }
   }
 
