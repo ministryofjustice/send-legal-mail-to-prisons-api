@@ -41,6 +41,8 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLin
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeConfig
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
@@ -77,6 +79,12 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var magicLinkConfig: MagicLinkConfig
+
+  @Autowired
+  protected lateinit var oneTimeCodeRepository: OneTimeCodeRepository
+
+  @Autowired
+  protected lateinit var oneTimeCodeConfig: OneTimeCodeConfig
 
   @Autowired
   protected lateinit var jwtService: JwtService
