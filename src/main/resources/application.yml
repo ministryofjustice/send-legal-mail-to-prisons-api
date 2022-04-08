@@ -90,6 +90,11 @@ app:
   magiclink:
     secret-expiry: 1h
     url: "http://localhost:3000/link/verify-link"
+  one-time-code:
+    code-expiry: 30m
+    code-length: 4
+    supported-characters: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
+                           'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
   jwt:
     expiry: 7d
   barcode:

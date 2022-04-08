@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@Schema(subTypes = [StandardErrorCodes::class, MagicLinkRequestErrorCodes::class, CheckBarcodeErrorCodes::class])
+@Schema(subTypes = [StandardErrorCodes::class, AuthenticationRequestErrorCodes::class, CheckBarcodeErrorCodes::class])
 sealed class ErrorCode(
   @Schema(description = "The error code", example = "ERROR_IDENTIFIER")
   val code: String,
@@ -29,15 +29,16 @@ object MalformedRequest : StandardErrorCodes("MALFORMED_REQUEST", "Failed to rea
 object NotFound : StandardErrorCodes("NOT_FOUND", "Not found")
 
 @Schema(oneOf = [EmailMandatory::class, EmailTooLong::class, EmailInvalid::class, EmailInvalidCjsm::class])
-sealed class MagicLinkRequestErrorCodes(
+sealed class AuthenticationRequestErrorCodes(
   @Schema(allowableValues = ["EMAIL_MANDATORY", "EMAIL_TOO_LONG", "INVALID_EMAIL", "INVALID_CJSM_EMAIL"])
   code: String,
   userMessage: String
 ) : StandardErrorCodes(code, userMessage)
-object EmailMandatory : MagicLinkRequestErrorCodes("EMAIL_MANDATORY", "The email address must be entered")
-object EmailTooLong : MagicLinkRequestErrorCodes("EMAIL_TOO_LONG", "The email address can have a maximum length of $MAX_EMAIL_LENGTH")
-object EmailInvalid : MagicLinkRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
-object EmailInvalidCjsm : MagicLinkRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
+object SessionIdMandatory : AuthenticationRequestErrorCodes("SESSION_ID_MANDATORY", "The session ID must be entered")
+object EmailMandatory : AuthenticationRequestErrorCodes("EMAIL_MANDATORY", "The email address must be entered")
+object EmailTooLong : AuthenticationRequestErrorCodes("EMAIL_TOO_LONG", "The email address can have a maximum length of $MAX_EMAIL_LENGTH")
+object EmailInvalid : AuthenticationRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
+object EmailInvalidCjsm : AuthenticationRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
 @Schema(oneOf = [DuplicateContact::class])
 sealed class ContactErrorCodes(

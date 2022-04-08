@@ -1,0 +1,152 @@
+package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
+
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalid
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalidCjsm
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailMandatory
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.SessionIdMandatory
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
+
+class OneTimeCodeResourceTest(
+  @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
+) : IntegrationTest() {
+
+  private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
+
+  @Nested
+  inner class CreateMagicLink {
+
+    @AfterEach
+    fun `clear mail server`() {
+      mailCatcherWebClient.delete().uri("/messages").retrieve().bodyToMono(Void::class.java).block()
+    }
+
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `bad request without body`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `bad request with malformed body`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some.email@company.com.cjsm.net" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `bad request with missing email`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "email": "", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo(EmailMandatory.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("email address") }
+    }
+
+    @Test
+    fun `bad request with invalid email`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "email": "invalid@email", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo(EmailInvalid.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("email address") }
+    }
+
+    @Test
+    fun `bad request with non CJSM email`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo(EmailInvalidCjsm.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("cjsm.net") }
+    }
+
+    @Test
+    fun `bad request with empty sessionId`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net", "sessionID": "" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody()
+        .jsonPath("$.errorCode.code").isEqualTo(SessionIdMandatory.code)
+        .jsonPath("$.errorCode.userMessage").value<String> { it.contains("session ID") }
+    }
+
+    @Test
+    fun `saves one time code and sends email`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/email")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "email": "some.email@company.com.cjsm.net", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isCreated
+
+      val savedOneTimeCode = oneTimeCodeRepository.findAll().firstOrNull()
+      val message = mailCatcherWebClient.get()
+        .uri("/messages/1.json")
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(Message::class.java)
+        .block()
+
+      assertThat(message?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
+      assertThat(message?.source).contains(savedOneTimeCode!!.code)
+    }
+  }
+}
