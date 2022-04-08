@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -14,7 +15,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvali
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailMandatory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.SessionIdMandatory
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 
 class OneTimeCodeResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -22,8 +22,13 @@ class OneTimeCodeResourceTest(
 
   private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
 
+  @AfterEach
+  fun `empty repository`() {
+    oneTimeCodeRepository.deleteAll()
+  }
+
   @Nested
-  inner class CreateMagicLink {
+  inner class CreateOneTimeCode {
 
     @AfterEach
     fun `clear mail server`() {
@@ -149,4 +154,89 @@ class OneTimeCodeResourceTest(
       assertThat(message?.source).contains(savedOneTimeCode!!.code)
     }
   }
+
+  @Nested
+  inner class VerifyOneTimeCode {
+
+    @Test
+    fun `unauthorised without a valid auth token`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue("""{ "code": "ABCD", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `bad request without body`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `bad request with malformed body`() {
+      webTestClient.post()
+        .uri("/oneTimeCode/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "didnt-expect-this": "some-secret-value" }"""))
+        .exchange()
+        .expectStatus().isBadRequest
+        .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+    }
+
+    @Test
+    fun `generates a valid JWT for a one time code and deletes the one time code`() {
+      oneTimeCodeRepository.save(OneTimeCode("12345678", "ABCD", "some.email@company.com.cjsm.net"))
+
+      val jwt = webTestClient.post()
+        .uri("/oneTimeCode/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "code": "ABCD", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isCreated
+        .returnResult(VerifyCodeResponse::class.java)
+        .responseBody
+        .blockFirst()
+        ?: fail("Did not receive a response from /oneTimeCode/verify")
+
+      assertThat(oneTimeCodeRepository.findById("12345678")).isEmpty
+      assertThat(jwtService.validateToken(jwt.token)).isTrue
+      assertThat(jwtService.subject(jwt.token)).isEqualTo("some.email@company.com.cjsm.net")
+      assertThat(jwtService.authorities(jwt.token)).containsExactly("ROLE_SLM_CREATE_BARCODE")
+    }
+
+    @Test
+    fun `not found if the one time code doesn't exist`() {
+      assertThat(oneTimeCodeRepository.findById("12345678")).isEmpty
+
+      webTestClient.post()
+        .uri("/oneTimeCode/verify")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(user = null))
+        .body(BodyInserters.fromValue("""{ "code": "XXXX", "sessionID": "12345678" }"""))
+        .exchange()
+        .expectStatus().isNotFound
+
+      assertThat(oneTimeCodeRepository.findById("12345678")).isEmpty
+    }
+  }
 }
+
+data class Message(
+  val id: Int,
+  val recipients: List<String>,
+  val source: String,
+)

@@ -60,13 +60,54 @@ class OneTimeCodeResource(
     oneTimeCodeRequestValidator.validate(request)
     oneTimeCodeService.createAndSendOneTimeCode(request.email, request.sessionID)
   }
+
+  @PostMapping(value = ["/oneTimeCode/verify"])
+  @PreAuthorize("hasRole('ROLE_SLM_EMAIL_LINK')")
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(
+    summary = "Verify a one time code",
+    description = "Verifies a one time code and swaps it for an authentication token if valid.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Authentication token created",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = VerifyCodeResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "Not found, unable to verify the one time code",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun verifyMagicLink(@RequestBody request: VerifyCodeRequest) =
+    VerifyCodeResponse(oneTimeCodeService.verifyOneTimeCode(request.code, request.sessionID))
 }
 
 data class OneTimeCodeRequest(
   @Schema(description = "The CJSM email address to send the one time code to", example = "andrew.barret@company.com.cjsm.net", required = true)
   val email: String,
-  @Schema(description = "The browser session ID")
+  @Schema(description = "The browser session ID", required = true)
   val sessionID: String,
+)
+
+data class VerifyCodeRequest(
+  @Schema(description = "The one time code to verify", required = true)
+  val code: String,
+  @Schema(description = "The browser session ID", required = true)
+  val sessionID: String,
+)
+
+data class VerifyCodeResponse(
+  @Schema(description = "The JWT")
+  val token: String,
 )
 
 const val MAX_EMAIL_LENGTH = 254

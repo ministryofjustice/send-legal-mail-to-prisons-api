@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -41,6 +42,20 @@ class OneTimeCodeResourceTest {
 
       verify(oneTimeCodeRequestValidator).validate(oneTimeCodeRequest)
       verifyNoInteractions(oneTimeCodeService)
+    }
+  }
+
+  @Nested
+  inner class VerifyOneTimeCode {
+    @Test
+    fun `should verify one time code`() {
+      val verifyCodeRequest = VerifyCodeRequest("ABCD", "12345678")
+      given { oneTimeCodeService.verifyOneTimeCode(any(), any()) }.willReturn("a-valid-jwt")
+
+      val verifyCodeResponse = oneTimeCodeResource.verifyMagicLink(verifyCodeRequest)
+
+      assertThat(verifyCodeResponse.token).isEqualTo("a-valid-jwt")
+      verify(oneTimeCodeService).verifyOneTimeCode("ABCD", "12345678")
     }
   }
 }
