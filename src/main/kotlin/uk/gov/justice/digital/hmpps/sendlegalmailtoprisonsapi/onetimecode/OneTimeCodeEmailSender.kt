@@ -17,7 +17,7 @@ class OneTimeCodeEmailSender(
       Your code is:
       %s
 
-      You have %s to use the link.
+      You have %s to use the code.
 
       If you didn't request a code you can ignore this email.
       
@@ -38,7 +38,7 @@ class OneTimeCodeEmailSender(
           %s
         </p>
 
-        <p>You have %s to use the link.</p>
+        <p>You have %s to use the code.</p>
 
         <p>If you didn't request a code you can ignore this email.</p>
 
