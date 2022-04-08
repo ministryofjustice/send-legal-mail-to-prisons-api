@@ -15,7 +15,10 @@ import javax.mail.internet.MimeMultipart
 
 class OneTimeCodeEmailSenderTest {
   private val mockMailSender: JavaMailSender = mock()
-  private val magicLinkEmailSender = OneTimeCodeEmailSender(OneTimeCodeConfig(Duration.of(10, ChronoUnit.MINUTES)), mockMailSender)
+  private val magicLinkEmailSender = OneTimeCodeEmailSender(
+    OneTimeCodeConfig(Duration.of(10, ChronoUnit.MINUTES), 4, listOf('A', 'B', 'C', 'D')),
+    mockMailSender
+  )
 
   @Test
   fun `The mail should be sent to the user with a one time code`() {

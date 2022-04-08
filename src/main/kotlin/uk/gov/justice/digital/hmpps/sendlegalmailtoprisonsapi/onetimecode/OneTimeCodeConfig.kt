@@ -8,4 +8,6 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "app.one-time-code")
 data class OneTimeCodeConfig(
   val codeExpiry: Duration,
+  val codeLength: Int,
+  val supportedCharacters: List<Char>
 )
