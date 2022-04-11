@@ -87,7 +87,7 @@ class OneTimeCodeResource(
       ),
     ]
   )
-  fun verifyMagicLink(@RequestBody request: VerifyCodeRequest) =
+  fun verifyOneTimeCode(@RequestBody request: VerifyCodeRequest) =
     VerifyCodeResponse(oneTimeCodeService.verifyOneTimeCode(request.code, request.sessionID))
 }
 
