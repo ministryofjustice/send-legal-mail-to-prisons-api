@@ -52,7 +52,7 @@ class OneTimeCodeResourceTest {
       val verifyCodeRequest = VerifyCodeRequest("ABCD", "12345678")
       given { oneTimeCodeService.verifyOneTimeCode(any(), any()) }.willReturn("a-valid-jwt")
 
-      val verifyCodeResponse = oneTimeCodeResource.verifyMagicLink(verifyCodeRequest)
+      val verifyCodeResponse = oneTimeCodeResource.verifyOneTimeCode(verifyCodeRequest)
 
       assertThat(verifyCodeResponse.token).isEqualTo("a-valid-jwt")
       verify(oneTimeCodeService).verifyOneTimeCode("ABCD", "12345678")
