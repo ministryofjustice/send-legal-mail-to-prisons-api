@@ -28,7 +28,7 @@ class OneTimeCodeService(
     } else {
       oneTimeCodeRepository.findById(sessionId)
         .orElseGet { throw ResourceNotFoundException("One Time Code not found") }
-        .takeIf { oneTimeCode -> oneTimeCode.code == code }
+        .takeIf { oneTimeCode -> oneTimeCode.code.equals(code, ignoreCase = true) }
         ?.also { oneTimeCodeRepository.deleteById(sessionId) }
         ?.let { oneTimeCode -> jwtService.generateToken(oneTimeCode.email, findOrganisation(oneTimeCode.email)) }
         ?: throw ResourceNotFoundException("One Time Code not found") // TODO - this is where '3 strikes and out' will be handled when we get to that

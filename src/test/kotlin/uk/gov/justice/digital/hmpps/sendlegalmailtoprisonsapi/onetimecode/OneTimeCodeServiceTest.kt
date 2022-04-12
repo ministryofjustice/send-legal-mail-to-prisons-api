@@ -62,6 +62,26 @@ class OneTimeCodeServiceTest {
     verify(jwtService).generateToken(email, organisation)
   }
 
+  @Test
+  fun `should verify one time code case insensitive and delete it given it exists in the repository`() {
+    val email = "someone@somewhere.cjsm.net"
+    val organisation = "Aardvark Lawyers"
+    val sessionId = "12345678"
+    val code = "ABCD"
+    val oneTimeCode = OneTimeCode(sessionId, code, email)
+    given { oneTimeCodeRepository.findById(any()) }.willReturn(Optional.of(oneTimeCode))
+    given { cjsmService.findOrganisation(any()) }.willReturn(organisation)
+    given { jwtService.generateToken(any(), any()) }.willReturn("a-valid-token")
+
+    val token = oneTimeCodeService.verifyOneTimeCode(code.lowercase(), sessionId)
+
+    assertThat(token).isEqualTo("a-valid-token")
+    verify(oneTimeCodeRepository).findById(sessionId)
+    verify(oneTimeCodeRepository).deleteById(sessionId)
+    verify(cjsmService).findOrganisation(email)
+    verify(jwtService).generateToken(email, organisation)
+  }
+
   // The behaviour that this test asserts is vital to supporting a '3 strikes' and out approach as and when we get there
   // IE. not to delete the OneTimeCode from the repository
   @Test
