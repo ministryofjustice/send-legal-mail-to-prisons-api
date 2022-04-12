@@ -30,7 +30,7 @@ object NotFound : StandardErrorCodes("NOT_FOUND", "Not found")
 
 @Schema(oneOf = [EmailMandatory::class, EmailTooLong::class, EmailInvalid::class, EmailInvalidCjsm::class])
 sealed class AuthenticationRequestErrorCodes(
-  @Schema(allowableValues = ["EMAIL_MANDATORY", "EMAIL_TOO_LONG", "INVALID_EMAIL", "INVALID_CJSM_EMAIL"])
+  @Schema(allowableValues = ["SESSION_ID_MANDATORY", "EMAIL_MANDATORY", "EMAIL_TOO_LONG", "INVALID_EMAIL", "INVALID_CJSM_EMAIL"])
   code: String,
   userMessage: String
 ) : StandardErrorCodes(code, userMessage)
