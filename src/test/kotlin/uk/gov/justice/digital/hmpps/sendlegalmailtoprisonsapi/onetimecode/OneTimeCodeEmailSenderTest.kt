@@ -30,7 +30,7 @@ class OneTimeCodeEmailSenderTest {
 
     verify(mockMailSender).send(
       check<MimeMessage> {
-        assertThat(it.subject).isEqualTo("Sign in to Send legal mail to prisons")
+        assertThat(it.subject).isEqualTo("Your code for Send legal mail to prisons")
         assertThat(it.allRecipients.map { recipient -> recipient.toString() })
           .isEqualTo(listOf("an.email@company.com"))
 
