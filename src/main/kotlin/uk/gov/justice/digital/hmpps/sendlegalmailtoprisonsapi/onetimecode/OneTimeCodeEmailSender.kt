@@ -64,7 +64,7 @@ class OneTimeCodeEmailSender(
       .also { mimeMessage ->
         MimeMessageHelper(mimeMessage, true).apply {
           setTo(email)
-          setSubject("Sign in to Send legal mail to prisons")
+          setSubject("Your code for Send legal mail to prisons")
           setText(textBody(oneTmeCode, codeExpiry), htmlBody(oneTmeCode, codeExpiry))
         }
       }
