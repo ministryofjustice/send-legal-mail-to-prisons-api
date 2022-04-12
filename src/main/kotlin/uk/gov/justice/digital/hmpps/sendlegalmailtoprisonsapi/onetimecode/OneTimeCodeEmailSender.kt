@@ -12,16 +12,18 @@ class OneTimeCodeEmailSender(
 
   private companion object {
     val TEXT_BODY_TEMPLATE: String = """
-      You requested a code to sign in to Send legal mail to prisons.
+      Your code for Send legal mail to prisons
+      
+      You need a code to start using Send legal mail to prisons.
 
-      Your code is:
+      Your confirmation code is:
       %s
 
-      You have %s to use the code.
+      You have %s to use the code. You can only use it once.
 
       If you didn't request a code you can ignore this email.
       
-      Send legal mail to prisons team
+      From Send legal mail to prisons team
       Ministry of Justice
     """.trimIndent()
 
@@ -30,20 +32,24 @@ class OneTimeCodeEmailSender(
       <head></head>
       <body>
         <p>
-          You requested a code to sign in to Send legal mail to prisons.
+          <strong>Your code for Send legal mail to prisons</strong>
+        </p>
+        <p>
+          You need a code to start using Send legal mail to prisons.
+        </p>
+        <p>
+          Your confirmation code is:<br/>
+          <strong>%s</strong>
         </p>
 
         <p>
-          Your code is:<br/>
-          %s
+          <strong>You have %s to use the code. You can only use it once.</strong>
         </p>
-
-        <p>You have %s to use the code.</p>
 
         <p>If you didn't request a code you can ignore this email.</p>
 
         <p>
-          <strong>Send legal mail to prisons team</strong><br/>
+          From Send legal mail to prisons team<br/>
           Ministry of Justice
         </p>
       </body>
