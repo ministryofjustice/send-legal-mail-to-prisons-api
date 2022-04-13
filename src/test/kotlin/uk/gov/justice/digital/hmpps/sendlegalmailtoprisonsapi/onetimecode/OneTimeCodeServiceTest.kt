@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
@@ -85,6 +86,7 @@ class OneTimeCodeServiceTest {
   // The behaviour that this test asserts is vital to supporting a '3 strikes' and out approach as and when we get there
   // IE. not to delete the OneTimeCode from the repository
   @Test
+  @Disabled("Implementation does not currently support this as it presents a security risk - SLM-233 should address this")
   fun `should not verify one time code and not delete from the repository given the code does not match`() {
     val email = "someone@somewhere.cjsm.net"
     val sessionId = "12345678"
