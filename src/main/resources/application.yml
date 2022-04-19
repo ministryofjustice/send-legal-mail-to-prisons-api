@@ -93,6 +93,7 @@ app:
   one-time-code:
     code-expiry: 30m
     code-length: 4
+    max-attempts: 6
     supported-characters: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
                            'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
   jwt:

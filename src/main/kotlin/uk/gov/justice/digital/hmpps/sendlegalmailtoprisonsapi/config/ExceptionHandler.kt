@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
@@ -95,6 +96,14 @@ class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler
       .body(ErrorResponse(status = CONFLICT, errorCode = DuplicateContact))
   }
 
+  @ExceptionHandler(OneTimeCodeException::class)
+  fun handleException(e: OneTimeCodeException): ResponseEntity<ErrorResponse?>? {
+    log.info("Failed attempt to resolve a one time code", e)
+    return ResponseEntity
+      .status(UNAUTHORIZED)
+      .body(ErrorResponse(status = UNAUTHORIZED, errorCode = e.errorCode))
+  }
+
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse?>? {
     log.error("Unexpected exception", e)
@@ -109,6 +118,8 @@ class ValidationException(val errorCode: ErrorCode) : RuntimeException(errorCode
 class DuplicateContactException(val userId: String, val prisonNumber: String) : RuntimeException()
 
 class ResourceNotFoundException(message: String) : RuntimeException(message)
+
+class OneTimeCodeException(val errorCode: OneTimeCodeErrorCode) : RuntimeException(errorCode.code)
 
 class ErrorResponse(
   @Schema(description = "The HTTP status code", example = "400")

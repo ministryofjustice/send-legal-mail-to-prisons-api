@@ -40,6 +40,16 @@ object EmailTooLong : AuthenticationRequestErrorCodes("EMAIL_TOO_LONG", "The ema
 object EmailInvalid : AuthenticationRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
 object EmailInvalidCjsm : AuthenticationRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
+@Schema(oneOf = [OneTimeCodeSessionNotFound::class, OneTimeCodeTooManyAttempts::class])
+sealed class OneTimeCodeErrorCode(
+  @Schema(allowableValues = ["OTC_SESSION_NOT_FOUND", "OTC_TOO_MANY_ATTEMPTS", "OTC_NOT_FOUND"])
+  code: String,
+  userMessage: String
+) : StandardErrorCodes(code, userMessage)
+object OneTimeCodeSessionNotFound : OneTimeCodeErrorCode("OTC_SESSION_NOT_FOUND", "There is no one time code saved for the session")
+object OneTimeCodeTooManyAttempts : OneTimeCodeErrorCode("OTC_TOO_MANY_ATTEMPTS", "Too many incorrect one time codes have been attempted")
+object OneTimeCodeNotFound : OneTimeCodeErrorCode("OTC_NOT_FOUND", "The one time code could not be found")
+
 @Schema(oneOf = [DuplicateContact::class])
 sealed class ContactErrorCodes(
   @Schema(allowableValues = ["DUPLICATE_CONTACT"])
