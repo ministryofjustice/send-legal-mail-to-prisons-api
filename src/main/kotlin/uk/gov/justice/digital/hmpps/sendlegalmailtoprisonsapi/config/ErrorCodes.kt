@@ -28,7 +28,7 @@ object InternalError : StandardErrorCodes("INTERNAL_ERROR", "An unexpected error
 object MalformedRequest : StandardErrorCodes("MALFORMED_REQUEST", "Failed to read the payload")
 object NotFound : StandardErrorCodes("NOT_FOUND", "Not found")
 
-@Schema(oneOf = [EmailMandatory::class, EmailTooLong::class, EmailInvalid::class, EmailInvalidCjsm::class])
+@Schema(oneOf = [SessionIdMandatory::class, EmailMandatory::class, EmailTooLong::class, EmailInvalid::class, EmailInvalidCjsm::class])
 sealed class AuthenticationRequestErrorCodes(
   @Schema(allowableValues = ["SESSION_ID_MANDATORY", "EMAIL_MANDATORY", "EMAIL_TOO_LONG", "INVALID_EMAIL", "INVALID_CJSM_EMAIL"])
   code: String,
