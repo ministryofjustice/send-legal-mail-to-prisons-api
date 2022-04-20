@@ -10,7 +10,8 @@ class OneTimeCodeGeneratorTest {
   private val oneTimeCodeConfig = OneTimeCodeConfig(
     codeExpiry = Duration.of(10, ChronoUnit.MINUTES),
     codeLength = 6,
-    supportedCharacters = listOf('A', 'B', 'C', 'D', 'E', 'F')
+    supportedCharacters = listOf('A', 'B', 'C', 'D', 'E', 'F'),
+    maxAttempts = 6,
   )
   private val oneTimeCodeGenerator = OneTimeCodeGenerator(oneTimeCodeConfig)
 

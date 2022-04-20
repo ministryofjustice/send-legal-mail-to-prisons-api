@@ -22,11 +22,6 @@ class OneTimeCodeResourceTest(
 
   private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
 
-  @AfterEach
-  fun `empty repository`() {
-    oneTimeCodeRepository.deleteAll()
-  }
-
   @Nested
   inner class CreateOneTimeCode {
 
@@ -197,6 +192,7 @@ class OneTimeCodeResourceTest(
     @Test
     fun `generates a valid JWT for a one time code and deletes the one time code`() {
       oneTimeCodeRepository.save(OneTimeCode("12345678", "ABCD", "some.email@company.com.cjsm.net"))
+      oneTimeCodeAttemptsRepository.save(OneTimeCodeAttempts("12345678", setOf()))
 
       val jwt = webTestClient.post()
         .uri("/oneTimeCode/verify")
@@ -218,7 +214,7 @@ class OneTimeCodeResourceTest(
     }
 
     @Test
-    fun `not found if the one time code doesn't exist`() {
+    fun `unauthorised if the one time code doesn't exist`() {
       assertThat(oneTimeCodeRepository.findById("12345678")).isEmpty
 
       webTestClient.post()
@@ -228,7 +224,7 @@ class OneTimeCodeResourceTest(
         .headers(setAuthorisation(user = null))
         .body(BodyInserters.fromValue("""{ "code": "XXXX", "sessionID": "12345678" }"""))
         .exchange()
-        .expectStatus().isNotFound
+        .expectStatus().isUnauthorized
 
       assertThat(oneTimeCodeRepository.findById("12345678")).isEmpty
     }

@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLin
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeAttemptsRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
@@ -82,6 +83,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var oneTimeCodeRepository: OneTimeCodeRepository
+
+  @Autowired
+  protected lateinit var oneTimeCodeAttemptsRepository: OneTimeCodeAttemptsRepository
 
   @Autowired
   protected lateinit var oneTimeCodeConfig: OneTimeCodeConfig
@@ -135,6 +139,8 @@ abstract class IntegrationTest {
     magicLinkSecretRepository.deleteAll()
     cjsmDirectoryRepository.deleteAll()
     contactRepository.deleteAll()
+    oneTimeCodeRepository.deleteAll()
+    oneTimeCodeAttemptsRepository.deleteAll()
   }
 
   @AfterEach

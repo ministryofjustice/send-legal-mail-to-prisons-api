@@ -9,5 +9,6 @@ import java.time.Duration
 data class OneTimeCodeConfig(
   val codeExpiry: Duration,
   val codeLength: Int,
-  val supportedCharacters: List<Char>
+  val supportedCharacters: List<Char>,
+  val maxAttempts: Int,
 )
