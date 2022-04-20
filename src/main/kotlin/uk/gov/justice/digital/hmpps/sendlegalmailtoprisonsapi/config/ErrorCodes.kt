@@ -40,7 +40,7 @@ object EmailTooLong : AuthenticationRequestErrorCodes("EMAIL_TOO_LONG", "The ema
 object EmailInvalid : AuthenticationRequestErrorCodes("INVALID_EMAIL", "Enter an email address in the correct format")
 object EmailInvalidCjsm : AuthenticationRequestErrorCodes("INVALID_CJSM_EMAIL", "Enter an email address which ends with 'cjsm.net'")
 
-@Schema(oneOf = [OneTimeCodeSessionNotFound::class, OneTimeCodeTooManyAttempts::class])
+@Schema(oneOf = [OneTimeCodeSessionNotFound::class, OneTimeCodeTooManyAttempts::class, OneTimeCodeNotFound::class])
 sealed class OneTimeCodeErrorCode(
   @Schema(allowableValues = ["OTC_SESSION_NOT_FOUND", "OTC_TOO_MANY_ATTEMPTS", "OTC_NOT_FOUND"])
   code: String,
