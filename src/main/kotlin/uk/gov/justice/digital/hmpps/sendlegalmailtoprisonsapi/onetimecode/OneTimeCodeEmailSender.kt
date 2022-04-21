@@ -60,9 +60,7 @@ class OneTimeCodeEmailSender(
 
                                 </td>
                                 <td style="font-family:Helvetica,Arial,sans-serif;padding:4px 0;border-bottom:solid 10px #005ea5">
-
                                     <a href="https://www.gov.uk/" title="Go to the GOV.UK homepage" style="font-size:24px;font-weight:bold;text-decoration:none;color:#ffffff" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://www.gov.uk/&amp;source=gmail&amp;ust=1648555909470000&amp;usg=AOvVaw2uN4hTGDbOHXGNCBJLkYyo">HMPPS</a>
-
                                 </td>
                             </tr>
                             </tbody>
@@ -74,20 +72,14 @@ class OneTimeCodeEmailSender(
                         <table style="background:#ffffff" width="100%" cellspacing="0" cellpadding="0">
                             <tbody>
                             <tr>
-                                <td style="font-family:Helvetica,Arial,sans-serif;padding:25px 20px 20px">
+                                <td style="font-family:Helvetica,Arial,sans-serif;padding:25px 20px 20px;line-height:1.11111">
                                     <h1 style="margin:0 0 30px;font-size:36px">Your code for Send legal mail to prisons</h1>
-
-                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:19px">You need a code to start using Send legal mail to prisons.</p>
-                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:19px">
-                                        Your confirmation code is:</p>
-                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:24px;font-weight:700;">$oneTimeCode</p>
-
-                                    <p style="border-left: 10px solid #b1b4b6;display:block;font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:19px;font-weight:700;padding-left:10px;"><br>You have $codeExpiry to use the code. You can use it only once.<br><br></p>
-                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:19px;">
-                                        If you didn't request a code you can ignore this email.</p>
-
-                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 30px;font-size:19px">
-                                        From Send legal mail to prisons team<br> Ministry of Justice</p>
+                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:19px">You need a code to start using Send legal mail to prisons.</p>
+                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:19px">Your confirmation code is:</p>
+                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:24px;font-weight:700;">$oneTimeCode</p>
+                                    <p style="border-left: 10px solid #b1b4b6;display:block;font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:19px;font-weight:700;padding-left:10px;"><br>You have $codeExpiry to use the code. You can use it only once.<br><br></p>
+                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:19px;">If you didn't request a code you can ignore this email.</p>
+                                    <p style="font-family:Helvetica,Arial,sans-serif;margin:0 0 20px;font-size:19px">From Send legal mail to prisons team<br> Ministry of Justice</p>
                                 </td>
                             </tr>
                             </tbody>
