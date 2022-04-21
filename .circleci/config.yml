@@ -131,7 +131,6 @@ workflows:
             branches:
               only:
                 - main
-                - mh-SLM-238-new-email-format
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -140,7 +139,6 @@ workflows:
             branches:
               only:
                 - main
-                - mh-SLM-238-new-email-format
           requires:
             - helm_lint
             - validate
