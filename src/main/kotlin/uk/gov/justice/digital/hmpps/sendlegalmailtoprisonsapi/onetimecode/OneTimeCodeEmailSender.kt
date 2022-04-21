@@ -55,7 +55,7 @@ class OneTimeCodeEmailSender(
                                 <td style="font-family:Helvetica,Arial,sans-serif;padding:4px 0;border-bottom:solid 10px #005ea5" width="30">
 
                                     <a href="https://www.gov.uk/" title="Go to the GOV.UK homepage" style="font-size:24px;font-weight:bold;text-decoration:none;color:#ffffff" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://www.gov.uk/&amp;source=gmail&amp;ust=1648555909470000&amp;usg=AOvVaw2uN4hTGDbOHXGNCBJLkYyo">
-                                        <img src="cid:crest.svg" alt="Government crest" style="margin:6px 6px 0 20px" class="CToWUd" width="30">
+                                        <img src="cid:crest.png" alt="" style="margin:6px 6px 0 20px" class="CToWUd" width="30">
                                     </a>
 
                                 </td>
@@ -106,7 +106,7 @@ class OneTimeCodeEmailSender(
                                     Anfonwyd y neges ebost hon drwy wasanaeth ebost Diogel Cyfiawnder Troseddo;
                                 </td>
                                 <td colspan="25%" style="font-family:Helvetica,Arial,sans-serif;padding:20px" align="right">
-                                    <img src="cid:footer-image.png" tabindex="0" width="150" alt="Government crest">
+                                    <img src="cid:footer-image.png" tabindex="0" width="150" alt="">
                                 </td>
                             </tr>
                             </tbody>
@@ -132,7 +132,7 @@ class OneTimeCodeEmailSender(
           setTo(email)
           setSubject("Your code for Send legal mail to prisons")
           setText(textBodyTemplate(oneTmeCode, codeExpiry), htmlBodyTemplate(oneTmeCode, codeExpiry))
-          addInline("crest.svg", ClassPathResource("email/crest.svg"))
+          addInline("crest.png", ClassPathResource("email/crest.png"))
           addInline("footer-image.png", ClassPathResource("email/footer-image.png"))
         }
       }
