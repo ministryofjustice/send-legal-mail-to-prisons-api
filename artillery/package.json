@@ -1,0 +1,11 @@
+{
+  "name": "send-legal-mail-to-prisons-api",
+  "version": "0.0.1",
+  "description": "Artillery performance benchmark data uploader for Send Legal Mail To Prisons API",
+  "main": "sendPerformanceBenchmarksEvent.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "applicationinsights": "^2.3.1"
+  }
+}

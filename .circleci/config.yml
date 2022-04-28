@@ -71,6 +71,12 @@ jobs:
       image: ubuntu-2004:202201-02
     steps:
       - checkout
+      - hmpps/k8s_setup
+      - run:
+          name: Install node
+          command: |
+            sudo apt update
+            sudo apt install -y nodejs npm
       - run:
           name: Execute load tests
           command: |
