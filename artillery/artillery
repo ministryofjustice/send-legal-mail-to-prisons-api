@@ -96,5 +96,12 @@ docker run --rm -it \
   artilleryio/artillery:latest \
   report /scripts/test-run-report.json
 
+echo Getting build number of SLM API and App Insights connection string
+export BUILD_NUMBER=$(curl -s http://localhost:10080/info | jq .build.version -r)
+export APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=$(kubectl -n send-legal-mail-to-prisons-dev get secret send-legal-mail-to-prisons-api --template {{.data.APPINSIGHTS_INSTRUMENTATIONKEY}} | base64 -d)"
+
+npm install
+node sendPerformanceBenchmarksEvent.js
+
 echo Stopping hmpps-auth and removing the docker-compose containers
 docker-compose down && docker-compose rm -f
