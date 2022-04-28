@@ -109,7 +109,7 @@ const val MAX_EMAIL_LENGTH = 254
 
 @Service
 class MagicLinkRequestValidator {
-  private val emailRegex = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
+  private val emailRegex = "^[\\w!#$%&’*+/=?`'{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`'{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
 
   fun validate(magicLinkRequest: MagicLinkRequest) {
     if (magicLinkRequest.email.isEmpty()) {

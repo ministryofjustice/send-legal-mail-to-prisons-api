@@ -114,7 +114,7 @@ const val MAX_EMAIL_LENGTH = 254
 
 @Service
 class OneTimeCodeRequestValidator {
-  private val emailRegex = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
+  private val emailRegex = "^[\\w!#$%&’*+/=?`'{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`'{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
 
   fun validate(oneTimeCodeRequest: OneTimeCodeRequest) {
     if (oneTimeCodeRequest.sessionID.isEmpty()) {
