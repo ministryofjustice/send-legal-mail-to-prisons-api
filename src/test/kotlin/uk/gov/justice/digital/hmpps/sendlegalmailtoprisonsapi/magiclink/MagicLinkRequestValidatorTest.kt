@@ -22,4 +22,9 @@ class MagicLinkRequestValidatorTest {
     }.isInstanceOf(ValidationException::class.java)
       .extracting("errorCode").isEqualTo(EmailTooLong)
   }
+
+  @Test
+  fun `email with apostrophe should not throw exception`() {
+    magicLinkRequestValidator.validate(MagicLinkRequest("""anemailw'ithapostrophes@something.cjsm.net"""))
+  }
 }

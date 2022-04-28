@@ -17,6 +17,11 @@ class OneTimeCodeRequestValidatorTest {
   }
 
   @Test
+  fun `email with apostrophe should not throw exception`() {
+    oneTimeCodeRequestValidator.validate(OneTimeCodeRequest("""anemailw'ithapostrophes@something.cjsm.net""", sessionId))
+  }
+
+  @Test
   fun `request with session id and email greater than maximum length should throw validation exception`() {
     assertThatThrownBy {
       oneTimeCodeRequestValidator.validate(OneTimeCodeRequest("a$emailOfMaxLength", sessionId))
