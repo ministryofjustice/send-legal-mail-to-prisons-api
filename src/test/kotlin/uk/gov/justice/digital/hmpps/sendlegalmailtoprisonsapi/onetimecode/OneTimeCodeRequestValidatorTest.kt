@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailTooLong
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.SessionIdMandatory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
@@ -13,12 +14,16 @@ class OneTimeCodeRequestValidatorTest {
 
   @Test
   fun `request with session id and email of maximum length should not throw validation exception`() {
-    oneTimeCodeRequestValidator.validate(OneTimeCodeRequest(emailOfMaxLength, sessionId))
+    assertDoesNotThrow {
+      oneTimeCodeRequestValidator.validate(OneTimeCodeRequest(emailOfMaxLength, sessionId))
+    }
   }
 
   @Test
   fun `email with apostrophe should not throw exception`() {
-    oneTimeCodeRequestValidator.validate(OneTimeCodeRequest("""anemailw'ithapostrophes@something.cjsm.net""", sessionId))
+    assertDoesNotThrow {
+      oneTimeCodeRequestValidator.validate(OneTimeCodeRequest("""anemailw'ithapostrophes@something.cjsm.net""", sessionId))
+    }
   }
 
   @Test

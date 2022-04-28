@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailTooLong
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 
@@ -12,7 +13,9 @@ class MagicLinkRequestValidatorTest {
 
   @Test
   fun `email of maximum length should not throw validation exception`() {
-    magicLinkRequestValidator.validate(MagicLinkRequest(emailOfMaxLength))
+    assertDoesNotThrow {
+      magicLinkRequestValidator.validate(MagicLinkRequest(emailOfMaxLength))
+    }
   }
 
   @Test
@@ -25,6 +28,8 @@ class MagicLinkRequestValidatorTest {
 
   @Test
   fun `email with apostrophe should not throw exception`() {
-    magicLinkRequestValidator.validate(MagicLinkRequest("""anemailw'ithapostrophes@something.cjsm.net"""))
+    assertDoesNotThrow {
+      magicLinkRequestValidator.validate(MagicLinkRequest("""anemailw'ithapostrophes@something.cjsm.net"""))
+    }
   }
 }
