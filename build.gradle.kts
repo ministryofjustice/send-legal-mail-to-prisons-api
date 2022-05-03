@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.6"
   id("org.unbroken-dome.test-sets") version "4.0.0"
   kotlin("plugin.spring") version "1.6.21"
   kotlin("plugin.jpa") version "1.6.21"
@@ -25,15 +25,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.7")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.7")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.7")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.8")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.203")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.211")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -42,7 +42,7 @@ dependencies {
   testImplementation("org.testcontainers:postgresql:1.17.1")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("org.mockito:mockito-inline:4.5.0")
+  testImplementation("org.mockito:mockito-inline:4.5.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.32")
   testImplementation("org.testcontainers:localstack:1.17.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
