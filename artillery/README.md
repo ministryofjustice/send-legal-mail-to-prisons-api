@@ -55,5 +55,31 @@ data:
 
 * Both of these files are included in the `.gitignore` file and should not be committed to source control.
 
+## Benchmark Performance Tests
+An overnight CircleCI job runs some benchmark tests against the API and records the results in Application Insights Logs as CustomEvents with name `performance-benchmarks`.
 
+The trigger for the job can be found in the CircleCI configuration file `/circleci/config.yml` and is called `artillery-nightly`.
+
+### Benchmark Test Results
+The recent test results can be found on the [SLM Performance Azure dashboard](https://portal.azure.com/#@nomsdigitechoutlook.onmicrosoft.com/dashboard/arm/subscriptions/c27cfedb-f5e9-45e6-9642-0fad1a5c94e7/resourcegroups/nomisapi-t3-alerts-rg/providers/microsoft.portal/dashboards/d0c0c0d9-0784-45eb-815b-73ce8c42d5c5).
+
+This shows the number of API calls made in the time available and the number of API calls that failed:
+* a drop in the number of API calls made indicates that the performance of the API is degraded
+* an increase in the number of failed API calls indicates that the performance of the API is degraded
+
+### Benchmark Test Alerts
+We have 2 alerts to notify us when the API performance is degraded:
+* [alert if number of API calls completed reduces significantly](https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/UpdateLogSearchV2AlertRuleViewModel/alertId/%2Fsubscriptions%2Fc27cfedb-f5e9-45e6-9642-0fad1a5c94e7%2FresourceGroups%2Fnomisapi-t3-rg%2Fproviders%2Fmicrosoft.insights%2Fscheduledqueryrules%2FSLM%20-%20Performance%20Benchmark%20dropped%20by%2020%20percent)
+* [alert if number of failed API calls increases](https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/UpdateLogSearchV2AlertRuleViewModel/alertId/%2Fsubscriptions%2Fc27cfedb-f5e9-45e6-9642-0fad1a5c94e7%2FresourceGroups%2Fnomisapi-t3-rg%2Fproviders%2Fmicrosoft.insights%2Fscheduledqueryrules%2FSLM%20Performance%20errors%20more%20than%20recent%20average)
+
+These alerts should trigger notifications in the `#farsight-alerts` channel on MOJ Slack.
+
+### What should I do if performance is degraded?
+This hasn't happened yet so this section is a bit theoretical. Please update this section if you get some real life experience!
+
+Some ideas for next steps are:
+* look further back through the [Benchmark Test Results](#benchmark-test-results) to try to identify when the performance first started degrading
+* investigate commits that occurred around the same time as the performance degradation
+* be suspicious of any changes to the database or the API
+* also be on lookout for changes to infrastructure, base images, JVM version, database version, library versions etc.
 

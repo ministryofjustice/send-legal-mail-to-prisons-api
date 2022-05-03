@@ -34,6 +34,13 @@ For example in the dev environment:
 5. Given the application version you wish to roll back to, find the related revision number
 6. Rollback to that version with command `helm rollback <revision-number>` replacing `<revision-number>` as appropriate
 
+## Performance tests
+Benchmark performance tests run nightly against the API (running in Docker Compose).
+
+Full details of how the tests work can be found in [the Artillery readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/tree/main/artillery).
+
+You may see some alerts in the `#farsight-alerts` Slack channel about "SLM Performance errors". Details about how test results are recorded and alerted upon can also be found in [the Artillery readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/tree/main/artillery#benchmark-performance-tests).
+
 ## Configuring the project
 
 ### Ktlint formatting
