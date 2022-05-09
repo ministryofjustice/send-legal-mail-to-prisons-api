@@ -17,6 +17,10 @@ The application has a ping endpoint found at `/ping` which indicates that the ap
 
 The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
 
+### Alerting and monitoring
+
+Please see the [UI readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons#alerting-and-monitoring) for more information.
+
 ### Versions
 The application version currently running can be found on the `/info` endpoint at node `build.version`. The format of the version number is `YYY-MM-DD.ccc.gggggg` where `ccc` is the Circle job number and `gggggg` is the git commit reference.
 
