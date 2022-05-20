@@ -33,18 +33,18 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.222")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.224")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.5")
 
-  testImplementation("org.testcontainers:postgresql:1.17.1")
+  testImplementation("org.testcontainers:postgresql:1.17.2")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:4.5.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.32")
-  testImplementation("org.testcontainers:localstack:1.17.1")
+  testImplementation("org.testcontainers:localstack:1.17.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
