@@ -46,6 +46,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.32")
   testImplementation("org.testcontainers:localstack:1.17.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+  testImplementation("org.springframework.security:spring-security-test")
 }
 
 // Language versions
