@@ -44,6 +44,8 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSear
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeAttemptsRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons.SupportedPrisonsRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons.SupportedPrisonsService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
@@ -126,6 +128,12 @@ abstract class IntegrationTest {
   @SpyBean
   protected lateinit var smokeTestConfig: SmokeTestConfig
 
+  @SpyBean
+  protected lateinit var supportedPrisonsService: SupportedPrisonsService
+
+  @Autowired
+  protected lateinit var supportedPrisonsRepository: SupportedPrisonsRepository
+
   @BeforeEach
   fun `turn off random checks`() {
     doReturn(false).whenever(randomCheckService).requiresRandomCheck()
@@ -141,11 +149,12 @@ abstract class IntegrationTest {
     contactRepository.deleteAll()
     oneTimeCodeRepository.deleteAll()
     oneTimeCodeAttemptsRepository.deleteAll()
+    supportedPrisonsRepository.deleteAll()
   }
 
   @AfterEach
   fun `reset mocks and spies`() {
-    reset(barcodeRecipientRepository, amazonS3, randomCheckService, barcodeConfig, barcodeGeneratorService, barcodeEventRepository, barcodeRepository, smokeTestConfig)
+    reset(barcodeRecipientRepository, amazonS3, randomCheckService, barcodeConfig, barcodeGeneratorService, barcodeEventRepository, barcodeRepository, smokeTestConfig, supportedPrisonsService)
   }
 
   internal fun setAuthorisation(
