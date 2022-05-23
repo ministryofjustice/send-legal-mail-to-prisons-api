@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserConte
 class WebClientConfiguration(
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
   @Value("\${prisoner.search.url}") private val prisonerSearchApiUrl: String,
+  @Value("\${prison.register.url}") private val prisonRegisterApiUrl: String,
   private val userContext: UserContext,
 ) {
 
@@ -35,6 +36,13 @@ class WebClientConfiguration(
     return WebClient.builder()
       .baseUrl(prisonerSearchApiUrl)
       .filter(addAuthHeaderFilterFunction())
+      .build()
+  }
+
+  @Bean
+  fun prisonRegisterWebClient(): WebClient {
+    return WebClient.builder()
+      .baseUrl(prisonRegisterApiUrl)
       .build()
   }
 
