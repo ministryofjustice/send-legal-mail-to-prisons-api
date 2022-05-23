@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.7"
   id("org.unbroken-dome.test-sets") version "4.0.0"
@@ -90,7 +92,7 @@ tasks.register<JacocoReport>("combineJacocoReports") {
   }
 }
 
-openApiGenerate {
+tasks.register<GenerateTask>("buildPrisonerSearchModel") {
   generatorName.set("kotlin")
   inputSpec.set("$projectDir/src/main/resources/prisoner-offender-search-open-api.yml")
   outputDir.set("$buildDir/generated")
@@ -107,14 +109,36 @@ openApiGenerate {
     )
   )
 }
-tasks.named("compileKotlin") {
-  dependsOn("openApiGenerate")
+
+tasks.register<GenerateTask>("buildPrisonRegisterModel") {
+  generatorName.set("kotlin")
+  inputSpec.set("$projectDir/src/main/resources/prison-register-open-api.yml")
+  outputDir.set("$buildDir/generated")
+  modelPackage.set("uk.gov.justice.digital.hmpps.prisonregister.model")
+  configOptions.set(
+    mapOf(
+      "dateLibrary" to "java8",
+      "serializationLibrary" to "jackson"
+    )
+  )
+  globalProperties.set(
+    mapOf(
+      "models" to ""
+    )
+  )
 }
+
+tasks.named("compileKotlin") {
+  dependsOn("buildPrisonerSearchModel")
+  dependsOn("buildPrisonRegisterModel")
+}
+
 kotlin {
   sourceSets["main"].apply {
     kotlin.srcDir("$buildDir/generated/src/main/kotlin")
   }
 }
+
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
   filter {
     exclude {

@@ -49,3 +49,6 @@ hmpps:
 prisoner:
   search:
     url: http://localhost:8091
+prison:
+  register:
+    url: http://localhost:8092

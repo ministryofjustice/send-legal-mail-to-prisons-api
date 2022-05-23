@@ -10,17 +10,20 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 
 @RestController
-@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/prisons"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPrisonsService) {
 
-  @GetMapping(value = ["/prisons"])
+  @GetMapping
   @ResponseBody
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
@@ -37,17 +40,52 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
       ),
       ApiResponse(
         responseCode = "401",
-        description = "Unauthorised, requires a valid CJSM email link token",
+        description = "Unauthorised, requires a valid authentication token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
       ApiResponse(
         responseCode = "403",
-        description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
+        description = "Forbidden, requires a valid authentication token with role ROLE_SLM_ADMIN",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ]
   )
   fun getSupportedPrisons(): SupportedPrisons = SupportedPrisons(supportedPrisonsService.findSupportedPrisonCodes())
+
+  @PostMapping(value = ["/{prisonCode}"])
+  @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
+  @Operation(
+    summary = "Add a supported prison",
+    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "201",
+        description = "Supported prison created",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid authentication token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid authentication token with role ROLE_SLM_ADMIN",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "The prison code is not recognised",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun addSupportedPrison(@PathVariable prisonCode: String) {
+    supportedPrisonsService.addPrisonCode(prisonCode)
+      ?: throw ResourceNotFoundException("Prison code $prisonCode is not found or not active")
+  }
 }
 
 data class SupportedPrisons(
