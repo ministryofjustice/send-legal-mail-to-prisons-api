@@ -12,6 +12,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     PRISONER_SEARCH_URL: https://prisoner-offender-search.prison.service.justice.gov.uk
+    PRISON_REGISTER_URL: https://prison-register.prison.service.justice.gov.uk
     APP_MAGICLINK_URL: https://send-legal-mail.prison.service.justice.gov.uk/link/verify-link
     APP_BARCODE_STATS_REPORT_RECIPIENT_EMAILS: send-legal-mail-support@digital.justice.gov.uk, art.atwal@digital.justice.gov.uk, lauren.darby@digital.justice.gov.uk, phoebe.crossland@digital.justice.gov.uk
 

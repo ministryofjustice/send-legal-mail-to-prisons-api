@@ -12,6 +12,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISONER_SEARCH_URL: https://prisoner-offender-search-preprod.prison.service.justice.gov.uk
+    PRISON_REGISTER_URL: https://prison-register-preprod.prison.service.justice.gov.uk
     APP_MAGICLINK_URL: https://send-legal-mail-preprod.prison.service.justice.gov.uk/link/verify-link
 
   namespace_secrets:
