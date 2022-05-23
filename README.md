@@ -17,6 +17,10 @@ The application has a ping endpoint found at `/ping` which indicates that the ap
 
 The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
 
+### Alerting and monitoring
+
+Please see the [UI readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons#alerting-and-monitoring) for more information.
+
 ### Versions
 The application version currently running can be found on the `/info` endpoint at node `build.version`. The format of the version number is `YYY-MM-DD.ccc.gggggg` where `ccc` is the Circle job number and `gggggg` is the git commit reference.
 
@@ -185,13 +189,13 @@ To manually trigger the refresh, you have to trigger the Cronjob - use the follo
 
 `kubectl create job --from=cronjob/send-legal-mail-to-prisons-api-cjsm-directory manual-cjsm-directory-triggered`
 
-## Authorisation via Magic Link (CJSM users)
+## Authorisation via One Time Code (CJSM users)
 
-For the `create barcode` user story we verify users by sending a magic link to their CJSM email account. Once the user clicks the link we issue a JWT giving the user authorisation to use the create barcode function.
+For the `create barcode` user story we verify users by sending a one time code to their CJSM email account. Once the user clicks the link we issue a JWT giving the user authorisation to use the create barcode function.
 
 ### Signing the JWT
 
-In order to sign the JWT generated for Magic Link users there are private/public keys saved in configuration properties `app.jwt.private-key` and `app.jwt.public-key`.
+In order to sign the JWT generated for One Time Code users there are private/public keys saved in configuration properties `app.jwt.private-key` and `app.jwt.public-key`.
 
 A different public/private keypair is required locally and for each deployment environment.
 
