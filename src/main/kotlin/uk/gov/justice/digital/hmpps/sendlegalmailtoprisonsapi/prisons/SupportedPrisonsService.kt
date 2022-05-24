@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.PrisonRegisterClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.toNullable
 
 @Service
 class SupportedPrisonsService(
@@ -20,4 +21,10 @@ class SupportedPrisonsService(
       ?.let { prisonDto -> SupportedPrison(prisonDto.prisonId, true) }
       ?.let { supportedPrison -> supportedPrisonsRepository.save(supportedPrison) }
       ?.let { supportedPrison -> supportedPrison.code }
+
+  fun removePrisonCode(prisonCode: String): String? =
+    supportedPrisonsRepository.findById(prisonCode).toNullable()
+      ?.let { supportedPrison -> SupportedPrison(code = supportedPrison.code, active = false) }
+      ?.also { inactivePrison -> supportedPrisonsRepository.save(inactivePrison) }
+      ?.let { inactivePrison -> inactivePrison.code }
 }
