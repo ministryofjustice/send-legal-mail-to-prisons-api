@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -85,6 +86,41 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
   fun addSupportedPrison(@PathVariable prisonCode: String) {
     supportedPrisonsService.addPrisonCode(prisonCode)
       ?: throw ResourceNotFoundException("Prison code $prisonCode is not found or not active")
+  }
+
+  @DeleteMapping(value = ["/{prisonCode}"])
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
+  @Operation(
+    summary = "Delete a supported prison",
+    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Supported prison deleted",
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid authentication token",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires a valid authentication token with role ROLE_SLM_ADMIN",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "The prison code has never been supported",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ]
+  )
+  fun deleteSupportedPrison(@PathVariable prisonCode: String) {
+    supportedPrisonsService.removePrisonCode(prisonCode)
+      ?: throw ResourceNotFoundException("Prison code $prisonCode is not found")
   }
 }
 

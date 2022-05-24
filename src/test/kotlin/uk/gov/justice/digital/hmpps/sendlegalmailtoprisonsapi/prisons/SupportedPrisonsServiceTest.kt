@@ -10,10 +10,12 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.then
+import org.mockito.kotlin.willReturn
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonDto
 import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonTypeDto
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.PrisonRegisterClient
 import java.time.Instant
+import java.util.Optional
 
 class SupportedPrisonsServiceTest {
 
@@ -95,8 +97,54 @@ class SupportedPrisonsServiceTest {
     }
   }
 
-  private fun aSupportedPrison(code: String = "some-prison"): SupportedPrison =
-    SupportedPrison(code = code, active = true, updatedBy = "anyone", updated = Instant.now())
+  @Nested
+  inner class RemovePrisonCode {
+    @Test
+    fun `should return null if prison code not found`() {
+      given { supportedPrisonsRepository.findById(anyString()) }.willReturn { Optional.empty() }
+
+      val removedPrisonCode = supportedPrisonsService.removePrisonCode("some-prison")
+
+      assertThat(removedPrisonCode).isNull()
+      then(supportedPrisonsRepository).should().findById("some-prison")
+      then(supportedPrisonsRepository).should(never()).save(any())
+    }
+
+    @Test
+    fun `should remove prison code if active`() {
+      given { supportedPrisonsRepository.findById(anyString()) }
+        .willReturn { Optional.of(aSupportedPrison(code = "some-prison")) }
+
+      val removedPrisonCode = supportedPrisonsService.removePrisonCode("some-prison")
+
+      assertThat(removedPrisonCode).isEqualTo("some-prison")
+      then(supportedPrisonsRepository).should().save(
+        check {
+          assertThat(it.code).isEqualTo("some-prison")
+          assertThat(it.active).isFalse()
+        }
+      )
+    }
+
+    @Test
+    fun `should remove prison code if already inactive`() {
+      given { supportedPrisonsRepository.findById(anyString()) }
+        .willReturn { Optional.of(aSupportedPrison(code = "some-prison", active = false)) }
+
+      val removedPrisonCode = supportedPrisonsService.removePrisonCode("some-prison")
+
+      assertThat(removedPrisonCode).isEqualTo("some-prison")
+      then(supportedPrisonsRepository).should().save(
+        check {
+          assertThat(it.code).isEqualTo("some-prison")
+          assertThat(it.active).isFalse()
+        }
+      )
+    }
+  }
+
+  private fun aSupportedPrison(code: String = "some-prison", active: Boolean = true): SupportedPrison =
+    SupportedPrison(code = code, active = active, updatedBy = "anyone", updated = Instant.now())
 
   private fun aPrisonDto(code: String, active: Boolean = true): PrisonDto =
     PrisonDto(
