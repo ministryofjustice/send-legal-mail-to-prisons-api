@@ -26,6 +26,9 @@ hmpps:
 prisoner:
   search:
     url: http://localhost:9092
+prison:
+  register:
+    url: https://prison-register-dev.hmpps.service.justice.gov.uk
 
 app:
   jwt:
