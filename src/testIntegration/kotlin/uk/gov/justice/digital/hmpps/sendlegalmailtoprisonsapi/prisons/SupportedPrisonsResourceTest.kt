@@ -18,26 +18,6 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
   inner class GetSupportedPrison {
 
     @Test
-    fun `unauthorised without a valid token`() {
-      webTestClient.get()
-        .uri("/prisons")
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isUnauthorized
-    }
-
-    @Test
-    fun `forbidden without a valid role`() {
-      webTestClient.get()
-        .uri("/prisons")
-        .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = "AUSER_GEN"))
-        .exchange()
-        .expectStatus().isForbidden
-        .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
-    }
-
-    @Test
     fun `returns supported prisons`() {
       supportedPrisonsRepository.save(aSupportedPrison(code = "CCC", active = true))
       supportedPrisonsRepository.save(aSupportedPrison(code = "BBB", active = false))

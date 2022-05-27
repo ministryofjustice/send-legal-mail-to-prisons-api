@@ -27,27 +27,13 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
   @GetMapping
   @ResponseBody
   @ResponseStatus(HttpStatus.OK)
-  @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
-  @Operation(
-    summary = "Retrieve a list of supported prisons",
-    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
-  )
+  @Operation(summary = "Retrieve a list of supported prisons")
   @ApiResponses(
     value = [
       ApiResponse(
         responseCode = "200",
         description = "Supported prisons returned",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = SupportedPrisons::class))],
-      ),
-      ApiResponse(
-        responseCode = "401",
-        description = "Unauthorised, requires a valid authentication token",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
-      ),
-      ApiResponse(
-        responseCode = "403",
-        description = "Forbidden, requires a valid authentication token with role ROLE_SLM_ADMIN",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
     ]
   )
