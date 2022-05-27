@@ -27,10 +27,10 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
   @GetMapping
   @ResponseBody
   @ResponseStatus(HttpStatus.OK)
-  @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_SLM_ADMIN','ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Retrieve a list of supported prisons",
-    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
+    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN,ROLE_SLM_CREATE_BARCODE")]
   )
   @ApiResponses(
     value = [
