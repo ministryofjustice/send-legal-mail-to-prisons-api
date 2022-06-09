@@ -9,7 +9,7 @@ object MailcatcherContainer {
   val instance: GenericContainer<Nothing>? by lazy { startMailcatcherContainer() }
   private fun startMailcatcherContainer(): GenericContainer<Nothing>? =
     if (checkMailcatcherRunning().not()) {
-      GenericContainer<Nothing>("schickling/mailcatcher").apply {
+      GenericContainer<Nothing>("sj26/mailcatcher").apply {
         withEnv("HOSTNAME_EXTERNAL", "localhost")
         withExposedPorts(1080, 1025)
         setWaitStrategy(Wait.forListeningPort())
