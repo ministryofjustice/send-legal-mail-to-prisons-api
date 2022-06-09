@@ -138,15 +138,21 @@ class OneTimeCodeResourceTest(
         .expectStatus().isCreated
 
       val savedOneTimeCode = oneTimeCodeRepository.findAll().firstOrNull()
-      val message = mailCatcherWebClient.get()
+      val messageJson = mailCatcherWebClient.get()
         .uri("/messages/1.json")
         .accept(MediaType.APPLICATION_JSON)
         .retrieve()
-        .bodyToMono(Message::class.java)
+        .bodyToMono(MessageJson::class.java)
+        .block()
+      val messageSource = mailCatcherWebClient.get()
+        .uri("/messages/1.source")
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .bodyToMono(String::class.java)
         .block()
 
-      assertThat(message?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
-      assertThat(message?.source).contains(savedOneTimeCode!!.code)
+      assertThat(messageJson?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
+      assertThat(messageSource).contains(savedOneTimeCode!!.code)
     }
   }
 
@@ -231,8 +237,7 @@ class OneTimeCodeResourceTest(
   }
 }
 
-data class Message(
+data class MessageJson(
   val id: Int,
   val recipients: List<String>,
-  val source: String,
 )

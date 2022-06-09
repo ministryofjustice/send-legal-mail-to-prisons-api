@@ -20,7 +20,7 @@ executors:
           POSTGRES_PASSWORD: admin_password
           POSTGRES_USER: admin
           POSTGRES_DB: send_legal_mail_api_db
-      - image: schickling/mailcatcher
+      - image: sj26/mailcatcher
       - image: localstack/localstack:0.13.1
         environment:
           SERVICES: s3

@@ -13,7 +13,7 @@ services:
       - POSTGRES_DB=send_legal_mail_api_db
 
   mailcatcher:
-    image: schickling/mailcatcher
+    image: sj26/mailcatcher
     networks:
       - hmpps
     ports:

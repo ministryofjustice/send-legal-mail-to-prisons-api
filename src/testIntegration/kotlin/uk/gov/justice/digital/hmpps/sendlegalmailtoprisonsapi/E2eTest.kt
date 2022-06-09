@@ -14,7 +14,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
@@ -67,13 +66,13 @@ class E2eTest(
   }
 
   private fun getSecretFromReceivedEmail(): String {
-    val message = mailCatcherWebClient.get()
-      .uri("/messages/1.json")
+    val messageSource = mailCatcherWebClient.get()
+      .uri("/messages/1.source")
       .accept(MediaType.APPLICATION_JSON)
       .retrieve()
-      .bodyToMono(Message::class.java)
-      .block() as Message
-    val (secretValue) = ".*secret=(.*)".toRegex().find(message.source)!!.destructured
+      .bodyToMono(String::class.java)
+      .block() as String
+    val (secretValue) = ".*secret=(.*)".toRegex().find(messageSource)!!.destructured
     return secretValue
   }
 

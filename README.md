@@ -69,10 +69,12 @@ The easiest (and slowest) way to run the app is to use docker compose to create 
 
 `docker-compose up`
 
+See `http://localhost:8080/health` to check the app is running.
+
 ### Running the app for development - Intellij
 First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
 
 In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
 
@@ -81,7 +83,7 @@ Run the configuration and the app should start. See `http://localhost:8080/healt
 ### Running the app for development - Gradle
 First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
 
 Then run the following command:
 

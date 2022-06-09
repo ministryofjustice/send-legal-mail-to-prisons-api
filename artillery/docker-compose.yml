@@ -48,7 +48,7 @@ services:
     command: --port 6378
 
   mailcatcher:
-    image: schickling/mailcatcher
+    image: sj26/mailcatcher
     networks:
       - artillery
     ports:

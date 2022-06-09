@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.Message
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MessageJson
 
 class BarcodeReportingResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
@@ -43,12 +43,12 @@ class BarcodeReportingResourceTest(
   }
 
   private fun getEmailRecipients(): List<String> {
-    val message = mailCatcherWebClient.get()
+    val messageJson = mailCatcherWebClient.get()
       .uri("/messages/1.json")
       .accept(MediaType.APPLICATION_JSON)
       .retrieve()
-      .bodyToMono(Message::class.java)
-      .block() as Message
-    return message.recipients
+      .bodyToMono(MessageJson::class.java)
+      .block() as MessageJson
+    return messageJson.recipients
   }
 }
