@@ -2,7 +2,7 @@
 # Per environment values which override defaults in send-legal-mail-to-prisons-api/values.yaml
 
 generic-service:
-  replicaCount: 2
+  replicaCount: 4
 
   ingress:
     host: send-legal-mail-api.prison.service.justice.gov.uk
