@@ -13,7 +13,7 @@ The application has a health endpoint found at `/health` which indicates if the 
 The application has a ping endpoint found at `/ping` which indicates that the app is responding to requests.
 
 ### Build
-<em>Requires membership of Github team `farsight-devs`</em>
+<em>Requires membership of Github team `book-a-prison-visit`</em>
 
 The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
 
@@ -28,7 +28,7 @@ The application version currently running can be found on the `/info` endpoint a
 
 * <em>Requires CLI tools `kubectl` and `helm`</em>
 * <em>Requires access to Cloud Platform Kubernetes `live` cluster</em>
-* <em>Requires membership of Github team `farsight-devs`</em>
+* <em>Requires membership of Github team `book-a-prison-visit`</em>
 
 For example in the dev environment:
 1. Set the Kube context with command `kubectl config use-context live.cloud-platform.service.justice.gov.uk`
@@ -43,7 +43,7 @@ Benchmark performance tests run nightly against the API (running in Docker Compo
 
 Full details of how the tests work can be found in [the Artillery readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/tree/main/artillery).
 
-You may see some alerts in the `#farsight-alerts` Slack channel about "SLM Performance errors". Details about how test results are recorded and alerted upon can also be found in [the Artillery readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/tree/main/artillery#benchmark-performance-tests).
+You may see some alerts in the `#send-legal-mail-alerts` Slack channel about "SLM Performance errors". Details about how test results are recorded and alerted upon can also be found in [the Artillery readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/tree/main/artillery#benchmark-performance-tests).
 
 ## Configuring the project
 
