@@ -72,7 +72,7 @@ We have 2 alerts to notify us when the API performance is degraded:
 * [alert if number of API calls completed reduces significantly](https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/UpdateLogSearchV2AlertRuleViewModel/alertId/%2Fsubscriptions%2Fc27cfedb-f5e9-45e6-9642-0fad1a5c94e7%2FresourceGroups%2Fnomisapi-t3-rg%2Fproviders%2Fmicrosoft.insights%2Fscheduledqueryrules%2FSLM%20-%20Performance%20Benchmark%20dropped%20by%2020%20percent)
 * [alert if number of failed API calls increases](https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/UpdateLogSearchV2AlertRuleViewModel/alertId/%2Fsubscriptions%2Fc27cfedb-f5e9-45e6-9642-0fad1a5c94e7%2FresourceGroups%2Fnomisapi-t3-rg%2Fproviders%2Fmicrosoft.insights%2Fscheduledqueryrules%2FSLM%20Performance%20errors%20more%20than%20recent%20average)
 
-These alerts should trigger notifications in the `#farsight-alerts` channel on MOJ Slack.
+These alerts should trigger notifications in the `#send-legal-mail-alerts` channel on MOJ Slack.
 
 ### What should I do if performance is degraded?
 This hasn't happened yet so this section is a bit theoretical. Please update this section if you get some real life experience!
