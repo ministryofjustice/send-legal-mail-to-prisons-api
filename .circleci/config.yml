@@ -88,6 +88,7 @@ jobs:
           path: artillery/test-run-report.json.html
 
   run_smoke_test:
+    circleci_ip_ranges: true
     executor: smoke-test
     parameters:
       env:
