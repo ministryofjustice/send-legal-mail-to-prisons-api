@@ -1,12 +1,12 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.3.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.3.3"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.7.0"
-  kotlin("plugin.jpa") version "1.7.0"
+  kotlin("plugin.spring") version "1.7.10"
+  kotlin("plugin.jpa") version "1.7.10"
   id("jacoco")
-  id("org.openapi.generator") version "6.0.0"
+  id("org.openapi.generator") version "6.0.1"
 }
 
 testSets {
@@ -35,7 +35,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:2.1.23")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.251")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.264")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
