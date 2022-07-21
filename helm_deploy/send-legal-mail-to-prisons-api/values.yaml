@@ -73,8 +73,6 @@ generic-service:
   resources:
     requests:
       memory: 512Mi
-    limits:
-      memory: 1Gi
 
 generic-prometheus-alerts:
   targetApplication: send-legal-mail-to-prisons-api
