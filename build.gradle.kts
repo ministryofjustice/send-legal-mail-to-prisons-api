@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.7"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.7.10"
-  kotlin("plugin.jpa") version "1.7.10"
+  kotlin("plugin.spring") version "1.7.20"
+  kotlin("plugin.jpa") version "1.7.20"
   id("jacoco")
   id("org.openapi.generator") version "6.0.1"
 }
@@ -27,15 +27,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.12")
 
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:3.0.2")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.319")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.328")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -45,7 +45,7 @@ dependencies {
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:4.8.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.3")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.6")
   testImplementation("org.testcontainers:localstack:1.17.4")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
