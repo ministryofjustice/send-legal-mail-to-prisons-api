@@ -37,7 +37,7 @@ executors:
 
   smoke-test:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/included:12.5.1
     working_directory: ~/tests
 
 jobs:
@@ -101,7 +101,7 @@ jobs:
       - hmpps/k8s_setup
       - run:
           name: Install jq
-          command: apt install -y jq
+          command: apt-get update && apt-get install -y jq
       - run:
           name: Run smoke tests in << parameters.env >>
           command: |
