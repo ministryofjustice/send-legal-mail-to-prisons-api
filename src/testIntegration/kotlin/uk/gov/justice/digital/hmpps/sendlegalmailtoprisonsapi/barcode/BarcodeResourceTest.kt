@@ -11,13 +11,13 @@ abstract class BarcodeResourceTest : IntegrationTest() {
   protected fun assertBarcodeEventCreated(
     expectedBarcode: Barcode,
     expectedBarcodeEventType: BarcodeEventType,
-    expectedSourceIp: String = "127.0.0.1"
+    expectedSourceIp: String = "127.0.0.1",
   ) {
     assertThat(
       barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(
         expectedBarcode,
-        expectedBarcodeEventType
-      )
+        expectedBarcodeEventType,
+      ),
     )
       .isNotEmpty
       .extracting(BarcodeEvent::barcode, BarcodeEvent::ipAddress)

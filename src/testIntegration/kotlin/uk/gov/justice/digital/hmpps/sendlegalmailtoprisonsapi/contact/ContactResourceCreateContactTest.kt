@@ -15,7 +15,7 @@ class ContactResourceCreateContactTest : IntegrationTest() {
     val JOHN_SMITH = ContactRequest(
       prisonerName = "John Smith",
       prisonId = "BXI",
-      prisonNumber = "A1234BC"
+      prisonNumber = "A1234BC",
     )
   }
 
@@ -67,7 +67,7 @@ class ContactResourceCreateContactTest : IntegrationTest() {
             "prisonerName": "John Smith",
             "prisonId": "BXI",
             "dob": "17-08-1971"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest
@@ -85,7 +85,7 @@ class ContactResourceCreateContactTest : IntegrationTest() {
         """{ 
             "prisonerName": "John Smith",
             "prisonId": "BXI"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest
@@ -119,7 +119,7 @@ class ContactResourceCreateContactTest : IntegrationTest() {
             "prisonerName": "John Smith",
             "prisonId": "BXI",
             "dob": "1972-05-29"
-          }"""
+          }""",
         )
         .exchange()
         .expectStatus().isCreated
