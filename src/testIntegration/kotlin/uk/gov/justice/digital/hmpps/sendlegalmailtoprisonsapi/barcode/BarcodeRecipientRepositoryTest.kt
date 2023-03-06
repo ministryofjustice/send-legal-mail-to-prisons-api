@@ -18,7 +18,7 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
       barcode = barcode,
       name = "Fred Bloggs",
       prisonCode = "BXI",
-      prisonNumber = "A1234BC"
+      prisonNumber = "A1234BC",
     )
 
     barcodeRecipientRepository.save(barcodeRecipient)
@@ -37,7 +37,7 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
       barcode = barcodeNotPresentInDatabase,
       name = "Fred Bloggs",
       prisonCode = "BXI",
-      prisonNumber = "A1234BC"
+      prisonNumber = "A1234BC",
     )
 
     assertThatExceptionOfType(InvalidDataAccessApiUsageException::class.java)
@@ -54,15 +54,15 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
         barcode = barcode,
         name = "Fred Bloggs",
         prisonCode = "BXI",
-        prisonNumber = "A1234BC"
-      )
+        prisonNumber = "A1234BC",
+      ),
     )
 
     val secondBarcodeRecipient = BarcodeRecipient(
       barcode = barcode,
       name = "John Smith",
       prisonCode = "LEI",
-      prisonNumber = "Q9816HG"
+      prisonNumber = "Q9816HG",
     )
 
     assertThatExceptionOfType(DataIntegrityViolationException::class.java)
@@ -79,8 +79,8 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
         barcode = barcode,
         name = "Fred Bloggs",
         prisonCode = "BXI",
-        prisonNumber = "A1234BC"
-      )
+        prisonNumber = "A1234BC",
+      ),
     )
 
     assertThatExceptionOfType(DataIntegrityViolationException::class.java)

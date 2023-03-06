@@ -92,7 +92,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
         """{ 
             "prisonerName": "John Smith",
             "prisonId": "BXI"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest
@@ -112,7 +112,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
             "prisonerName": "<John Smith>",
             "prisonId": "BXI",
             "prisonNumber": "A1234BC"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest

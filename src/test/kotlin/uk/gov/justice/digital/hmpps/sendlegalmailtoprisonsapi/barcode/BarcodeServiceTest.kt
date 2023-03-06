@@ -33,7 +33,7 @@ class BarcodeServiceTest {
     barcodeEventService,
     barcodeGeneratorService,
     barcodeRecipientService,
-    prisonerSearchService
+    prisonerSearchService,
   )
 
   val IP_ADDRESS = "127.0.0.1"
@@ -46,7 +46,7 @@ class BarcodeServiceTest {
       mockFindBarcode(null)
       mockSaveBarcode()
       whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString(), anyString())).thenReturn(
-        BarcodeEvent(1L, aBarcode(), "some_user", BarcodeEventType.CREATED, ipAddress = IP_ADDRESS)
+        BarcodeEvent(1L, aBarcode(), "some_user", BarcodeEventType.CREATED, ipAddress = IP_ADDRESS),
       )
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 

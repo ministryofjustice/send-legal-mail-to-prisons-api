@@ -17,7 +17,7 @@ class OneTimeCodeEmailSenderTest {
   private val mockMailSender: JavaMailSender = mock()
   private val magicLinkEmailSender = OneTimeCodeEmailSender(
     OneTimeCodeConfig(Duration.of(10, ChronoUnit.MINUTES), 4, listOf('A', 'B', 'C', 'D'), 6),
-    mockMailSender
+    mockMailSender,
   )
 
   @Test
@@ -39,7 +39,7 @@ class OneTimeCodeEmailSenderTest {
         assertThat(bodyPartContents["text/plain"]).contains("ABCD")
         assertThat(bodyPartContents["text/html"]).contains("10 minutes")
         assertThat(bodyPartContents["text/html"]).contains("ABCD")
-      }
+      },
     )
   }
 

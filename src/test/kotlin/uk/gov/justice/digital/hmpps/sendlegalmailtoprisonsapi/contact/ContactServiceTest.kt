@@ -46,7 +46,7 @@ class ContactServiceTest {
       prisonerName = "some-name",
       prisonId = "some-prison-code",
       dob = LocalDate.of(1990, 1, 1),
-      prisonNumber = "some-prison-number"
+      prisonNumber = "some-prison-number",
     )
 
     @Test
@@ -76,7 +76,7 @@ class ContactServiceTest {
       val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
-        prisonNumber = "A1234BC"
+        prisonNumber = "A1234BC",
       )
       val savedContact = Contact(
         id = 1,
@@ -85,7 +85,7 @@ class ContactServiceTest {
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
         created = Instant.now(clock),
-        updated = Instant.now(clock)
+        updated = Instant.now(clock),
       )
       val expectedContactResponse = ContactResponse(
         id = 1,
@@ -101,7 +101,7 @@ class ContactServiceTest {
       then(contactRepository).should().save(
         check<Contact> {
           assertThat(it).usingRecursiveComparison().isEqualTo(savedContact.copy(id = null))
-        }
+        },
       )
     }
 
@@ -110,7 +110,7 @@ class ContactServiceTest {
       val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
-        dob = LocalDate.of(1990, 12, 20)
+        dob = LocalDate.of(1990, 12, 20),
       )
       val savedContact = Contact(
         id = 1,
@@ -119,7 +119,7 @@ class ContactServiceTest {
         prisonCode = "BXI",
         dob = LocalDate.of(1990, 12, 20),
         created = Instant.now(clock),
-        updated = Instant.now(clock)
+        updated = Instant.now(clock),
       )
       val expectedContactResponse = ContactResponse(
         id = 1,
@@ -135,7 +135,7 @@ class ContactServiceTest {
       then(contactRepository).should().save(
         check<Contact> {
           assertThat(it).usingRecursiveComparison().isEqualTo(savedContact.copy(id = null))
-        }
+        },
       )
     }
 
@@ -144,7 +144,7 @@ class ContactServiceTest {
       val contactRequest = ContactRequest(
         prisonerName = "John Smith",
         prisonId = "BXI",
-        prisonNumber = "A1234BC"
+        prisonNumber = "A1234BC",
       )
       given { contactRepository.save(any()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
 
@@ -161,10 +161,10 @@ class ContactServiceTest {
               prisonCode = "BXI",
               prisonNumber = "A1234BC",
               created = Instant.now(clock),
-              updated = Instant.now(clock)
-            )
+              updated = Instant.now(clock),
+            ),
           )
-        }
+        },
       )
     }
   }
@@ -178,7 +178,7 @@ class ContactServiceTest {
         prisonerName = "new-name",
         prisonId = "new-prison-code",
         dob = LocalDate.of(1999, 12, 12),
-        prisonNumber = "new-prison-number"
+        prisonNumber = "new-prison-number",
       )
     private val existingContact = Contact(
       id = 1L,
@@ -220,7 +220,7 @@ class ContactServiceTest {
       then(contactRepository).should().save(
         check<Contact> {
           assertThat(it).usingRecursiveComparison().isEqualTo(updatedContact)
-        }
+        },
       )
     }
 
@@ -261,7 +261,7 @@ class ContactServiceTest {
           prisonCode = "BXI",
           dob = LocalDate.of(1990, 12, 20),
           created = Instant.now(clock),
-          updated = Instant.now(clock)
+          updated = Instant.now(clock),
         ),
         Contact(
           id = 1921,
@@ -270,8 +270,8 @@ class ContactServiceTest {
           prisonCode = "LEI",
           prisonNumber = "B4372PC",
           created = Instant.now(clock),
-          updated = Instant.now(clock)
-        )
+          updated = Instant.now(clock),
+        ),
       )
       val expectedContactResponses = listOf(
         ContactResponse(
@@ -285,10 +285,10 @@ class ContactServiceTest {
           prisonerName = "Barbara Johnston",
           prisonId = "LEI",
           prisonNumber = "B4372PC",
-        )
+        ),
       )
       given { contactRepository.findContactByOwnerAndNameContainingIgnoreCase(any(), any()) }.willReturn(
-        existingContacts
+        existingContacts,
       )
 
       val contactResponses = contactService.searchContactsByName("a-user@cjsm.net", "john")
@@ -319,7 +319,7 @@ class ContactServiceTest {
         prisonCode = "BXI",
         dob = LocalDate.of(1990, 12, 20),
         created = Instant.now(clock),
-        updated = Instant.now(clock)
+        updated = Instant.now(clock),
       )
       val expectedContactResponse = ContactResponse(
         id = 1,

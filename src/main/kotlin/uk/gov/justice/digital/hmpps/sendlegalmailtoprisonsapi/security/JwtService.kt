@@ -48,7 +48,7 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
           "client_id" to "send-legal-mail",
           "user_name" to email,
           "organisation" to organisation,
-        )
+        ),
       )
       .signWith(SignatureAlgorithm.RS256, privateKey)
       .compact()

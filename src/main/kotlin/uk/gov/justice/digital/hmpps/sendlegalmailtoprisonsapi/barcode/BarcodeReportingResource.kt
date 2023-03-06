@@ -18,12 +18,12 @@ class BarcodeReportingResource(private val barcodeReportingService: BarcodeRepor
     value = [
       ApiResponse(
         responseCode = "201",
-        description = "Report created and emailed"
+        description = "Report created and emailed",
       ), ApiResponse(
         responseCode = "404",
-        description = "No recipients configured. Add a comma separated list of email addresses to helm values file entry env.APP_BARCODE_STATS_REPORT_RECIPIENT_EMAILS."
-      )
-    ]
+        description = "No recipients configured. Add a comma separated list of email addresses to helm values file entry env.APP_BARCODE_STATS_REPORT_RECIPIENT_EMAILS.",
+      ),
+    ],
   )
   fun createBarcodeStatsReport() = barcodeReportingService.distributeBarcodeStats()
 }

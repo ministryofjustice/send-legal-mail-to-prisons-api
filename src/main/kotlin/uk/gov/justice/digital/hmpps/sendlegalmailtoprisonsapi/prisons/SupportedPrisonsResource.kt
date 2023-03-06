@@ -35,7 +35,7 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
         description = "Supported prisons returned",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = SupportedPrisons::class))],
       ),
-    ]
+    ],
   )
   fun getSupportedPrisons(): SupportedPrisons = SupportedPrisons(supportedPrisonsService.findSupportedPrisonCodes())
 
@@ -44,7 +44,7 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
   @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
   @Operation(
     summary = "Add a supported prison",
-    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
+    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")],
   )
   @ApiResponses(
     value = [
@@ -67,7 +67,7 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
         description = "The prison code is not recognised",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun addSupportedPrison(@PathVariable prisonCode: String) {
     supportedPrisonsService.addPrisonCode(prisonCode)
@@ -79,7 +79,7 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
   @PreAuthorize("hasRole('ROLE_SLM_ADMIN')")
   @Operation(
     summary = "Delete a supported prison",
-    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")]
+    security = [SecurityRequirement(name = "ROLE_SLM_ADMIN")],
   )
   @ApiResponses(
     value = [
@@ -102,7 +102,7 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
         description = "The prison code has never been supported",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun deleteSupportedPrison(@PathVariable prisonCode: String) {
     supportedPrisonsService.removePrisonCode(prisonCode)
@@ -112,5 +112,5 @@ class SupportedPrisonsResource(private val supportedPrisonsService: SupportedPri
 
 data class SupportedPrisons(
   @Schema(description = "The prison codes of the supported prisons")
-  val supportedPrisons: List<String>
+  val supportedPrisons: List<String>,
 )

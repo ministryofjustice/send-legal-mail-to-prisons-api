@@ -16,7 +16,7 @@ class PrisonerMatchCountTest {
     @Test
     fun `prison number and main name match`() {
       val prisoners = listOf(
-        aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH")
+        aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH"),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -28,14 +28,16 @@ class PrisonerMatchCountTest {
     fun `prison number and alias name match`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH",
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
           aliases = listOf(
             PrisonerAlias("John", lastName = "Doe", dateOfBirth = LocalDate.MIN),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MAX),
-            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
-          )
-        )
+            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -47,14 +49,16 @@ class PrisonerMatchCountTest {
     fun `prison number and main name match, ignore any alias match as they are the same person`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH",
+          prisonerNumber = "A1234BC",
+          firstName = "JOHN",
+          lastName = "SMITH",
           aliases = listOf(
             PrisonerAlias("John", lastName = "Doe", dateOfBirth = LocalDate.MIN),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MAX),
-            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
-          )
-        )
+            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -66,12 +70,14 @@ class PrisonerMatchCountTest {
     fun `prison number matches but names dont`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH",
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
           aliases = listOf(
             PrisonerAlias("John", lastName = "Doe", dateOfBirth = LocalDate.MIN),
-            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
-          )
-        )
+            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -82,7 +88,7 @@ class PrisonerMatchCountTest {
     @Test
     fun `prison number doesnt match but name does`() {
       val prisoners = listOf(
-        aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH")
+        aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH"),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -99,7 +105,7 @@ class PrisonerMatchCountTest {
     @Test
     fun `main name and dob match`() {
       val prisoners = listOf(
-        aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH", dateOfBirth = dob)
+        aPrisoner.copy(prisonerNumber = "A1234BC", firstName = "JOHN", lastName = "SMITH", dateOfBirth = dob),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -124,14 +130,17 @@ class PrisonerMatchCountTest {
     fun `dob and alias name match`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
+          dateOfBirth = dob,
           aliases = listOf(
             PrisonerAlias("John", lastName = "Doe", dateOfBirth = LocalDate.MIN),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MAX),
-            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
-          )
-        )
+            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -143,12 +152,15 @@ class PrisonerMatchCountTest {
     fun `dob and several aliases name match - only count the first alias match`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
+          dateOfBirth = dob,
           aliases = listOf(
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
-            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob)
-          )
-        )
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -163,20 +175,23 @@ class PrisonerMatchCountTest {
           prisonerNumber = "Z1234BC",
           firstName = "JOHN",
           lastName = "SMITH",
-          dateOfBirth = dob
+          dateOfBirth = dob,
         ), // match main details
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
+          dateOfBirth = dob,
           aliases = listOf(
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob), // match alias details
-            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob)
-          )
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
+          ),
         ),
         aPrisoner.copy(
           prisonerNumber = "Z9999BC",
           firstName = "JOHN",
           lastName = "SMITH",
-          dateOfBirth = LocalDate.MIN
+          dateOfBirth = LocalDate.MIN,
         ), // no match
         aPrisoner.copy(
           prisonerNumber = "Z9999BC",
@@ -184,9 +199,9 @@ class PrisonerMatchCountTest {
           lastName = "SMITHSON",
           dateOfBirth = LocalDate.MIN,
           aliases = listOf(
-            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob) // match alias details
-          )
-        )
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob), // match alias details
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -198,12 +213,15 @@ class PrisonerMatchCountTest {
     fun `dob matches but names dont`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
+          dateOfBirth = dob,
           aliases = listOf(
             PrisonerAlias("John", lastName = "Doe", dateOfBirth = dob),
-            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = dob)
-          )
-        )
+            PrisonerAlias("Frank", lastName = "SMITH", dateOfBirth = dob),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -214,7 +232,7 @@ class PrisonerMatchCountTest {
     @Test
     fun `dob doesnt match but name does`() {
       val prisoners = listOf(
-        aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH", dateOfBirth = LocalDate.MIN)
+        aPrisoner.copy(prisonerNumber = "Z1234AA", firstName = "JOHN", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -226,12 +244,15 @@ class PrisonerMatchCountTest {
     fun `alias has dob that doesnt match but name does, and another alias that matches the dob but not the name`() {
       val prisoners = listOf(
         aPrisoner.copy(
-          prisonerNumber = "A1234BC", firstName = "JOHNNY", lastName = "SMITH", dateOfBirth = dob,
+          prisonerNumber = "A1234BC",
+          firstName = "JOHNNY",
+          lastName = "SMITH",
+          dateOfBirth = dob,
           aliases = listOf(
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = LocalDate.MIN),
-            PrisonerAlias("John", lastName = "SMITHSON", dateOfBirth = dob)
-          )
-        )
+            PrisonerAlias("John", lastName = "SMITHSON", dateOfBirth = dob),
+          ),
+        ),
       )
 
       val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)

@@ -11,7 +11,7 @@ class OneTimeCodeRepositoryTest : IntegrationTest() {
     val sessionId = "12345678"
 
     val oneTimeCode = oneTimeCodeRepository.save(
-      OneTimeCode(sessionId, code = "ABCD", email = "someone@somewhere.com")
+      OneTimeCode(sessionId, code = "ABCD", email = "someone@somewhere.com"),
     )
 
     val savedSecret = oneTimeCodeRepository.findById(sessionId).orElseThrow()

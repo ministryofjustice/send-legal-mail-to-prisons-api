@@ -17,7 +17,7 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
   fun processSearchResults(
     prisonerMatches: PrisonerMatches,
     prisonerSearchRequest: PrisonerSearchRequest,
-    caseload: String
+    caseload: String,
   ) {
     val prisoners = prisonerMatches.matches.map { it.prisoner }
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -29,8 +29,8 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
         numberOfResults = prisoners.size,
         exactMatchCount = prisonerMatch.mainDetailsCount,
         aliasExactMatchCount = prisonerMatch.aliasDetailsCount,
-        matchedBy = prisonerMatches.matchedBy.value
-      )
+        matchedBy = prisonerMatches.matchedBy.value,
+      ),
     ) {
       telemetryClient.trackEvent("prisoner-search-summary", this, null)
     }
@@ -45,7 +45,7 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
   fun processSearchResults(
     pagePrisoner: PagePrisoner,
     prisonerSearchRequest: PrisonerSearchRequest,
-    caseload: String
+    caseload: String,
   ) {
     val prisoners = pagePrisoner.content ?: emptyList()
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
@@ -56,8 +56,8 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
         searchType = prisonerSearchRequest.searchType,
         numberOfResults = prisoners.size,
         exactMatchCount = prisonerMatch.mainDetailsCount,
-        aliasExactMatchCount = prisonerMatch.aliasDetailsCount
-      )
+        aliasExactMatchCount = prisonerMatch.aliasDetailsCount,
+      ),
     ) {
       telemetryClient.trackEvent("prisoner-search-summary", this, null)
     }
@@ -76,7 +76,7 @@ private val PrisonerSearchRequest.searchType: PrisonerSearchType
 data class PrisonerMatch(
   val mainDetailsCount: Int,
   val aliasDetailsCount: Int,
-  val bestMatch: Prisoner?
+  val bestMatch: Prisoner?,
 ) {
   companion object {
     fun of(prisoners: List<Prisoner>, prisonerSearchRequest: PrisonerSearchRequest): PrisonerMatch {
@@ -96,7 +96,7 @@ data class PrisonerMatch(
         return PrisonerMatch(
           mainDetailsCount = prisonersMatchingMainDetails.size,
           aliasDetailsCount = prisonersMatchingAliasDetails.size,
-          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails),
         )
       } else {
         // Match prisoners on main name and DOB, or alias name and DOB
@@ -112,7 +112,7 @@ data class PrisonerMatch(
         return PrisonerMatch(
           mainDetailsCount = prisonersMatchingMainDetails.size,
           aliasDetailsCount = prisonersMatchingAliasDetails.size,
-          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails)
+          bestMatch = bestPrisonerMatch(prisonersMatchingMainDetails, prisonersMatchingAliasDetails),
         )
       }
     }
