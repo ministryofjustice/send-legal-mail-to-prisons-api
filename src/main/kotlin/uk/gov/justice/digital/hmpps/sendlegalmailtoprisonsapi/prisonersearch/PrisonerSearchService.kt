@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserConte
 class PrisonerSearchService(
   private val prisonerSearchClient: PrisonerSearchClient,
   private val prisonerSearchResultsProcessor: PrisonerSearchResultsProcessor,
-  private val userContext: UserContext
+  private val userContext: UserContext,
 ) {
   fun lookupPrisoner(barcodeRecipient: BarcodeRecipient) {
     val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)

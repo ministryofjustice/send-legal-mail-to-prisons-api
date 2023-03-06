@@ -15,7 +15,7 @@ class BarcodeRecipientService(
       prisonCode = createBarcodeRequest.prisonId,
       prisonNumber = createBarcodeRequest.prisonNumber,
       dob = createBarcodeRequest.dob,
-      contact = createBarcodeRequest.contactId?.let { contactId -> contactRepository.getById(contactId) }
+      contact = createBarcodeRequest.contactId?.let { contactId -> contactRepository.getById(contactId) },
     ).let {
       barcodeRecipientRepository.save(it)
     }

@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTim
 @EnableRedisRepositories(
   enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP,
   keyspaceNotificationsConfigParameter = "\${standalone-redis.keyspace-notifications:}",
-  keyspaceConfiguration = OneTimeCodeKeyspaceConfiguration::class
+  keyspaceConfiguration = OneTimeCodeKeyspaceConfiguration::class,
 )
 class RedisConfig
 

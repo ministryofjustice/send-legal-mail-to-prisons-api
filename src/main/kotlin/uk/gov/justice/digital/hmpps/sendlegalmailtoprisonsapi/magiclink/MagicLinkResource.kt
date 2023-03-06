@@ -40,7 +40,7 @@ class MagicLinkResource(
         responseCode = "201",
         description = "CJSM email link created",
         content = [
-          Content(mediaType = "application/json")
+          Content(mediaType = "application/json"),
         ],
       ),
       ApiResponse(
@@ -53,7 +53,7 @@ class MagicLinkResource(
         description = "Unauthorised, requires a valid Oauth2 token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun createMagicLink(@RequestBody request: MagicLinkRequest) {
     magicLinkRequestValidator.validate(request)
@@ -84,7 +84,7 @@ class MagicLinkResource(
         description = "Not found, unable to verify the CJSM email link",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun verifyMagicLink(@RequestBody request: VerifyLinkRequest) =
     VerifyLinkResponse(magicLinkService.verifyMagicLinkSecret(request.secret))

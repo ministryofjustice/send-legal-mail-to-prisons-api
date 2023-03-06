@@ -91,7 +91,7 @@ class SupportedPrisonsServiceTest {
         check {
           assertThat(it.code).isEqualTo("some-prison")
           assertThat(it.active).isTrue
-        }
+        },
       )
       assertThat(newSupportedPrisonCode).isEqualTo("some-prison")
     }
@@ -122,7 +122,7 @@ class SupportedPrisonsServiceTest {
         check {
           assertThat(it.code).isEqualTo("some-prison")
           assertThat(it.active).isFalse()
-        }
+        },
       )
     }
 
@@ -138,7 +138,7 @@ class SupportedPrisonsServiceTest {
         check {
           assertThat(it.code).isEqualTo("some-prison")
           assertThat(it.active).isFalse()
-        }
+        },
       )
     }
   }
@@ -155,6 +155,6 @@ class SupportedPrisonsServiceTest {
       female = true,
       contracted = false,
       types = listOf(PrisonTypeDto(PrisonTypeDto.Code.hMP, "hmp")),
-      addresses = listOf()
+      addresses = listOf(),
     )
 }

@@ -8,7 +8,7 @@ fun prisonerSearchSummaryCustomDimensions(
   numberOfResults: Int,
   exactMatchCount: Int,
   aliasExactMatchCount: Int,
-  matchedBy: String? = null
+  matchedBy: String? = null,
 ): Map<String, String?> =
   mapOf(
     "dataSource" to dataSource.toString(),
@@ -17,7 +17,7 @@ fun prisonerSearchSummaryCustomDimensions(
     "exactMatchCount" to exactMatchCount.toString(),
     "aliasExactMatchCount" to aliasExactMatchCount.toString(),
     "singleResultIdentified" to (exactMatchCount + aliasExactMatchCount == 1).toString(),
-    "matchedBy" to matchedBy
+    "matchedBy" to matchedBy,
   )
 
 fun prisonerSearchBestMatchCustomDimensions(prisoner: Prisoner, caseload: String): Map<String, String?> =
@@ -28,7 +28,7 @@ fun prisonerSearchBestMatchCustomDimensions(prisoner: Prisoner, caseload: String
     "lastMovementTypeCode" to prisoner.lastMovementTypeCode,
     "lastMovementReasonCode" to prisoner.lastMovementReasonCode,
     "forwardingRequired" to (prisoner.prisonId != caseload).toString(),
-    "hasCellLocation" to (!prisoner.cellLocation.isNullOrBlank()).toString()
+    "hasCellLocation" to (!prisoner.cellLocation.isNullOrBlank()).toString(),
   )
 
 enum class PrisonerSearchDataSource {

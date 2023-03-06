@@ -17,12 +17,12 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
     .servers(
       listOf(
         Server().url("https://send-legal-mail-dev.prison.service.justice.gov.uk").description("Development"),
-      )
+      ),
     )
     .info(
       Info().title("Send Legal Mail to Prisons")
         .version(version)
         .description("Create and receive Rule 39 mail")
-        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk"))
+        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
 }

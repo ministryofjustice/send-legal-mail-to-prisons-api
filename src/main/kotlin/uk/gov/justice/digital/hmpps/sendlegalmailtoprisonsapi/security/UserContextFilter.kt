@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest
 class UserContextFilter(
   private val hmppsAuthClient: HmppsAuthClient,
   private val userContext: UserContext,
-  private val jwtService: JwtService
+  private val jwtService: JwtService,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {

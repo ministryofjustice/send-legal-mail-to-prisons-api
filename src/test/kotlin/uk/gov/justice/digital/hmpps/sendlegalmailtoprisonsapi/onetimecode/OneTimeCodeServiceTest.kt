@@ -28,7 +28,14 @@ class OneTimeCodeServiceTest {
   private val smokeTestConfig = mock<SmokeTestConfig>()
 
   private val oneTimeCodeService = OneTimeCodeService(
-    oneTimeCodeGenerator, oneTimeCodeRepository, oneTimeCodeAttemptsRepository, oneTimeCodeEmailSender, oneTimeCodeConfig, jwtService, cjsmService, smokeTestConfig
+    oneTimeCodeGenerator,
+    oneTimeCodeRepository,
+    oneTimeCodeAttemptsRepository,
+    oneTimeCodeEmailSender,
+    oneTimeCodeConfig,
+    jwtService,
+    cjsmService,
+    smokeTestConfig,
   )
 
   @BeforeEach

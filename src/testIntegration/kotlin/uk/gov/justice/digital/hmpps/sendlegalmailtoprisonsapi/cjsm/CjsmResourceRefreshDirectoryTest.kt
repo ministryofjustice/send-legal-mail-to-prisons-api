@@ -126,6 +126,6 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
 
   fun saveCjsmDirectoryEntry(secureEmail: String) =
     cjsmDirectoryRepository.save(
-      CjsmDirectoryEntry(-1L, secureEmail, "any", "any", "any", "any", "any")
+      CjsmDirectoryEntry(-1L, secureEmail, "any", "any", "any", "any", "any"),
     )
 }

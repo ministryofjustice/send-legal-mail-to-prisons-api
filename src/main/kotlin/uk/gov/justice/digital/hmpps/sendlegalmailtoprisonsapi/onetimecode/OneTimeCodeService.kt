@@ -33,12 +33,11 @@ class OneTimeCodeService(
     if (code == smokeTestConfig.lsjSecret) {
       smokeTest()
     } else {
-
       val oneTimeCode = oneTimeCodeRepository.findById(sessionId).toNullable()
       val attempts = oneTimeCodeAttemptsRepository.findById(sessionId).toNullable()
         ?.let {
           oneTimeCodeAttemptsRepository.save(
-            OneTimeCodeAttempts(sessionId, it.attempts?.plus(code.uppercase()) ?: mutableSetOf(code.uppercase()))
+            OneTimeCodeAttempts(sessionId, it.attempts?.plus(code.uppercase()) ?: mutableSetOf(code.uppercase())),
           )
         }
       when {

@@ -17,7 +17,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
     val JOHN_SMITH = ContactRequest(
       prisonerName = "John Smith",
       prisonId = "BXI",
-      prisonNumber = "A1234BC"
+      prisonNumber = "A1234BC",
     )
   }
 
@@ -69,7 +69,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
             "prisonerName": "John Smith",
             "prisonId": "BXI",
             "dob": "17-08-1971"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().is4xxClientError
@@ -87,7 +87,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
             "prisonerName": "John Smith",
             "prisonId": "BXI",
             "dob": "17-08-1971"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest
@@ -105,7 +105,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
         """{ 
             "prisonerName": "John Smith",
             "prisonId": "BXI"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isBadRequest
@@ -122,8 +122,8 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
         prisonCode = "SKI",
         prisonNumber = "A2222ZZ",
         created = createdTime,
-        updated = createdTime
-      )
+        updated = createdTime,
+      ),
     ).id
     val updateContactId = contactRepository.save(
       Contact(
@@ -132,8 +132,8 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
         prisonCode = "LEI",
         prisonNumber = "A1111ZZ",
         created = createdTime,
-        updated = createdTime
-      )
+        updated = createdTime,
+      ),
     ).id
 
     webTestClient.put()
@@ -146,7 +146,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
             "prisonerName": "Johnnie Smith",
             "prisonId": "LEI",
             "prisonNumber": "A2222ZZ"
-          }"""
+          }""",
       )
       .exchange()
       .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -168,8 +168,8 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
         prisonCode = "LEI",
         prisonNumber = "A1111ZZ",
         created = createdTime,
-        updated = createdTime
-      )
+        updated = createdTime,
+      ),
     ).id
 
     webTestClient.put()

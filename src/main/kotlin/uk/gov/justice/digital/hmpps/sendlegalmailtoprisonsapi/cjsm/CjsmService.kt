@@ -22,7 +22,7 @@ private val log = KotlinLogging.logger {}
 class CjsmService(
   private val amazonS3: AmazonS3,
   private val s3Config: S3Config,
-  private val cjsmDirectoryRepository: CjsmDirectoryRepository
+  private val cjsmDirectoryRepository: CjsmDirectoryRepository,
 ) {
 
   @Transactional
@@ -49,7 +49,7 @@ class CjsmService(
       s3Config.bucketName,
       s3Config.cjsmDirectoryCsvName,
       s3Config.bucketName,
-      archiveFileName
+      archiveFileName,
     )
     log.info("Copied the existing CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
     amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
@@ -105,5 +105,5 @@ private fun toUserDetails(cjsmDirectoryEntry: CjsmDirectoryEntry): UserDetails =
     cjsmDirectoryEntry.secureEmail,
     cjsmDirectoryEntry.organisation,
     cjsmDirectoryEntry.businessType,
-    cjsmDirectoryEntry.townCity
+    cjsmDirectoryEntry.townCity,
   )

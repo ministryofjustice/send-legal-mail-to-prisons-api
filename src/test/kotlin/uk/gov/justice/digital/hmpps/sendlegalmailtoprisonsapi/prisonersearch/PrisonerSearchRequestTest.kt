@@ -18,7 +18,7 @@ class PrisonerSearchRequestTest {
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
         name = "John Smith",
-        dob = null
+        dob = null,
       )
       val expectedPrisonSearchRequest =
         PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Smith", dob = null)
@@ -35,7 +35,7 @@ class PrisonerSearchRequestTest {
         prisonCode = "BXI",
         prisonNumber = null,
         name = "John Smith",
-        dob = LocalDate.MIN
+        dob = LocalDate.MIN,
       )
       val expectedPrisonSearchRequest =
         PrisonerSearchRequest(prisonNumber = null, firstName = "John", lastName = "Smith", dob = LocalDate.MIN)
@@ -52,7 +52,7 @@ class PrisonerSearchRequestTest {
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
         name = "John Bobby Smith",
-        dob = null
+        dob = null,
       )
       val expectedPrisonSearchRequest =
         PrisonerSearchRequest(prisonNumber = "A1234BC", firstName = "John", lastName = "Bobby Smith", dob = null)
@@ -85,7 +85,7 @@ class PrisonerSearchRequestTest {
         "firstName" to "John",
         "lastName" to "Smith",
         "dateOfBirth" to "1965-02-16",
-        "includeAliases" to "true"
+        "includeAliases" to "true",
       )
 
       assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
@@ -98,7 +98,7 @@ class PrisonerSearchRequestTest {
         "nomsNumber" to null,
         "firstName" to "John",
         "lastName" to "Smith",
-        "dateOfBirth" to "1965-02-16"
+        "dateOfBirth" to "1965-02-16",
       )
 
       assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
@@ -111,7 +111,7 @@ class PrisonerSearchRequestTest {
         "nomsNumber" to "A1234BC",
         "firstName" to "John",
         "lastName" to "Smith",
-        "dateOfBirth" to null
+        "dateOfBirth" to null,
       )
 
       assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
@@ -124,7 +124,7 @@ class PrisonerSearchRequestTest {
         "nomsNumber" to "A1234BC",
         "firstName" to null,
         "lastName" to "Smith",
-        "dateOfBirth" to null
+        "dateOfBirth" to null,
       )
 
       assertThat(prisonerSearchRequest.toMatchPrisonersRequestBody()).isEqualTo(expectedRequestBody)
@@ -141,7 +141,7 @@ class PrisonerSearchRequestTest {
         "firstName" to "John",
         "lastName" to "Smith",
         "dateOfBirth" to "1965-02-16",
-        "includeAliases" to "true"
+        "includeAliases" to "true",
       )
 
       assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
@@ -155,7 +155,7 @@ class PrisonerSearchRequestTest {
         "firstName" to "John",
         "lastName" to "Smith",
         "dateOfBirth" to "1965-02-16",
-        "includeAliases" to "true"
+        "includeAliases" to "true",
       )
 
       assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
@@ -169,7 +169,7 @@ class PrisonerSearchRequestTest {
         "firstName" to "John",
         "lastName" to "Smith",
         "dateOfBirth" to null,
-        "includeAliases" to "true"
+        "includeAliases" to "true",
       )
 
       assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)
@@ -183,7 +183,7 @@ class PrisonerSearchRequestTest {
         "firstName" to null,
         "lastName" to "Smith",
         "dateOfBirth" to null,
-        "includeAliases" to "true"
+        "includeAliases" to "true",
       )
 
       assertThat(prisonerSearchRequest.toGlobalSearchRequestBody()).isEqualTo(expectedRequestBody)

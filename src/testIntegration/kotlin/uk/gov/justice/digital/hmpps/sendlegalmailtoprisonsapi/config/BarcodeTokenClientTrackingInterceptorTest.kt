@@ -25,6 +25,7 @@ class BarcodeTokenClientTrackingInterceptorTest : IntegrationTest() {
   fun tearDown() {
     ThreadContext.remove()
   }
+
   @Test
   fun `should add client and username to telemetry`() {
     val token = jwtService.generateToken("some.email@company.com", "Some Organisation")

@@ -23,7 +23,7 @@ class CreateBarcodeRequestTest {
     prisonId = prisonId,
     dob = dob,
     prisonNumber = prisonNumber,
-    contactId = contactId
+    contactId = contactId,
   )
 
   @Nested

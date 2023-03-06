@@ -42,7 +42,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Creates a one time barcode for the prisoner",
-    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -61,12 +61,18 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
         description = "Unauthorised, requires a valid magic link token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun createBarcode(
-    @Parameter(hidden = true) @AuthenticationPrincipal userDetails: UserDetails,
-    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
-    @RequestBody @Valid createBarcodeRequest: CreateBarcodeRequest
+    @Parameter(hidden = true)
+    @AuthenticationPrincipal
+    userDetails: UserDetails,
+    @Parameter(hidden = true)
+    @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "")
+    sourceIp: String,
+    @RequestBody
+    @Valid
+    createBarcodeRequest: CreateBarcodeRequest,
   ): CreateBarcodeResponse {
     validateRequestHasDobOrPrisonNumber(createBarcodeRequest)
     return CreateBarcodeResponse(barcodeService.createBarcode(userDetails.username, sourceIp, createBarcodeRequest))
@@ -77,7 +83,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   @PreAuthorize("hasRole('ROLE_SLM_SCAN_BARCODE')")
   @Operation(
     summary = "Checks the status of a barcode received on Rule 39 mail",
-    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -105,12 +111,16 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
         responseCode = "404",
         description = "Not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
-      )
-    ]
+      ),
+    ],
   )
   fun checkBarcode(
-    @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
-    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
+    @Parameter(hidden = true)
+    @AuthenticationPrincipal
+    userId: String,
+    @Parameter(hidden = true)
+    @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "")
+    sourceIp: String,
     @RequestBody request: CheckBarcodeRequest,
   ) = CheckBarcodeResponse(barcodeService.checkBarcode(userId, request.barcode, userContext.caseload, sourceIp))
 
@@ -120,7 +130,7 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
   @PreAuthorize("hasRole('ROLE_SLM_SCAN_BARCODE')")
   @Operation(
     summary = "Flags that more checks are required for a barcode received on Rule 39 mail",
-    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_SCAN_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -148,12 +158,16 @@ class BarcodeResource(private val barcodeService: BarcodeService, private val us
         responseCode = "404",
         description = "Not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
-      )
-    ]
+      ),
+    ],
   )
   fun createBarcodeMoreChecksRequestedEvent(
-    @Parameter(hidden = true) @AuthenticationPrincipal userId: String,
-    @Parameter(hidden = true) @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "") sourceIp: String,
+    @Parameter(hidden = true)
+    @AuthenticationPrincipal
+    userId: String,
+    @Parameter(hidden = true)
+    @RequestHeader(SLM_CLIENT_IP_HEADER, defaultValue = "")
+    sourceIp: String,
     @RequestBody request: CheckBarcodeRequest,
   ) = barcodeService.registerEvent(userId, userContext.caseload, sourceIp, request.barcode, BarcodeEventType.MORE_CHECKS_REQUESTED)
 }

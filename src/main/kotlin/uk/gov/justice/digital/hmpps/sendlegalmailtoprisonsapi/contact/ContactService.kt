@@ -22,7 +22,7 @@ class ContactService(private val contactRepository: ContactRepository, private v
       dob = contactRequest.dob,
       prisonNumber = contactRequest.prisonNumber,
       created = now,
-      updated = now
+      updated = now,
     )
     try {
       return toContactResponse(contactRepository.save(newContactEntity))
@@ -67,6 +67,6 @@ class ContactService(private val contactRepository: ContactRepository, private v
       prisonerName = contact.name,
       prisonId = contact.prisonCode,
       dob = contact.dob,
-      prisonNumber = contact.prisonNumber
+      prisonNumber = contact.prisonNumber,
     )
 }

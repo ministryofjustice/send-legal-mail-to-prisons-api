@@ -51,9 +51,9 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
                 "token_type": "bearer",
                 "access_token": "atoken"
               }
-              """.trimIndent()
-            )
-        )
+              """.trimIndent(),
+            ),
+        ),
     )
   }
   fun stubGetUserDetails() {
@@ -67,11 +67,12 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
               {
                 "activeCaseLoadId": "LEI"
               }
-              """.trimIndent()
-            )
-        )
+              """.trimIndent(),
+            ),
+        ),
     )
   }
+
   // If the user is not known then this endpoint still returns the username, just not the active caseload
   fun stubFailToGetUserDetails() {
     stubFor(
@@ -84,9 +85,9 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
               {
                 "username": "you"
               }
-              """.trimIndent()
-            )
-        )
+              """.trimIndent(),
+            ),
+        ),
     )
   }
 
@@ -96,8 +97,8 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(if (status == 200) "pong" else "some error")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 }

@@ -23,8 +23,8 @@ class PrisonerSearchResultsProcessorTest {
     val prisonerMatches = PrisonerMatches(
       matchedBy = aLLSUPPLIED,
       matches = listOf(
-        PrisonerMatch(Prisoner(restrictedPatient = false, prisonerNumber = "A1234BC", firstName = "John", lastName = "Smith"))
-      )
+        PrisonerMatch(Prisoner(restrictedPatient = false, prisonerNumber = "A1234BC", firstName = "John", lastName = "Smith")),
+      ),
     )
     val expectedCustomDimensions = mapOf(
       "dataSource" to "MATCH_PRISONERS",
@@ -33,7 +33,7 @@ class PrisonerSearchResultsProcessorTest {
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
       "singleResultIdentified" to "true",
-      "matchedBy" to "ALL_SUPPLIED"
+      "matchedBy" to "ALL_SUPPLIED",
     )
     val expectedBestMatchCustomDimensions = mapOf(
       "status" to null,
@@ -42,7 +42,7 @@ class PrisonerSearchResultsProcessorTest {
       "lastMovementTypeCode" to null,
       "lastMovementReasonCode" to null,
       "forwardingRequired" to "true",
-      "hasCellLocation" to "false"
+      "hasCellLocation" to "false",
     )
 
     prisonerSearchResultsProcessor.processSearchResults(prisonerMatches, prisonerSearchRequest, caseload)
@@ -55,8 +55,8 @@ class PrisonerSearchResultsProcessorTest {
   fun `should process search results from global search (PagePrisoner)`() {
     val pagePrisoner = PagePrisoner(
       content = listOf(
-        Prisoner(restrictedPatient = false, prisonerNumber = "A1234BC", firstName = "John", lastName = "Smith")
-      )
+        Prisoner(restrictedPatient = false, prisonerNumber = "A1234BC", firstName = "John", lastName = "Smith"),
+      ),
     )
     val expectedSummaryCustomDimensions = mapOf(
       "dataSource" to "GLOBAL_SEARCH",
@@ -65,7 +65,7 @@ class PrisonerSearchResultsProcessorTest {
       "exactMatchCount" to "1",
       "aliasExactMatchCount" to "0",
       "singleResultIdentified" to "true",
-      "matchedBy" to null
+      "matchedBy" to null,
     )
     val expectedBestMatchCustomDimensions = mapOf(
       "status" to null,
@@ -74,7 +74,7 @@ class PrisonerSearchResultsProcessorTest {
       "lastMovementTypeCode" to null,
       "lastMovementReasonCode" to null,
       "forwardingRequired" to "true",
-      "hasCellLocation" to "false"
+      "hasCellLocation" to "false",
     )
 
     prisonerSearchResultsProcessor.processSearchResults(pagePrisoner, prisonerSearchRequest, caseload)

@@ -47,8 +47,8 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_CONFIG) {
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBodyFile("prisoner-search/match-prisoners-response.json")
-        )
+            .withBodyFile("prisoner-search/match-prisoners-response.json"),
+        ),
     )
   }
 
@@ -58,8 +58,8 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_CONFIG) {
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBodyFile("prisoner-search/global-search-response.json")
-        )
+            .withBodyFile("prisoner-search/global-search-response.json"),
+        ),
     )
   }
 

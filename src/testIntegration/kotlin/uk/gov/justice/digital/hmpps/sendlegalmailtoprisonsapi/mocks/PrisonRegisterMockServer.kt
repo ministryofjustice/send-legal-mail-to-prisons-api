@@ -50,16 +50,16 @@ class PrisonRegisterMockServer : WireMockServer(WIREMOCK_PORT) {
               "contracted": false,
               "types": [{ "code": "HMP", "description": "HMP" }],
               "addresses": []
-            }"""
-            )
-        )
+            }""",
+            ),
+        ),
     )
   }
 
   fun stubGetPrisonNotFound(prisonCode: String) {
     stubFor(
       get(urlEqualTo("/prisons/id/$prisonCode"))
-        .willReturn(aResponse().withStatus(404))
+        .willReturn(aResponse().withStatus(404)),
     )
   }
 }

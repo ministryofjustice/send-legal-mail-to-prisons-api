@@ -31,7 +31,7 @@ class JwtAuthHelper(private val jwtService: JwtService) {
   fun setAuthorisation(
     user: String? = "send-legal-mail-client",
     roles: List<String> = listOf(),
-    scopes: List<String> = listOf()
+    scopes: List<String> = listOf(),
   ): (HttpHeaders) -> Unit {
     val token = createJwt(
       subject = user,

@@ -16,7 +16,7 @@ class ContactRequestTest {
     prisonerName: String = "Andrew Barnes",
     prisonId: String = "BXI",
     dob: LocalDate? = null,
-    prisonNumber: String = "A1234BC"
+    prisonNumber: String = "A1234BC",
   ) = ContactRequest(prisonerName = prisonerName, prisonId = prisonId, dob = dob, prisonNumber = prisonNumber)
 
   @Nested

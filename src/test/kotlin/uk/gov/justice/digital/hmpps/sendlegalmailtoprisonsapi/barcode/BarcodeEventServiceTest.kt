@@ -40,7 +40,7 @@ class BarcodeEventServiceTest {
     barcodeRecipientRepository,
     barcodeConfig,
     randomCheckService,
-    cjsmService
+    cjsmService,
   )
 
   val IP_ADDRESS = "127.0.0.1"
@@ -95,7 +95,7 @@ class BarcodeEventServiceTest {
         listOf(
           aBarcodeEvent(userId = "first_check_user", eventType = CHECKED, createdTime = firstCheckTime, location = "first_check_location"),
           aBarcodeEvent(userId = "second_check_user", eventType = CHECKED, createdTime = secondCheckTime, location = "second_check_location"),
-        )
+        ),
       )
     }
 
@@ -130,7 +130,7 @@ class BarcodeEventServiceTest {
         check {
           assertThat(it).extracting("barcode", "eventType", "location", "userId", "ipAddress")
             .isEqualTo(listOf(aBarcode(), DUPLICATE, "second_check_location", "second_check_user", IP_ADDRESS))
-        }
+        },
       )
     }
 
@@ -196,7 +196,7 @@ class BarcodeEventServiceTest {
         check {
           assertThat(it).extracting("barcode", "eventType", "location", "userId", "ipAddress")
             .isEqualTo(listOf(aBarcode(), EXPIRED, "check_location", "check_user", IP_ADDRESS))
-        }
+        },
       )
     }
   }
@@ -226,7 +226,7 @@ class BarcodeEventServiceTest {
         check {
           assertThat(it).extracting("barcode", "eventType", "location", "userId", "ipAddress")
             .isEqualTo(listOf(aBarcode(), RANDOM_CHECK, "check_location", "check_user", IP_ADDRESS))
-        }
+        },
       )
     }
   }
@@ -289,7 +289,7 @@ class BarcodeEventServiceTest {
       eventType = eventType,
       createdDateTime = createdTime,
       location = location,
-      ipAddress = ipAddress
+      ipAddress = ipAddress,
     )
 
   private fun aBarcodeRecipient() = BarcodeRecipient(barcode = aBarcode(), name = "some_name", prisonCode = "some_prison_code", prisonNumber = "some_prison_number", dob = LocalDate.of(1990, 1, 1))

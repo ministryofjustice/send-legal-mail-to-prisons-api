@@ -29,7 +29,7 @@ class BarcodeEventService(
         eventType = eventType,
         location = location,
         ipAddress = sourceIp,
-      )
+      ),
     )
 
   fun checkForCreated(barcode: Barcode) =

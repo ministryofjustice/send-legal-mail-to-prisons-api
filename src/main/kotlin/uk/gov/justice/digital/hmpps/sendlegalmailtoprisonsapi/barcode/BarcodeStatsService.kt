@@ -27,6 +27,6 @@ class BarcodeStatsService(private val barcodeEventRepository: BarcodeEventReposi
   private fun getDayBoundaries(day: LocalDate): Pair<Instant, Instant> =
     Pair(
       day.atStartOfDay(ZoneOffset.UTC).toInstant(),
-      day.atTime(23, 59, 59, 999999000).toInstant(ZoneOffset.UTC)
+      day.atTime(23, 59, 59, 999999000).toInstant(ZoneOffset.UTC),
     )
 }
