@@ -17,7 +17,7 @@ class JwtServiceTest {
   private val smokeTestConfig = mock<SmokeTestConfig>()
   private fun jwtService(
     expiry: Duration = Duration.of(10, ChronoUnit.MINUTES),
-    clock: Clock = Clock.fixed(Instant.now(), ZoneId.of("Europe/London"))
+    clock: Clock = Clock.fixed(Instant.now(), ZoneId.of("Europe/London")),
   ) = JwtService(JwtConfig(privateKey, publicKey, expiry), smokeTestConfig, clock)
 
   @Test
@@ -65,7 +65,7 @@ class JwtServiceTest {
   fun `the generated JWT should expire at midnight on the day of expiry`() {
     val jwtService = jwtService(
       expiry = Duration.of(1, ChronoUnit.DAYS),
-      clock = Clock.fixed(Instant.parse("2100-11-26T12:18:05Z"), ZoneId.of("Europe/London"))
+      clock = Clock.fixed(Instant.parse("2100-11-26T12:18:05Z"), ZoneId.of("Europe/London")),
     )
     val jwt = jwtService.generateToken("some.email@company.com", "Some Organisation")
 

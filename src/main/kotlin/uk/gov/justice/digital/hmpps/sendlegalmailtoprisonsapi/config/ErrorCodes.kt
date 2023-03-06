@@ -13,14 +13,14 @@ sealed class ErrorCode(
   @Schema(description = "The error code", example = "ERROR_IDENTIFIER")
   val code: String,
   @Schema(description = "A human readable description of the error", example = "An error occurred")
-  val userMessage: String
+  val userMessage: String,
 )
 
 @Schema(oneOf = [AuthenticationError::class, DownstreamError::class, InternalError::class, MalformedRequest::class, NotFound::class])
 sealed class StandardErrorCodes(
   @Schema(allowableValues = ["AUTH", "DOWNSTREAM", "INTERNAL_ERROR", "MALFORMED_REQUEST", "NOT_FOUND"])
   code: String,
-  userMessage: String
+  userMessage: String,
 ) : ErrorCode(code, userMessage)
 object AuthenticationError : StandardErrorCodes("AUTH", "Authentication failure")
 object DownstreamError : StandardErrorCodes("DOWNSTREAM", "An error occurred calling a downstream service")
@@ -32,7 +32,7 @@ object NotFound : StandardErrorCodes("NOT_FOUND", "Not found")
 sealed class AuthenticationRequestErrorCodes(
   @Schema(allowableValues = ["SESSION_ID_MANDATORY", "EMAIL_MANDATORY", "EMAIL_TOO_LONG", "INVALID_EMAIL", "INVALID_CJSM_EMAIL"])
   code: String,
-  userMessage: String
+  userMessage: String,
 ) : StandardErrorCodes(code, userMessage)
 object SessionIdMandatory : AuthenticationRequestErrorCodes("SESSION_ID_MANDATORY", "The session ID must be entered")
 object EmailMandatory : AuthenticationRequestErrorCodes("EMAIL_MANDATORY", "The email address must be entered")
@@ -44,7 +44,7 @@ object EmailInvalidCjsm : AuthenticationRequestErrorCodes("INVALID_CJSM_EMAIL", 
 sealed class OneTimeCodeErrorCode(
   @Schema(allowableValues = ["OTC_SESSION_NOT_FOUND", "OTC_TOO_MANY_ATTEMPTS", "OTC_NOT_FOUND"])
   code: String,
-  userMessage: String
+  userMessage: String,
 ) : StandardErrorCodes(code, userMessage)
 object OneTimeCodeSessionNotFound : OneTimeCodeErrorCode("OTC_SESSION_NOT_FOUND", "There is no one time code saved for the session")
 object OneTimeCodeTooManyAttempts : OneTimeCodeErrorCode("OTC_TOO_MANY_ATTEMPTS", "Too many incorrect one time codes have been attempted")
@@ -54,7 +54,7 @@ object OneTimeCodeNotFound : OneTimeCodeErrorCode("OTC_NOT_FOUND", "The one time
 sealed class ContactErrorCodes(
   @Schema(allowableValues = ["DUPLICATE_CONTACT"])
   code: String,
-  userMessage: String
+  userMessage: String,
 ) : StandardErrorCodes(code, userMessage)
 object DuplicateContact : ContactErrorCodes("CONFLICT", "A contact already exists for this prison number")
 
@@ -62,7 +62,7 @@ object DuplicateContact : ContactErrorCodes("CONFLICT", "A contact already exist
 sealed class CheckBarcodeErrorCodes(
   @Schema(allowableValues = ["DUPLICATE", "EXPIRED", "RANDOM_CHECK"])
   code: String,
-  userMessage: String
+  userMessage: String,
 ) : StandardErrorCodes(code, userMessage)
 
 class Duplicate(
@@ -86,12 +86,12 @@ class Expired(
   @Schema(description = "The number of days before a barcode expires", example = "28")
   val barcodeExpiryDays: Long,
   @Schema(description = "The organisation that created the barcode in the first place", example = "Aardvark Solicitors")
-  val createdBy: String
+  val createdBy: String,
 ) : CheckBarcodeErrorCodes("EXPIRED", "This barcode was created ${createdDate.ageInDays()}, ${createdDate.formatOnDate()}.")
 
 class RandomCheck(
   @Schema(description = "The organisation that created the barcode in the first place", example = "Aardvark Solicitors")
-  val createdBy: String
+  val createdBy: String,
 ) : CheckBarcodeErrorCodes("RANDOM_CHECK", "For additional security this barcode has been selected for a random check")
 
 private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())

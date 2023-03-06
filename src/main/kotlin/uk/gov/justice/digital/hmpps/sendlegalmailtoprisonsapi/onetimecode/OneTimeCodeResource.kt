@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationE
 @Tag(name = "one-time-code-resource")
 class OneTimeCodeResource(
   private val oneTimeCodeService: OneTimeCodeService,
-  private val oneTimeCodeRequestValidator: OneTimeCodeRequestValidator
+  private val oneTimeCodeRequestValidator: OneTimeCodeRequestValidator,
 ) {
 
   @PostMapping(value = ["/oneTimeCode/email"])
@@ -41,7 +41,7 @@ class OneTimeCodeResource(
         responseCode = "201",
         description = "One time code created and emailed",
         content = [
-          Content(mediaType = "application/json")
+          Content(mediaType = "application/json"),
         ],
       ),
       ApiResponse(
@@ -54,7 +54,7 @@ class OneTimeCodeResource(
         description = "Unauthorised, requires a valid Oauth2 token",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun createOneTimeCode(@RequestBody request: OneTimeCodeRequest) {
     oneTimeCodeRequestValidator.validate(request)
@@ -85,7 +85,7 @@ class OneTimeCodeResource(
         description = "Not found, unable to verify the one time code",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun verifyOneTimeCode(@RequestBody request: VerifyCodeRequest) =
     VerifyCodeResponse(oneTimeCodeService.verifyOneTimeCode(request.code, request.sessionID))

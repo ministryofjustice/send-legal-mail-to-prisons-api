@@ -125,7 +125,7 @@ class ErrorResponse(
   @Schema(description = "The HTTP status code", example = "400")
   val status: Int,
   @Schema(description = "The error code describing the error")
-  val errorCode: ErrorCode
+  val errorCode: ErrorCode,
 ) {
   constructor(status: HttpStatus, errorCode: ErrorCode) : this(status.value(), errorCode)
 }

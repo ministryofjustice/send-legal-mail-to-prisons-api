@@ -92,10 +92,11 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .isEqualTo(listOf("ABC", true, "SOME_USER"))
       assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
     }
+
     @Test
     fun `created if the prison was already active`() {
       supportedPrisonsRepository.save(
-        aSupportedPrison(code = "ABC", active = true, updated = Instant.now().minus(1, ChronoUnit.DAYS))
+        aSupportedPrison(code = "ABC", active = true, updated = Instant.now().minus(1, ChronoUnit.DAYS)),
       )
       PrisonRegisterExtension.prisonRegisterApi.stubGetPrisonOk("ABC")
 
@@ -118,7 +119,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
     @Test
     fun `created if the prison has been reactivated`() {
       supportedPrisonsRepository.save(
-        aSupportedPrison(code = "CDE", active = false, updated = Instant.now().minus(1, ChronoUnit.DAYS))
+        aSupportedPrison(code = "CDE", active = false, updated = Instant.now().minus(1, ChronoUnit.DAYS)),
       )
       PrisonRegisterExtension.prisonRegisterApi.stubGetPrisonOk("CDE")
 
@@ -193,7 +194,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
     @Test
     fun `ok if the prison was already inactive`() {
       supportedPrisonsRepository.save(
-        aSupportedPrison(code = "CDE", active = false, updated = Instant.now().minus(1, ChronoUnit.DAYS))
+        aSupportedPrison(code = "CDE", active = false, updated = Instant.now().minus(1, ChronoUnit.DAYS)),
       )
 
       webTestClient.delete()

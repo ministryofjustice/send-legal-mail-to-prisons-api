@@ -9,13 +9,13 @@ data class PrisonerSearchRequest(
   val prisonNumber: String? = null,
   val firstName: String?,
   val lastName: String,
-  val dob: LocalDate? = null
+  val dob: LocalDate? = null,
 ) {
   constructor(barcodeRecipient: BarcodeRecipient) : this(
     barcodeRecipient.prisonNumber,
     barcodeRecipient.names.first,
     barcodeRecipient.names.second,
-    barcodeRecipient.dob
+    barcodeRecipient.dob,
   )
 
   fun toMatchPrisonersRequestBody(): Map<String, String?> =
@@ -23,7 +23,7 @@ data class PrisonerSearchRequest(
       "nomsNumber" to prisonNumber,
       "firstName" to firstName,
       "lastName" to lastName,
-      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE)
+      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
     )
 
   fun toGlobalSearchRequestBody(): Map<String, String?> =
@@ -32,7 +32,7 @@ data class PrisonerSearchRequest(
       "firstName" to firstName,
       "lastName" to lastName,
       "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
-      "includeAliases" to "true"
+      "includeAliases" to "true",
     )
 }
 

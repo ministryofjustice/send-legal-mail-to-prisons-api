@@ -42,7 +42,7 @@ class ContactResource(private val contactService: ContactService) {
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Retrieve an existing Contact for the signed in user",
-    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -71,11 +71,11 @@ class ContactResource(private val contactService: ContactService) {
         description = "Contact not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun getContact(
     @PathVariable id: Long,
-    authentication: Authentication
+    authentication: Authentication,
   ): ContactResponse = contactService.getContact(authentication.name, id)
     ?: throw ResourceNotFoundException("Contact not found")
 
@@ -85,7 +85,7 @@ class ContactResource(private val contactService: ContactService) {
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Creates a new Contact for the signed in user",
-    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -114,9 +114,14 @@ class ContactResource(private val contactService: ContactService) {
         description = "Conflict, the specified new contact already exists for this user. See ContactErrorCodes.",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
-  fun createContact(@Valid @RequestBody contactRequest: ContactRequest, authentication: Authentication): ContactResponse {
+  fun createContact(
+    @Valid
+    @RequestBody
+    contactRequest: ContactRequest,
+    authentication: Authentication,
+  ): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
     return contactService.createContact(authentication.name, contactRequest)
   }
@@ -127,7 +132,7 @@ class ContactResource(private val contactService: ContactService) {
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Update an existing Contact for the signed in user",
-    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -161,12 +166,14 @@ class ContactResource(private val contactService: ContactService) {
         description = "Conflict, the specified new contact already exists for this user. See ContactErrorCodes.",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun updateContact(
-    @Valid @RequestBody contactRequest: ContactRequest,
+    @Valid
+    @RequestBody
+    contactRequest: ContactRequest,
     @PathVariable id: Long,
-    authentication: Authentication
+    authentication: Authentication,
   ): ContactResponse {
     validateRequestHasDobOrPrisonNumber(contactRequest)
     return contactService.updateContact(authentication.name, id, contactRequest)
@@ -180,7 +187,7 @@ class ContactResource(private val contactService: ContactService) {
   @Operation(
     summary = "Retrieve a Contact by prisonNumber for the logged in user",
     security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
-    parameters = [Parameter(`in` = ParameterIn.PATH, name = "prisonNumber", example = "A1234BC", description = "The prison number of the Contact to return.")]
+    parameters = [Parameter(`in` = ParameterIn.PATH, name = "prisonNumber", example = "A1234BC", description = "The prison number of the Contact to return.")],
   )
   @ApiResponses(
     value = [
@@ -204,7 +211,7 @@ class ContactResource(private val contactService: ContactService) {
         description = "Contact not found",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
     contactService.getContactByPrisonNumber(authentication.name, prisonNumber)
@@ -217,7 +224,7 @@ class ContactResource(private val contactService: ContactService) {
   @Operation(
     summary = "Search for Contacts by their name or partial name",
     security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
-    parameters = [Parameter(`in` = ParameterIn.QUERY, name = "name", example = "john", description = "The name or partial name of the Contacts to return. Case insensitive.")]
+    parameters = [Parameter(`in` = ParameterIn.QUERY, name = "name", example = "john", description = "The name or partial name of the Contacts to return. Case insensitive.")],
   )
   @ApiResponses(
     value = [
@@ -241,11 +248,11 @@ class ContactResource(private val contactService: ContactService) {
         description = "Forbidden, requires a valid token with role ROLE_SLM_CREATE_BARCODE",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun searchContactsByName(
     @RequestParam(required = true) name: String,
-    authentication: Authentication
+    authentication: Authentication,
   ): Collection<ContactResponse> {
     return contactService.searchContactsByName(authentication.name, name)
   }
@@ -285,5 +292,5 @@ data class ContactResponse(
   val dob: LocalDate? = null,
 
   @Schema(description = "The prison number of the contact if known", example = "A1234BC", required = false)
-  val prisonNumber: String? = null
+  val prisonNumber: String? = null,
 )

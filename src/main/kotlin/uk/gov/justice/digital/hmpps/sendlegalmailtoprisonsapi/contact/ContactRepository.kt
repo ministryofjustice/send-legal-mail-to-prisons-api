@@ -47,7 +47,7 @@ data class Contact(
 
   val created: Instant,
 
-  val updated: Instant
+  val updated: Instant,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

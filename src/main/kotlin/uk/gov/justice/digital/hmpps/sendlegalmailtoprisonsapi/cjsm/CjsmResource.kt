@@ -33,7 +33,7 @@ class CjsmResource(private val cjsmService: CjsmService) {
   @PreAuthorize("hasRole('ROLE_SLM_CREATE_BARCODE')")
   @Operation(
     summary = "Retrieve information about the curren user",
-    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")]
+    security = [SecurityRequirement(name = "ROLE_SLM_CREATE_BARCODE")],
   )
   @ApiResponses(
     value = [
@@ -57,7 +57,7 @@ class CjsmResource(private val cjsmService: CjsmService) {
         description = "Not found, the email is not in the CJSM directory",
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
       ),
-    ]
+    ],
   )
   fun getUserDetails(
     @Parameter(hidden = true) @AuthenticationPrincipal principalUserDetails: PrincipalUserDetails,
