@@ -34,7 +34,7 @@ class BarcodeRecipientServiceTest {
         name = "Fred Bloggs",
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
-        contact = contact
+        contact = contact,
       )
       given { barcodeRecipientRepository.save(any()) }.willReturn(expectedBarcodeRecipient)
 
@@ -44,7 +44,7 @@ class BarcodeRecipientServiceTest {
       verify(barcodeRecipientRepository).save(
         check<BarcodeRecipient> {
           assertThat(it).usingRecursiveComparison().isEqualTo(expectedBarcodeRecipient)
-        }
+        },
       )
       verify(contactRepository).getById(1234)
     }
@@ -59,7 +59,7 @@ class BarcodeRecipientServiceTest {
         name = "Fred Bloggs",
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
-        contact = null
+        contact = null,
       )
       given { barcodeRecipientRepository.save(any()) }.willReturn(expectedBarcodeRecipient)
 
@@ -69,7 +69,7 @@ class BarcodeRecipientServiceTest {
       verify(barcodeRecipientRepository).save(
         check<BarcodeRecipient> {
           assertThat(it).usingRecursiveComparison().isEqualTo(expectedBarcodeRecipient)
-        }
+        },
       )
       verifyNoInteractions(contactRepository)
     }

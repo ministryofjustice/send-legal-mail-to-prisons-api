@@ -82,7 +82,7 @@ class BarcodeReportingServiceTest {
     then(javaMailSender).should().send(
       check<MimeMessage> { message ->
         assertThat(message.allRecipients.map { it.toString() }).containsExactlyInAnyOrder("email1", "email2")
-      }
+      },
     )
   }
 
@@ -93,7 +93,7 @@ class BarcodeReportingServiceTest {
     then(javaMailSender).should().send(
       check<MimeMessage> { message ->
         assertThat(message.subject).contains(expectedReportDateString)
-      }
+      },
     )
   }
 
@@ -109,7 +109,7 @@ class BarcodeReportingServiceTest {
         assertThat(body).contains("on $expectedReportDateString: 3")
         assertThat(body).contains("on $expectedReportDateString: 4")
         assertThat(body).contains(": 5")
-      }
+      },
     )
   }
 

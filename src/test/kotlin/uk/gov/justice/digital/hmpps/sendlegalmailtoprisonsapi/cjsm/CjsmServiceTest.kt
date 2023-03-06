@@ -30,7 +30,7 @@ class CjsmServiceTest {
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
           .isEqualTo(listOf("abigailhusbands@23es.com.cjsm.net", "Abigail", "Husbands", "29 Somerset Street (London)", "London", "Barristers"))
-      }
+      },
     )
   }
 
@@ -47,7 +47,7 @@ class CjsmServiceTest {
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
           .isEqualTo(listOf("ajubridlington@humberside.pnn.police.uk.cjsm.net", "Bridlington", "AJU", "Humberside Police", "Beverley", "Police"))
-      }
+      },
     )
   }
 
@@ -67,7 +67,7 @@ class CjsmServiceTest {
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
           .isEqualTo(listOf("ajubridlington@humberside.pnn.police.uk.cjsm.net", "Bridlington", "AJU", "Humberside Police", "Beverley", "Police"))
-      }
+      },
     )
     verifyNoMoreInteractions(cjsmDirectoryRepository)
   }
@@ -90,13 +90,13 @@ class CjsmServiceTest {
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
           .isEqualTo(listOf("abigailhusbands@23es.com.cjsm.net", "Abigail", "Husbands", "29 Somerset Street (London)", "London", "Barristers"))
-      }
+      },
     )
     verify(cjsmDirectoryRepository).save(
       check {
         assertThat(it).extracting("secureEmail", "firstName", "lastName", "organisation", "townCity", "businessType")
           .isEqualTo(listOf("ajubridlington@humberside.pnn.police.uk.cjsm.net", "Bridlington", "AJU", "Humberside Police", "Beverley", "Police"))
-      }
+      },
     )
   }
 }

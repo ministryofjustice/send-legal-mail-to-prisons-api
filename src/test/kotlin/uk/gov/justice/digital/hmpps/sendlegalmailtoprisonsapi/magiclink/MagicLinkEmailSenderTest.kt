@@ -36,7 +36,7 @@ class MagicLinkEmailSenderTest {
         assertThat(bodyPartContents["text/plain"]).contains("some-url?secret=this-is-a-secret")
         assertThat(bodyPartContents["text/html"]).contains("10 minutes")
         assertThat(bodyPartContents["text/html"]).contains("<a href=\"some-url?secret=this-is-a-secret\"")
-      }
+      },
     )
   }
 
