@@ -34,13 +34,13 @@ class PrisonerSearchServiceTest {
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
         name = "John Smith",
-        dob = null
+        dob = null,
       )
       given { prisonerSearchClient.matchPrisoners(any()) }.willReturn(
-        Mono.just(aMatchPrisonersResponse())
+        Mono.just(aMatchPrisonersResponse()),
       )
       given { prisonerSearchClient.globalSearch(any()) }.willReturn(
-        Mono.just(aGlobalSearchResponse())
+        Mono.just(aGlobalSearchResponse()),
       )
       given { userContext.caseload }.willReturn("BXI")
       val expectedPrisonerSearchRequest = PrisonerSearchRequest("A1234BC", "John", "Smith", null)
@@ -58,13 +58,13 @@ class PrisonerSearchServiceTest {
         prisonCode = "BXI",
         prisonNumber = "A1234BC",
         name = "John Smith",
-        dob = null
+        dob = null,
       )
       given { prisonerSearchClient.matchPrisoners(any()) }.willReturn(
-        Mono.error(create(403, "Forbidden", null, null, null))
+        Mono.error(create(403, "Forbidden", null, null, null)),
       )
       given { prisonerSearchClient.globalSearch(any()) }.willReturn(
-        Mono.error(create(403, "Forbidden", null, null, null))
+        Mono.error(create(403, "Forbidden", null, null, null)),
       )
 
       prisonerSearchService.lookupPrisoner(barcodeRecipient)
@@ -87,10 +87,10 @@ class PrisonerSearchServiceTest {
           prisonId = "BXI",
           cellLocation = "2-2-015",
           status = "ACTIVE IN",
-          restrictedPatient = false
-        )
-      )
-    )
+          restrictedPatient = false,
+        ),
+      ),
+    ),
   )
 
   private fun aGlobalSearchResponse() = PagePrisoner(
@@ -105,8 +105,8 @@ class PrisonerSearchServiceTest {
         prisonId = "BXI",
         cellLocation = "2-2-015",
         status = "ACTIVE IN",
-        restrictedPatient = false
-      )
-    )
+        restrictedPatient = false,
+      ),
+    ),
   )
 }
