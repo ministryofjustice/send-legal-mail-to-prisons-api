@@ -46,7 +46,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.15")
-  testImplementation("org.testcontainers:localstack:1.18.3")
+  testImplementation("org.testcontainers:localstack:1.17.6")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
