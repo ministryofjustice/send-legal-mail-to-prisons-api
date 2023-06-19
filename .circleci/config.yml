@@ -1,7 +1,16 @@
+main_branch: &main_branch
+  filters:
+    branches:
+      only: main
+feature_branch: &feature_branch
+  filters:
+    branches:
+      ignore: main
+
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6.2
+  hmpps: ministryofjustice/hmpps@7.2.1
 
 parameters:
   alerts-slack-channel:
@@ -134,22 +143,31 @@ workflows:
           name: helm_lint
       - hmpps/build_multiplatform_docker:
           name: build_docker
-          filters:
-            branches:
-              only:
-                - main
-      - hmpps/deploy_env:
-          name: deploy_dev
-          env: "dev"
-          context: hmpps-common-vars
-          filters:
-            branches:
-              only:
-                - main
+      - request-dev-preview-approval:
+          <<: *feature_branch
+          type: approval
           requires:
             - helm_lint
             - validate
             - build_docker
+      - hmpps/deploy_env:
+          <<: *feature_branch
+          name: deploy_dev_preview
+          env: "dev"
+          context: hmpps-common-vars
+          requires:
+            - request-dev-preview-approval
+
+      - hmpps/deploy_env:
+          <<: *main_branch
+          name: deploy_dev
+          env: "dev"
+          context: hmpps-common-vars
+          requires:
+            - helm_lint
+            - validate
+            - build_docker
+
       - run_smoke_test:
           name: smoke_test_dev
           env: dev
