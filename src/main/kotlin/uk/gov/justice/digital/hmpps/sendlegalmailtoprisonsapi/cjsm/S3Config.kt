@@ -8,8 +8,6 @@ import org.springframework.validation.annotation.Validated
 @ConfigurationProperties(prefix = "app.s3")
 @Validated
 data class S3Config(
-  val accessKeyId: String = "",
-  val secretAccessKey: String = "",
   val bucketName: String = "",
   val bucketArn: String = "",
   val localstackUrl: String = "",
