@@ -26,6 +26,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.3.0")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
