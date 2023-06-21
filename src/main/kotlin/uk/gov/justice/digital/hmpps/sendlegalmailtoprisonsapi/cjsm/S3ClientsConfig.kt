@@ -21,7 +21,6 @@ class S3ClientsConfig(private val s3Config: S3Config) {
   @ConditionalOnExpression("T(org.springframework.util.StringUtils).isEmpty('\${app.s3.localstack-url:}')")
   fun amazonS3(): AmazonS3 =
     AmazonS3ClientBuilder.standard()
-      .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(s3Config.accessKeyId, s3Config.secretAccessKey)))
       .withRegion(s3Config.region)
       .build()
 

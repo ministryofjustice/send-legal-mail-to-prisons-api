@@ -1,7 +1,7 @@
 ---
 generic-service:
   nameOverride: send-legal-mail-to-prisons-api
-
+  serviceAccountName: send-legal-mail-to-prisons
   replicaCount: 4
 
   image:
