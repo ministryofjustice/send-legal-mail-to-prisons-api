@@ -1,7 +1,7 @@
 ---
 generic-service:
   nameOverride: send-legal-mail-to-prisons-api
-
+  serviceAccountName: send-legal-mail-to-prisons # migrate to using ISRA
   replicaCount: 4
 
   image:
@@ -36,6 +36,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     SPRING_REDIS_SSL: "true"
+    HMPPS_SQS_USE_WEB_TOKEN: "true" # migrate to using ISRA
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
