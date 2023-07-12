@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.8"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.9.1"
   id("org.unbroken-dome.test-sets") version "4.0.0"
   kotlin("plugin.spring") version "1.8.22"
   kotlin("plugin.jpa") version "1.8.22"
@@ -36,7 +36,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.485")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.504")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -46,8 +46,8 @@ dependencies {
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.15")
-  testImplementation("org.testcontainers:localstack:1.17.6")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.16")
+  testImplementation("org.testcontainers:localstack:1.18.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
