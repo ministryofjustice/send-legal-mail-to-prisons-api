@@ -217,11 +217,10 @@ abstract class IntegrationTest {
         registry.add("mailcatcher.api.port") { getMappedPort(1080) }
       }
       localStackContainer?.run {
-        getEndpointConfiguration(S3)
-          .run {
-            registry.add("app.s3.localstack-url") { serviceEndpoint }
-            registry.add("app.s3.region") { signingRegion }
-          }
+        registry.add("app.s3.localstack-url") {
+          localStackContainer.getEndpointOverride(org.testcontainers.containers.localstack.LocalStackContainer.Service.S3)
+        }
+        registry.add("app.s3.region") { localStackContainer.region }
       }
     }
 
