@@ -59,10 +59,8 @@ generic-service:
       SPRING_REDIS_HOST: "primary_endpoint_address"
       SPRING_REDIS_PASSWORD: "auth_token"
     send-legal-mail-s3-bucket-output:
-      APP_S3_ACCESS_KEY_ID: "access_key_id"
       APP_S3_BUCKET_ARN: "bucket_arn"
       APP_S3_BUCKET_NAME: "bucket_name"
-      APP_S3_SECRET_ACCESS_KEY: "secret_access_key"
 
   allowlist:
     office: "217.33.148.210/32"
