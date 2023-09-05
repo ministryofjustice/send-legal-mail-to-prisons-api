@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.10.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.11.0"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.9.0"
-  kotlin("plugin.jpa") version "1.9.0"
+  kotlin("plugin.spring") version "1.9.10"
+  kotlin("plugin.jpa") version "1.9.10"
   id("jacoco")
   id("org.openapi.generator") version "6.0.1"
 }
@@ -36,18 +36,18 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.524")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.543")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.6.0")
 
-  testImplementation("org.testcontainers:postgresql:1.18.3")
+  testImplementation("org.testcontainers:postgresql:1.19.0")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.16")
-  testImplementation("org.testcontainers:localstack:1.18.3")
+  testImplementation("org.testcontainers:localstack:1.19.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
 }
