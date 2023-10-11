@@ -33,7 +33,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.7.0")
 
-  implementation("io.jsonwebtoken:jjwt:0.12.2")
+  implementation("io.jsonwebtoken:jjwt:0.9.1")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
   implementation("com.amazonaws:aws-java-sdk-s3:1.12.565")
