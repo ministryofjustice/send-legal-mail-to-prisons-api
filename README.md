@@ -152,7 +152,7 @@ The following commands retrieve the latest specifications:
 
 `curl https://prison-register.hmpps.service.justice.gov.uk/v3/api-docs > src/main/resources/prison-register-open-api.yml`
 
-`curl https://prisoner-offender-search.prison.service.justice.gov.uk/v3/api-docs > src/main/resources/prisoner-offender-search-open-api.yml`
+`curl https://prisoner-search.prison.service.justice.gov.uk/v3/api-docs > src/main/resources/prisoner-offender-search-open-api.yml`
 
 ## CJSM Directory
 
