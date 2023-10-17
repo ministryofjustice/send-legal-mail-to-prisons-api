@@ -33,10 +33,10 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.7.0")
 
-  implementation("io.jsonwebtoken:jjwt:0.9.1")
+  implementation("io.jsonwebtoken:jjwt:0.12.3")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.565")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.567")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -46,7 +46,7 @@ dependencies {
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.16")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.18")
   testImplementation("org.testcontainers:localstack:1.19.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
