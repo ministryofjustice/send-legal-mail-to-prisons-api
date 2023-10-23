@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.security.KeyFactory
@@ -39,10 +38,10 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
 
   fun generateToken(email: String, organisation: String?): String =
     Jwts.builder()
-      .setId(UUID.randomUUID().toString())
-      .setSubject(email)
-      .setExpiration(Date.from(calculateExpiryAtMidnight(expiry)))
-      .addClaims(
+      .id(UUID.randomUUID().toString())
+      .subject(email)
+      .expiration(Date.from(calculateExpiryAtMidnight(expiry)))
+      .claims(
         mapOf(
           "authorities" to listOf("ROLE_SLM_CREATE_BARCODE"),
           "client_id" to "send-legal-mail",
@@ -50,7 +49,7 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
           "organisation" to organisation,
         ),
       )
-      .signWith(SignatureAlgorithm.RS256, privateKey)
+      .signWith(privateKey, Jwts.SIG.RS256)
       .compact()
 
   private fun calculateExpiryAtMidnight(expiry: Duration) =
@@ -61,28 +60,26 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
 
   fun validateToken(jwt: String): Boolean =
     runCatching {
-      Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt)
+      Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt)
     }.onFailure {
       log.warn("Found an invalid JWT: $jwt", it)
     }.isSuccess
 
   fun subject(jwt: String): String =
-    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.subject
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.subject
 
-  @Suppress("UNCHECKED_CAST")
   fun organisation(jwt: String): String? =
-    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["organisation"] as? String
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["organisation"] as? String
 
   @Suppress("UNCHECKED_CAST")
   fun authorities(jwt: String): List<String>? =
-    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["authorities"] as? List<String>
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["authorities"] as? List<String>
 
-  @Suppress("UNCHECKED_CAST")
   fun clientId(jwt: String): String? =
-    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body["client_id"] as? String
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["client_id"] as? String
 
   fun expiresAt(jwt: String): Instant =
-    Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).body.expiration.toInstant()
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.expiration.toInstant()
 
   fun isSmokeTestUserToken(authToken: String?) =
     authToken?.isNotBlank()
