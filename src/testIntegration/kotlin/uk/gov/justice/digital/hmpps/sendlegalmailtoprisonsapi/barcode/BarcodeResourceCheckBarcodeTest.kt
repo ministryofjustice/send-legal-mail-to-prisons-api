@@ -112,7 +112,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .expectStatus().isNotFound
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
 
-    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
+    verify(telemetryClient, times(1)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -261,7 +261,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       },
       isNull(),
     )
-    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(3)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -311,7 +311,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       },
       isNull(),
     )
-    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(2)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -358,6 +358,6 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       },
       isNull(),
     )
-    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(2)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 }

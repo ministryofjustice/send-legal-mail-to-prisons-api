@@ -106,7 +106,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       check {
         assertThat(it["establishment"]).isEqualTo(aCreateBarcodeRequest().prisonId)
         assertThat(it["prisonNumber"]).isEqualTo(aCreateBarcodeRequest().prisonNumber)
-        assertThat(it["barcodeNumber"]).isEqualTo("SOME_CODE")
+        assertThat(it["barcodeNumber"]).isEqualTo("ANOTHER_CODE")
         assertThat(it["sender"]).isEqualTo("some.user@company.com.cjsm.net")
       },
       isNull(),

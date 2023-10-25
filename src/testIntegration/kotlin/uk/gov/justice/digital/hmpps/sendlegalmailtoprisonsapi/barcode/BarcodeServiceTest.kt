@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
-import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Nested
@@ -13,14 +12,10 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.dao.CannotAcquireLockException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 class BarcodeServiceTest : IntegrationTest() {
-  @SpyBean
-  private lateinit var telemetryClient: TelemetryClient
-
   @Nested
   inner class CreateBarcode {
     @Test
@@ -30,7 +25,7 @@ class BarcodeServiceTest : IntegrationTest() {
 
       barcodeService.createBarcode("a-user@cjsm.net", "127.0.0.1", createBarcodeRequest)
 
-      val barcode = barcodeRepository.getById("SOME_CODE")
+      val barcode = barcodeRepository.getReferenceById("SOME_CODE")
       assertThat(barcode).isNotNull
       assertThat(barcodeEventRepository.findByBarcodeAndEventTypeCreated(barcode)).isNotNull
       assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
