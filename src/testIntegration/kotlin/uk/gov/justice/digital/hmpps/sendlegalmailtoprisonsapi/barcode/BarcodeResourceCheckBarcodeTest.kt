@@ -6,6 +6,12 @@ import org.awaitility.kotlin.until
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
@@ -42,6 +48,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isUnauthorized
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -56,6 +64,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isForbidden
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -70,6 +80,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -83,6 +95,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -97,6 +111,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isNotFound
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -129,6 +145,18 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     with(PrisonerSearchExtension.prisonerSearchApi) {
       await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
     }
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo(barcode.code)
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.CHECKED.name)
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -160,6 +188,18 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     with(PrisonerSearchExtension.prisonerSearchApi) {
       await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
     }
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.CHECKED.name)
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -210,6 +250,18 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     with(PrisonerSearchExtension.prisonerSearchApi) {
       await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
     }
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.DUPLICATE.name)
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -248,6 +300,18 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     with(PrisonerSearchExtension.prisonerSearchApi) {
       await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
     }
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.EXPIRED.name)
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -283,5 +347,17 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     with(PrisonerSearchExtension.prisonerSearchApi) {
       await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
     }
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.RANDOM_CHECK.name)
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 }

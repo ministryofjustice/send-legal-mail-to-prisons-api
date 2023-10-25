@@ -19,7 +19,7 @@ class BarcodeService(
   @Transactional
   fun createBarcode(userId: String, sourceIp: String, createBarcodeRequest: CreateBarcodeRequest): String =
     createBarcode()
-      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp) }
+      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp, createBarcodeRequest = createBarcodeRequest) }
       .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
       .code
 

@@ -45,7 +45,7 @@ class BarcodeServiceTest {
       whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
       mockFindBarcode(null)
       mockSaveBarcode()
-      whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString(), anyString())).thenReturn(
+      whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString(), anyString(), any())).thenReturn(
         BarcodeEvent(1L, aBarcode(), "some_user", BarcodeEventType.CREATED, ipAddress = IP_ADDRESS),
       )
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
@@ -54,7 +54,7 @@ class BarcodeServiceTest {
 
       assertThat(code).isEqualTo("SOME_BARCODE")
       verify(barcodeRepository).save(aBarcode())
-      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeEventType.CREATED, "", IP_ADDRESS)
+      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeEventType.CREATED, "", IP_ADDRESS, createBarcodeRequest)
       verify(barcodeRecipientService).saveBarcodeRecipient(aBarcode(), createBarcodeRequest)
     }
   }
