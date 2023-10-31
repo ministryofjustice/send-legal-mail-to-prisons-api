@@ -16,12 +16,12 @@ class PrisonerSearchService(
     var forwardingNeeded = false
     prisonerSearchClient.matchPrisoners(prisonerSearchRequest).subscribe {
       prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload)?.let { prisoner ->
-        forwardingNeeded = forwardingNeeded || (prisoner.prisonId == caseload)
+        forwardingNeeded = forwardingNeeded || (prisoner.prisonId != caseload)
       }
     }
     prisonerSearchClient.globalSearch(prisonerSearchRequest).subscribe {
       prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload)?.let { prisoner ->
-        forwardingNeeded = forwardingNeeded || (prisoner.prisonId == caseload)
+        forwardingNeeded = forwardingNeeded || (prisoner.prisonId != caseload)
       }
     }
 
