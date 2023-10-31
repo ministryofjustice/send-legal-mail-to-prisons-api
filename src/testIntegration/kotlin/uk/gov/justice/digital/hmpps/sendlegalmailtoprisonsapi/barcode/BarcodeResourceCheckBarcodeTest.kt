@@ -112,7 +112,16 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
       .expectStatus().isNotFound
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(NotFound.code)
 
-    verify(telemetryClient, times(1)).trackEvent(any(), any(), isNull())
+    verify(telemetryClient).trackEvent(
+      eq("barcode-scanned"),
+      check {
+        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["barcodeNumber"]).isEqualTo("doesnt-exist")
+        Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
+        Assertions.assertThat(it["outcome"]).isEqualTo("NON_EXISTENT_BARCODE")
+      },
+      isNull(),
+    )
   }
 
   @Test
@@ -152,7 +161,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
         Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo(barcode.code)
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
-        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.CHECKED.name)
+        Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
       },
       isNull(),
     )
@@ -195,7 +204,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
         Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
-        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.CHECKED.name)
+        Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
       },
       isNull(),
     )
@@ -257,11 +266,11 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
         Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
-        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.DUPLICATE.name)
+        Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
       },
       isNull(),
     )
-    verify(telemetryClient, times(3)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(2)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -307,11 +316,11 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
         Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
-        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.EXPIRED.name)
+        Assertions.assertThat(it["outcome"]).isEqualTo("EXPIRED")
       },
       isNull(),
     )
-    verify(telemetryClient, times(2)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 
   @Test
@@ -354,10 +363,10 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
         Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
-        Assertions.assertThat(it["outcome"]).isEqualTo(BarcodeEventType.RANDOM_CHECK.name)
+        Assertions.assertThat(it["outcome"]).isEqualTo("RANDOM_CHECK")
       },
       isNull(),
     )
-    verify(telemetryClient, times(2)).trackEvent(eq("barcode-scanned"), any(), isNull())
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
   }
 }

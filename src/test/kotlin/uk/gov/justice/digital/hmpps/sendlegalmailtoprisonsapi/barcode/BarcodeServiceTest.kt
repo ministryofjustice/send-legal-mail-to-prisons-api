@@ -1,12 +1,17 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -28,12 +33,14 @@ class BarcodeServiceTest {
   private val barcodeGeneratorService = mock<BarcodeGeneratorService>()
   private val barcodeRecipientService = mock<BarcodeRecipientService>()
   private val prisonerSearchService = mock<PrisonerSearchService>()
+  private val telemetryClient = mock<TelemetryClient>()
   private val barcodeService = BarcodeService(
     barcodeRepository,
     barcodeEventService,
     barcodeGeneratorService,
     barcodeRecipientService,
     prisonerSearchService,
+    telemetryClient,
   )
 
   val IP_ADDRESS = "127.0.0.1"
@@ -45,7 +52,7 @@ class BarcodeServiceTest {
       whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
       mockFindBarcode(null)
       mockSaveBarcode()
-      whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString(), anyString(), any())).thenReturn(
+      whenever(barcodeEventService.createEvent(any(), anyString(), any(), anyString(), anyString())).thenReturn(
         BarcodeEvent(1L, aBarcode(), "some_user", BarcodeEventType.CREATED, ipAddress = IP_ADDRESS),
       )
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
@@ -54,8 +61,19 @@ class BarcodeServiceTest {
 
       assertThat(code).isEqualTo("SOME_BARCODE")
       verify(barcodeRepository).save(aBarcode())
-      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeEventType.CREATED, "", IP_ADDRESS, createBarcodeRequest)
+      verify(barcodeEventService).createEvent(aBarcode(), "some_user", BarcodeEventType.CREATED, "", IP_ADDRESS)
       verify(barcodeRecipientService).saveBarcodeRecipient(aBarcode(), createBarcodeRequest)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-created"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("BXI")
+          assertThat(it["prisonNumber"]).isEqualTo("A1234BC")
+          assertThat(it["barcodeNumber"]).isEqualTo(aBarcode().code)
+          assertThat(it["sender"]).isEqualTo("some_user")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-created"), any(), isNull())
     }
   }
 
@@ -73,6 +91,18 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location", IP_ADDRESS)
       verify(prisonerSearchService).lookupPrisoner(barcodeRecipient)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("some_user")
+          assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -90,6 +120,19 @@ class BarcodeServiceTest {
         .createEvent(aBarcode(), "some_user", BarcodeEventType.CHECKED, "some_location", IP_ADDRESS)
       verifyNoInteractions(barcodeRecipientService)
       verifyNoInteractions(prisonerSearchService)
+
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("some_user")
+          assertThat(it["outcome"]).isEqualTo("NON_EXISTENT_BARCODE")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -107,6 +150,18 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location", IP_ADDRESS)
       verify(prisonerSearchService).lookupPrisoner(barcodeRecipient)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("current_user")
+          assertThat(it["outcome"]).isEqualTo("DUPLICATE")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -125,6 +180,18 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location", IP_ADDRESS)
       verify(prisonerSearchService).lookupPrisoner(barcodeRecipient)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("current_user")
+          assertThat(it["outcome"]).isEqualTo("EXPIRED")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -141,6 +208,18 @@ class BarcodeServiceTest {
       verify(barcodeEventService)
         .createEvent(aBarcode(), "current_user", BarcodeEventType.CHECKED, "current_location", IP_ADDRESS)
       verify(prisonerSearchService).lookupPrisoner(barcodeRecipient)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("current_user")
+          assertThat(it["outcome"]).isEqualTo("RANDOM_CHECK")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -151,6 +230,18 @@ class BarcodeServiceTest {
       barcodeService.checkBarcode("current_user", "SOME_BARCODE", "current_location", IP_ADDRESS)
 
       verifyNoInteractions(prisonerSearchService)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("current_user")
+          assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
   }
 
@@ -164,6 +255,18 @@ class BarcodeServiceTest {
 
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeEventType.MORE_CHECKS_REQUESTED, "some_location", IP_ADDRESS)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("some_user")
+          assertThat(it["outcome"]).isEqualTo("MORE_CHECKS_REQUESTED")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
 
     @Test
@@ -176,6 +279,18 @@ class BarcodeServiceTest {
       verify(barcodeRepository).save(aBarcode())
       verify(barcodeEventService)
         .createEvent(aBarcode(), "some_user", BarcodeEventType.MORE_CHECKS_REQUESTED, "some_location", IP_ADDRESS)
+      verify(telemetryClient).trackEvent(
+        eq("barcode-scanned"),
+        check {
+          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
+          assertThat(it["forwardingRequired"]).isEqualTo("false")
+          assertThat(it["username"]).isEqualTo("some_user")
+          assertThat(it["outcome"]).isEqualTo("MORE_CHECKS_REQUESTED")
+        },
+        isNull(),
+      )
+      verify(telemetryClient, times(1)).trackEvent(eq("barcode-scanned"), any(), isNull())
     }
   }
 

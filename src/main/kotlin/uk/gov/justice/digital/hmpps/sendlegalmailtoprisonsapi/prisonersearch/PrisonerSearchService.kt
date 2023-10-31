@@ -10,12 +10,21 @@ class PrisonerSearchService(
   private val prisonerSearchResultsProcessor: PrisonerSearchResultsProcessor,
   private val userContext: UserContext,
 ) {
-  fun lookupPrisoner(barcodeRecipient: BarcodeRecipient) {
+  fun lookupPrisoner(barcodeRecipient: BarcodeRecipient): Boolean {
     val prisonerSearchRequest = PrisonerSearchRequest(barcodeRecipient)
     val caseload = userContext.caseload
-    prisonerSearchClient.matchPrisoners(prisonerSearchRequest)
-      .subscribe { prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload) }
-    prisonerSearchClient.globalSearch(prisonerSearchRequest)
-      .subscribe { prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload) }
+    var forwardingNeeded = false
+    prisonerSearchClient.matchPrisoners(prisonerSearchRequest).subscribe {
+      prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload)?.let { prisoner ->
+        forwardingNeeded = forwardingNeeded || (prisoner.prisonId == caseload)
+      }
+    }
+    prisonerSearchClient.globalSearch(prisonerSearchRequest).subscribe {
+      prisonerSearchResultsProcessor.processSearchResults(it, prisonerSearchRequest, caseload)?.let { prisoner ->
+        forwardingNeeded = forwardingNeeded || (prisoner.prisonId == caseload)
+      }
+    }
+
+    return forwardingNeeded
   }
 }

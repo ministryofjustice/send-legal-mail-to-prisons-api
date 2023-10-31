@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
-import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -10,9 +9,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType.CHECKED
@@ -38,14 +35,12 @@ class BarcodeEventServiceTest {
   private val barcodeConfig = mock<BarcodeConfig>()
   private val randomCheckService = mock<RandomCheckService>()
   private val cjsmService = mock<CjsmService>()
-  private val telemetryClient = mock<TelemetryClient>()
   private val barcodeEventService = BarcodeEventService(
     barcodeEventRepository,
     barcodeRecipientRepository,
     barcodeConfig,
     randomCheckService,
     cjsmService,
-    telemetryClient,
   )
 
   val IP_ADDRESS = "127.0.0.1"
@@ -66,18 +61,6 @@ class BarcodeEventServiceTest {
 
       verify(barcodeEventRepository).save(check { assertThat(it.location).isEqualTo("") })
       assertThat(createdEvent.location).isEqualTo("")
-
-      verify(telemetryClient).trackEvent(
-        eq("barcode-created"),
-        check {
-          assertThat(it["establishment"]).isNull()
-          assertThat(it["prisonNumber"]).isNull()
-          assertThat(it["barcodeNumber"]).isEqualTo(aBarcode().code)
-          assertThat(it["sender"]).isEqualTo("some_user")
-        },
-        isNull(),
-      )
-      verify(telemetryClient, times(1)).trackEvent(eq("barcode-created"), any(), isNull())
     }
   }
 

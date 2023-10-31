@@ -18,7 +18,7 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
     prisonerMatches: PrisonerMatches,
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String,
-  ) {
+  ): Prisoner? {
     val prisoners = prisonerMatches.matches.map { it.prisoner }
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
@@ -40,13 +40,15 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
         telemetryClient.trackEvent("prisoner-search-best-match", this, null)
       }
     }
+
+    return prisonerMatch.bestMatch
   }
 
   fun processSearchResults(
     pagePrisoner: PagePrisoner,
     prisonerSearchRequest: PrisonerSearchRequest,
     caseload: String,
-  ) {
+  ): Prisoner? {
     val prisoners = pagePrisoner.content ?: emptyList()
     val prisonerMatch = PrisonerMatch.of(prisoners, prisonerSearchRequest)
 
@@ -67,6 +69,8 @@ class PrisonerSearchResultsProcessor(private val telemetryClient: TelemetryClien
         telemetryClient.trackEvent("prisoner-search-best-match", this, null)
       }
     }
+
+    return prisonerMatch.bestMatch
   }
 }
 
