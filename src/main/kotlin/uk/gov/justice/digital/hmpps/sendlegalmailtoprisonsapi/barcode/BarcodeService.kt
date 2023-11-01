@@ -111,7 +111,7 @@ class BarcodeService(
     trackEvent(
       TelemetryEventType.SCAN,
       mapOf(
-        "establishment" to location,
+        "activeCaseLoadId" to location,
         "barcodeNumber" to barcode.code,
         "forwardingRequired" to isForwardingRequired.toString(),
         "username" to userId,

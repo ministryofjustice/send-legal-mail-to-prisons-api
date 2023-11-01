@@ -115,7 +115,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("doesnt-exist")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("NON_EXISTENT_BARCODE")
@@ -158,7 +158,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo(barcode.code)
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
@@ -201,7 +201,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
@@ -263,7 +263,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
@@ -313,7 +313,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("EXPIRED")
@@ -360,7 +360,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
     verify(telemetryClient).trackEvent(
       eq("barcode-scanned"),
       check {
-        Assertions.assertThat(it["establishment"]).isEqualTo("LEI")
+        Assertions.assertThat(it["activeCaseLoadId"]).isEqualTo("LEI")
         Assertions.assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
         Assertions.assertThat(it["username"]).isEqualTo("AUSER_GEN")
         Assertions.assertThat(it["outcome"]).isEqualTo("RANDOM_CHECK")

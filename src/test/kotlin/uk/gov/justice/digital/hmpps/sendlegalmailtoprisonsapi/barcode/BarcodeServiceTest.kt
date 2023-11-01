@@ -94,7 +94,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
@@ -124,7 +124,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
@@ -153,7 +153,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
@@ -183,7 +183,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
@@ -211,7 +211,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
@@ -233,7 +233,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("current_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
@@ -258,7 +258,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
@@ -282,7 +282,7 @@ class BarcodeServiceTest {
       verify(telemetryClient).trackEvent(
         eq("barcode-scanned"),
         check {
-          assertThat(it["establishment"]).isEqualTo("some_location")
+          assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
           assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
