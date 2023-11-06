@@ -68,7 +68,11 @@ class BarcodeService(
             // if no validation exception thrown above it means that the barcode is ready for delivery
             trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location)
           } catch (e: ValidationException) {
-            trackScanEvent(ScanEventType.valueOf(e.errorCode.code), barcode, userId, location)
+            when (e.errorCode.code) {
+              "DUPLICATE" -> trackScanEvent(ScanEventType.DUPLICATE, barcode, userId, location)
+              "EXPIRED" -> trackScanEvent(ScanEventType.EXPIRED, barcode, userId, location)
+              "RANDOM_CHECK" -> trackScanEvent(ScanEventType.RANDOM_CHECK, barcode, userId, location)
+            }
             throw e
           }
         }
