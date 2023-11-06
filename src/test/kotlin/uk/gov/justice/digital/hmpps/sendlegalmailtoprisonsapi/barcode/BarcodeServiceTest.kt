@@ -96,7 +96,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
           assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
         },
@@ -126,7 +125,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
           assertThat(it["outcome"]).isEqualTo("NON_EXISTENT_BARCODE")
         },
@@ -155,7 +153,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
           assertThat(it["outcome"]).isEqualTo("DUPLICATE")
         },
@@ -185,7 +182,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
           assertThat(it["outcome"]).isEqualTo("EXPIRED")
         },
@@ -213,7 +209,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
           assertThat(it["outcome"]).isEqualTo("RANDOM_CHECK")
         },
@@ -235,7 +230,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("current_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("current_user")
           assertThat(it["outcome"]).isEqualTo("READY_FOR_DELIVERY")
         },
@@ -260,7 +254,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
           assertThat(it["outcome"]).isEqualTo("MORE_CHECKS_REQUESTED")
         },
@@ -284,7 +277,6 @@ class BarcodeServiceTest {
         check {
           assertThat(it["activeCaseLoadId"]).isEqualTo("some_location")
           assertThat(it["barcodeNumber"]).isEqualTo("SOME_BARCODE")
-          assertThat(it["forwardingRequired"]).isEqualTo("false")
           assertThat(it["username"]).isEqualTo("some_user")
           assertThat(it["outcome"]).isEqualTo("MORE_CHECKS_REQUESTED")
         },

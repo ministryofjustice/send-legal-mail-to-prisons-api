@@ -46,7 +46,6 @@ class BarcodeService(
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
       .also { barcode ->
         with(barcodeEventService) {
-          var isForwardingRequired = false
           createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
           try {
             checkForCreated(barcode)
@@ -58,7 +57,7 @@ class BarcodeService(
           }
 
           barcodeRecipientService.getBarcodeRecipient(barcode)
-            ?.lookupRecipient().also { it?.let { isForwardingRequired = it } }
+            ?.lookupRecipient()
             ?: log.info { "No BarcodeRecipient record for barcode ${barcode.code}" }
 
           try {
@@ -67,12 +66,12 @@ class BarcodeService(
             checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
 
             // if no validation exception thrown above it means that the barcode is ready for delivery
-            trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location, isForwardingRequired)
+            trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location)
           } catch (e: ValidationException) {
             when (e.errorCode.code) {
-              "DUPLICATE" -> trackScanEvent(ScanEventType.DUPLICATE, barcode, userId, location, isForwardingRequired)
-              "EXPIRED" -> trackScanEvent(ScanEventType.EXPIRED, barcode, userId, location, isForwardingRequired)
-              "RANDOM_CHECK" -> trackScanEvent(ScanEventType.RANDOM_CHECK, barcode, userId, location, isForwardingRequired)
+              "DUPLICATE" -> trackScanEvent(ScanEventType.DUPLICATE, barcode, userId, location)
+              "EXPIRED" -> trackScanEvent(ScanEventType.EXPIRED, barcode, userId, location)
+              "RANDOM_CHECK" -> trackScanEvent(ScanEventType.RANDOM_CHECK, barcode, userId, location)
             }
             throw e
           }
@@ -85,13 +84,13 @@ class BarcodeService(
       .also { barcode ->
         with(barcodeEventService) {
           createEvent(barcode, userId, barcodeEventType, location, sourceIp)
-          trackScanEvent(ScanEventType.MORE_CHECKS_REQUESTED, barcode, userId, location, false)
+          trackScanEvent(ScanEventType.MORE_CHECKS_REQUESTED, barcode, userId, location)
           checkForCreated(barcode)
         }
       }
   }
 
-  private fun BarcodeRecipient.lookupRecipient(): Boolean {
+  private fun BarcodeRecipient.lookupRecipient() {
     return prisonerSearchService.lookupPrisoner(this)
   }
 
@@ -107,13 +106,12 @@ class BarcodeService(
     )
   }
 
-  fun trackScanEvent(scanEventType: ScanEventType, barcode: Barcode, userId: String, location: String, isForwardingRequired: Boolean? = false) {
+  fun trackScanEvent(scanEventType: ScanEventType, barcode: Barcode, userId: String, location: String) {
     trackEvent(
       TelemetryEventType.SCAN,
       mapOf(
         "activeCaseLoadId" to location,
         "barcodeNumber" to barcode.code,
-        "forwardingRequired" to isForwardingRequired.toString(),
         "username" to userId,
         "outcome" to scanEventType.name,
       ),
