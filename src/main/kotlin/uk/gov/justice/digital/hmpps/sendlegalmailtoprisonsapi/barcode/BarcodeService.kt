@@ -89,7 +89,7 @@ class BarcodeService(
   }
 
   private fun BarcodeRecipient.lookupRecipient() {
-    return prisonerSearchService.lookupPrisoner(this)
+    prisonerSearchService.lookupPrisoner(this)
   }
 
   fun trackCreateEvent(barcode: Barcode, userId: String, createBarcodeRequest: CreateBarcodeRequest) {
