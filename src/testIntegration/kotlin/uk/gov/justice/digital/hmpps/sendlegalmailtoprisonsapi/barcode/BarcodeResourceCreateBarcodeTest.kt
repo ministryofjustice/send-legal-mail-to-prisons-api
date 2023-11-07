@@ -3,6 +3,12 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
@@ -20,6 +26,8 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .bodyValue(aCreateBarcodeRequest())
       .exchange()
       .expectStatus().isUnauthorized
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -34,6 +42,8 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isForbidden
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(AuthenticationError.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -55,6 +65,18 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
     val barcode = barcodeRepository.findById("SOME_CODE").orElseThrow()
     assertBarcodeEventCreated(barcode, BarcodeEventType.CREATED)
     assertThat(barcodeRecipientRepository.getByBarcode(barcode)).isNotNull
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-created"),
+      check {
+        assertThat(it["establishment"]).isEqualTo(aCreateBarcodeRequest().prisonId)
+        assertThat(it["prisonNumber"]).isEqualTo(aCreateBarcodeRequest().prisonNumber)
+        assertThat(it["barcodeNumber"]).isEqualTo("SOME_CODE")
+        assertThat(it["sender"]).isEqualTo("some.user@company.com.cjsm.net")
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-created"), any(), isNull())
   }
 
   @Test
@@ -78,6 +100,18 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
 
     val barcode = barcodeRepository.findById("ANOTHER_CODE").orElseThrow()
     assertBarcodeEventCreated(barcode, BarcodeEventType.CREATED)
+
+    verify(telemetryClient).trackEvent(
+      eq("barcode-created"),
+      check {
+        assertThat(it["establishment"]).isEqualTo(aCreateBarcodeRequest().prisonId)
+        assertThat(it["prisonNumber"]).isEqualTo(aCreateBarcodeRequest().prisonNumber)
+        assertThat(it["barcodeNumber"]).isEqualTo("ANOTHER_CODE")
+        assertThat(it["sender"]).isEqualTo("some.user@company.com.cjsm.net")
+      },
+      isNull(),
+    )
+    verify(telemetryClient, times(1)).trackEvent(eq("barcode-created"), any(), isNull())
   }
 
   @Test
@@ -97,6 +131,8 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 
   @Test
@@ -117,5 +153,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody().jsonPath("$.errorCode.code").isEqualTo(MalformedRequest.code)
+
+    verify(telemetryClient, times(0)).trackEvent(any(), any(), isNull())
   }
 }

@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import com.microsoft.applicationinsights.TelemetryClient
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ValidationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisonersearch.PrisonerSearchService
 
 private val log = KotlinLogging.logger {}
@@ -14,12 +17,20 @@ class BarcodeService(
   private val barcodeGeneratorService: BarcodeGeneratorService,
   private val barcodeRecipientService: BarcodeRecipientService,
   private val prisonerSearchService: PrisonerSearchService,
+  private val telemetryClient: TelemetryClient,
 ) {
+  enum class ScanEventType { READY_FOR_DELIVERY, NON_EXISTENT_BARCODE, DUPLICATE, EXPIRED, RANDOM_CHECK, MORE_CHECKS_REQUESTED }
+  enum class TelemetryEventType(val eventName: String) { CREATE("barcode-created"), SCAN("barcode-scanned") }
 
   @Transactional
   fun createBarcode(userId: String, sourceIp: String, createBarcodeRequest: CreateBarcodeRequest): String =
     createBarcode()
-      .also { barcodeEventService.createEvent(barcode = it, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp) }
+      .also { barcode ->
+        barcodeEventService.createEvent(barcode = barcode, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp)
+          .also {
+            trackCreateEvent(barcode, userId, createBarcodeRequest)
+          }
+      }
       .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
       .code
 
@@ -36,15 +47,32 @@ class BarcodeService(
       .also { barcode ->
         with(barcodeEventService) {
           createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
-          checkForCreated(barcode)
+          try {
+            checkForCreated(barcode)
+          } catch (e: ResourceNotFoundException) {
+            // if ResourceNotFoundException thrown track the event
+            // else track the event post call to lookupRecipient
+            trackScanEvent(ScanEventType.NON_EXISTENT_BARCODE, barcode, userId, location)
+            throw e
+          }
 
           barcodeRecipientService.getBarcodeRecipient(barcode)
             ?.lookupRecipient()
             ?: log.info { "No BarcodeRecipient record for barcode ${barcode.code}" }
 
-          checkForDuplicate(barcode, userId, location, sourceIp)
-          checkForExpired(barcode, userId, location, sourceIp)
-          checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
+          try {
+            checkForDuplicate(barcode, userId, location, sourceIp)
+            checkForExpired(barcode, userId, location, sourceIp)
+            checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
+
+            // if no validation exception thrown above it means that the barcode is ready for delivery
+            trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location)
+          } catch (e: ValidationException) {
+            when (e.errorCode.code) {
+              "DUPLICATE", "EXPIRED", "RANDOM_CHECK" -> trackScanEvent(ScanEventType.valueOf(e.errorCode.code), barcode, userId, location)
+            }
+            throw e
+          }
         }
       }
       .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
@@ -54,6 +82,7 @@ class BarcodeService(
       .also { barcode ->
         with(barcodeEventService) {
           createEvent(barcode, userId, barcodeEventType, location, sourceIp)
+          trackScanEvent(ScanEventType.MORE_CHECKS_REQUESTED, barcode, userId, location)
           checkForCreated(barcode)
         }
       }
@@ -62,4 +91,31 @@ class BarcodeService(
   private fun BarcodeRecipient.lookupRecipient() {
     prisonerSearchService.lookupPrisoner(this)
   }
+
+  fun trackCreateEvent(barcode: Barcode, userId: String, createBarcodeRequest: CreateBarcodeRequest) {
+    trackEvent(
+      TelemetryEventType.CREATE,
+      mapOf(
+        "establishment" to createBarcodeRequest.prisonId,
+        "prisonNumber" to createBarcodeRequest.prisonNumber,
+        "barcodeNumber" to barcode.code,
+        "sender" to userId,
+      ),
+    )
+  }
+
+  fun trackScanEvent(scanEventType: ScanEventType, barcode: Barcode, userId: String, location: String) {
+    trackEvent(
+      TelemetryEventType.SCAN,
+      mapOf(
+        "activeCaseLoadId" to location,
+        "barcodeNumber" to barcode.code,
+        "username" to userId,
+        "outcome" to scanEventType.name,
+      ),
+    )
+  }
+
+  fun trackEvent(event: TelemetryEventType, properties: Map<String, String?>) =
+    telemetryClient.trackEvent(event.eventName, properties, null)
 }

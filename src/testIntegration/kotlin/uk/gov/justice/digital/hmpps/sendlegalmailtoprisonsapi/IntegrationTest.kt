@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import com.amazonaws.services.s3.AmazonS3
+import com.microsoft.applicationinsights.TelemetryClient
 import io.lettuce.core.ClientOptions
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
@@ -23,10 +24,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.testcontainers.containers.localstack.LocalStackContainer.Service.S3
 import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeGeneratorService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipientRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeReportingConfig
@@ -122,6 +123,12 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var barcodeService: BarcodeService
+
+  @Autowired
+  protected lateinit var barcodeEventService: BarcodeEventService
+
+  @SpyBean
+  lateinit var telemetryClient: TelemetryClient
 
   @SpyBean
   protected lateinit var barcodeReportingConfig: BarcodeReportingConfig
