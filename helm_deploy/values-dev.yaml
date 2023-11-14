@@ -10,6 +10,7 @@ generic-service:
   allowlist:
     groups:
       - circleci
+      - internal
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
