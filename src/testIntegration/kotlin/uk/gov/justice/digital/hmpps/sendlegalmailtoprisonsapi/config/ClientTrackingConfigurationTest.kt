@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-
 import io.opentelemetry.api.trace.Span
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
