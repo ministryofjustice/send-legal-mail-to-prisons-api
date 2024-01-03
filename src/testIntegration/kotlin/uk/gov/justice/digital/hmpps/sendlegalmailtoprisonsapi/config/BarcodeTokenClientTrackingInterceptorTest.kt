@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext
-import com.microsoft.applicationinsights.web.internal.ThreadContext
-import org.assertj.core.api.Assertions.assertThat
+import io.opentelemetry.api.trace.Span
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -18,12 +20,10 @@ class BarcodeTokenClientTrackingInterceptorTest : IntegrationTest() {
 
   @BeforeEach
   fun setup() {
-    ThreadContext.setRequestTelemetryContext(RequestTelemetryContext(1L))
   }
 
   @AfterEach
   fun tearDown() {
-    ThreadContext.remove()
   }
 
   @Test
@@ -32,10 +32,13 @@ class BarcodeTokenClientTrackingInterceptorTest : IntegrationTest() {
     val req = MockHttpServletRequest()
     req.addHeader("create-barcode-token", token)
     val res = MockHttpServletResponse()
-    barcodeTokenClientTrackingInterceptor.preHandle(req, res, "null")
-    val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
 
-    assertThat(insightTelemetry["username"]).isEqualTo("some.email@company.com")
-    assertThat(insightTelemetry["clientId"]).isEqualTo("send-legal-mail")
+    val clientTrackingInterceptorSpy = spy(barcodeTokenClientTrackingInterceptor)
+    val mockSpan = spy(Span.current())
+    whenever(clientTrackingInterceptorSpy.getCurrentSpan()).thenReturn(mockSpan)
+
+    clientTrackingInterceptorSpy.preHandle(req, res, "null")
+    verify(mockSpan, times(1)).setAttribute("username", "some.email@company.com")
+    verify(mockSpan, times(1)).setAttribute("clientId", "send-legal-mail")
   }
 }

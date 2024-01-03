@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext
-import com.microsoft.applicationinsights.web.internal.ThreadContext
-import org.assertj.core.api.Assertions.assertThat
+
+import io.opentelemetry.api.trace.Span
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.mock.web.MockHttpServletRequest
@@ -19,12 +22,10 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
 
   @BeforeEach
   fun setup() {
-    ThreadContext.setRequestTelemetryContext(RequestTelemetryContext(1L))
   }
 
   @AfterEach
   fun tearDown() {
-    ThreadContext.remove()
   }
 
   @Test
@@ -33,11 +34,14 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
-    clientTrackingInterceptor.preHandle(req, res, "null")
-    val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).hasSize(2)
-    assertThat(insightTelemetry["username"]).isEqualTo("bob")
-    assertThat(insightTelemetry["clientId"]).isEqualTo("send-legal-mail-client")
+
+    val clientTrackingInterceptorSpy = spy(clientTrackingInterceptor)
+    val mockSpan = spy(Span.current())
+    whenever(clientTrackingInterceptorSpy.getCurrentSpan()).thenReturn(mockSpan)
+
+    clientTrackingInterceptorSpy.preHandle(req, res, "null")
+    verify(mockSpan, times(1)).setAttribute("username", "bob")
+    verify(mockSpan, times(1)).setAttribute("clientId", "send-legal-mail-client")
   }
 
   @Test
@@ -46,9 +50,12 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
-    clientTrackingInterceptor.preHandle(req, res, "null")
-    val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).hasSize(1)
-    assertThat(insightTelemetry["clientId"]).isEqualTo("send-legal-mail-client")
+
+    val clientTrackingInterceptorSpy = spy(clientTrackingInterceptor)
+    val mockSpan = spy(Span.current())
+    whenever(clientTrackingInterceptorSpy.getCurrentSpan()).thenReturn(mockSpan)
+
+    clientTrackingInterceptorSpy.preHandle(req, res, "null")
+    verify(mockSpan, times(1)).setAttribute("clientId", "send-legal-mail-client")
   }
 }

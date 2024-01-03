@@ -32,10 +32,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-mail")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.1.1")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.3.0")
 
   implementation("io.jsonwebtoken:jjwt:0.12.3")
   implementation("io.github.microutils:kotlin-logging:3.0.5")

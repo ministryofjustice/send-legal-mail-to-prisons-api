@@ -31,7 +31,7 @@ class BarcodeTokenClientTrackingInterceptor : HandlerInterceptor {
 
   override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
     val token = request.getHeader("create-barcode-token")
-    if (token?.startsWith("Bearer ") == true) {
+    token?.let {
       try {
         val jwtBody = getClaimsFromJWT(token)
         val user = jwtBody.getClaim("user_name")?.toString()

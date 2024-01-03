@@ -34,7 +34,6 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
       sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
       // Can't have CSRF protection as requires session
       csrf { disable() }
-      addFilterAfter<RequestHeaderAuthenticationFilter>(createBarcodeAuthenticationFilter())
       authorizeHttpRequests {
         listOf(
           "/health/**",
@@ -49,6 +48,8 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
         ).forEach { authorize(it, permitAll) }
         authorize(anyRequest, authenticated)
       }
+      addFilterAfter<RequestHeaderAuthenticationFilter>(createBarcodeAuthenticationFilter())
+
       oauth2ResourceServer { jwt { jwtAuthenticationConverter = AuthAwareTokenConverter() } }
     }
     return http.build()
