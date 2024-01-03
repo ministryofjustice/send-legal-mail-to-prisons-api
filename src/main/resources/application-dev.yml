@@ -1,10 +1,4 @@
-standalone-redis:
-  # enable keyspace notifications when running in standalone redis (unsupported for elasticache)
-  keyspace-notifications: 'Ex'
-
 spring:
-  redis.port: 6378
-
   security:
     oauth2:
       resourceserver:
@@ -17,6 +11,9 @@ spring:
     port: 1025
     protocol: smtp
     test-connection: false
+  data:
+    redis:
+      port: 6378
 
 mailcatcher.api.port: 1080
 

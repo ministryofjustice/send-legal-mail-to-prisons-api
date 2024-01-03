@@ -1,10 +1,11 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import com.microsoft.applicationinsights.web.internal.ThreadContext
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import mu.KotlinLogging
-import org.apache.commons.lang3.StringUtils
+import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -12,11 +13,6 @@ import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.text.ParseException
-import java.util.Optional
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-
-private val log = KotlinLogging.logger {}
 
 @Configuration
 @ConditionalOnExpression("T(org.apache.commons.lang3.StringUtils).isNotBlank('\${applicationinsights.connection.string:}')")
@@ -27,22 +23,33 @@ class ClientTrackingConfiguration(private val clientTrackingInterceptor: ClientT
 }
 
 @Configuration
-class ClientTrackingInterceptor() : HandlerInterceptor {
+class ClientTrackingInterceptor : HandlerInterceptor {
+
+  companion object {
+    private val LOG = LoggerFactory.getLogger(this::class.java)
+  }
+
   override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
     val token = request.getHeader(HttpHeaders.AUTHORIZATION)
-    val bearer = "Bearer "
-    if (StringUtils.startsWithIgnoreCase(token, bearer)) {
+    if (token?.startsWith("Bearer ") == true) {
       try {
         val jwtBody = getClaimsFromJWT(token)
-        val properties = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-        val user = Optional.ofNullable(jwtBody.getClaim("user_name"))
-        user.map { it.toString() }.ifPresent { properties["username"] = it }
-        properties["clientId"] = jwtBody.getClaim("client_id").toString()
+        val user = jwtBody.getClaim("user_name")?.toString()
+        val currentSpan = getCurrentSpan()
+        user?.run {
+          currentSpan.setAttribute("username", this) // username in customDimensions
+          currentSpan.setAttribute("enduser.id", this) // user_Id at the top level of the request
+        }
+        currentSpan.setAttribute("clientId", jwtBody.getClaim("client_id").toString())
       } catch (e: ParseException) {
-        log.warn("problem decoding jwt public key for application insights", e)
+        LOG.warn("problem decoding jwt public key for application insights", e)
       }
     }
     return true
+  }
+
+  fun getCurrentSpan(): Span {
+    return Span.current()
   }
 
   @Throws(ParseException::class)

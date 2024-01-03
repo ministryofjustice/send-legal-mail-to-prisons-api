@@ -12,8 +12,6 @@ spring:
   jpa:
     show-sql: true
 
-  redis.port: 6380
-
   security:
     oauth2:
       resourceserver:
@@ -27,6 +25,9 @@ spring:
     port: 1025
     protocol: smtp
     test-connection: false
+  data:
+    redis:
+      port: 6380
 
 mailcatcher.api.port: 1080
 

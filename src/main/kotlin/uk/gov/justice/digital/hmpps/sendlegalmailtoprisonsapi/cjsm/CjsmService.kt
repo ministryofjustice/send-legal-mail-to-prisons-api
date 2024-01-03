@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.AmazonS3Exception
 import com.amazonaws.services.s3.model.DeleteObjectRequest
+import jakarta.transaction.Transactional
 import mu.KotlinLogging
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -13,7 +14,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.transaction.Transactional
 import kotlin.jvm.Throws
 
 private val log = KotlinLogging.logger {}
