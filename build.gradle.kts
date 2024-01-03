@@ -15,6 +15,10 @@ testSets {
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
+
+  testImplementation {
+    exclude(module = "slf4j-simple")
+  }
 }
 
 dependencies {
@@ -50,7 +54,6 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.19.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
-  // https://mvnrepository.com/artifact/com.microsoft.azure/applicationinsights-web
   testImplementation("com.microsoft.azure:applicationinsights-web:2.6.4")
 }
 

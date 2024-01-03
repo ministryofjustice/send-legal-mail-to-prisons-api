@@ -29,7 +29,9 @@ spring:
     redis:
       port: 6380
 
-mailcatcher.api.port: 1080
+mailcatcher:
+  api:
+    port: 1080
 
 app:
   jwt:
