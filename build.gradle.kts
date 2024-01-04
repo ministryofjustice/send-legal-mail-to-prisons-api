@@ -54,6 +54,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.microsoft.azure:applicationinsights-web:2.6.4")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
 // Language versions
