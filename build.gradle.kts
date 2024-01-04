@@ -9,6 +9,10 @@ plugins {
   id("org.openapi.generator") version "6.0.1"
 }
 
+jacoco {
+  toolVersion = "0.8.11"
+}
+
 testSets {
   "testIntegration"()
 }
