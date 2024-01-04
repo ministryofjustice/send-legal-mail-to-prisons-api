@@ -10,7 +10,7 @@ feature_branch: &feature_branch
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@7.2.1
+  hmpps: ministryofjustice/hmpps@8
 
 parameters:
   alerts-slack-channel:
@@ -23,7 +23,7 @@ parameters:
 executors:
   integration-test-validator:
     docker:
-      - image: cimg/openjdk:17.0
+      - image: maven:3.9.5-eclipse-temurin-21
       - image: cimg/postgres:13.3
         environment:
           POSTGRES_PASSWORD: admin_password
