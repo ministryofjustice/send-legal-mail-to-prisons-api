@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
@@ -26,22 +27,21 @@ private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler() {
-
-  override fun handleHttpMessageNotReadable(e: HttpMessageNotReadableException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+  override fun handleHttpMessageNotReadable(e: HttpMessageNotReadableException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any> {
     log.info("Request message unreadable exception: {}", e.message)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
-  override fun handleMethodArgumentNotValid(e: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+  override fun handleMethodArgumentNotValid(e: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any> {
     log.info("Method argument not valid exception: {}", e.message)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(ErrorResponse(status = BAD_REQUEST, errorCode = MalformedRequest))
   }
 
-  override fun handleMissingServletRequestParameter(e: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+  override fun handleMissingServletRequestParameter(e: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any> {
     log.info { "Missing required querystring parameter '${e.parameterName}' on request" }
     return ResponseEntity
       .status(BAD_REQUEST)
@@ -60,8 +60,8 @@ class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler
   fun handleRestClientException(e: RestClientResponseException): ResponseEntity<ErrorResponse> {
     log.error("RestClientResponseException: {}", e.message)
     return ResponseEntity
-      .status(e.rawStatusCode)
-      .body(ErrorResponse(status = e.rawStatusCode, errorCode = DownstreamError))
+      .status(e.statusCode)
+      .body(ErrorResponse(status = e.statusCode.value(), errorCode = DownstreamError))
   }
 
   @ExceptionHandler(RestClientException::class)

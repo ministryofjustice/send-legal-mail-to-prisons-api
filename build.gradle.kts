@@ -1,12 +1,16 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.13.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.9.10"
-  kotlin("plugin.jpa") version "1.9.10"
+  kotlin("plugin.spring") version "1.9.22"
+  kotlin("plugin.jpa") version "1.9.22"
   id("jacoco")
   id("org.openapi.generator") version "6.0.1"
+}
+
+jacoco {
+  toolVersion = "0.8.11"
 }
 
 testSets {
@@ -15,6 +19,10 @@ testSets {
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
+
+  testImplementation {
+    exclude(module = "slf4j-simple")
+  }
 }
 
 dependencies {
@@ -26,41 +34,41 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.3.0")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-webmvc-core:1.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.3.0")
 
   implementation("io.jsonwebtoken:jjwt:0.12.3")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.571")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.631")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.6.0")
 
-  testImplementation("org.testcontainers:postgresql:1.19.1")
+  testImplementation("org.testcontainers:postgresql:1.19.3")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
+  testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.18")
-  testImplementation("org.testcontainers:localstack:1.19.1")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.19")
+  testImplementation("org.testcontainers:localstack:1.19.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("com.microsoft.azure:applicationinsights-web:2.6.4")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
 // Language versions
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+kotlin {
+  jvmToolchain(21)
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "17"
+      jvmTarget = "21"
     }
   }
 }
