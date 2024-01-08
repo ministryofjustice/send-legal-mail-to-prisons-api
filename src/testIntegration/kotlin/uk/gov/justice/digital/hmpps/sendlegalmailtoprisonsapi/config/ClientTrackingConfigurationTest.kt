@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
-import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext
-import com.microsoft.applicationinsights.web.internal.ThreadContext
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.trace.Tracer
+import io.opentelemetry.sdk.testing.junit5.OpenTelemetryExtension
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.mock.web.MockHttpServletRequest
@@ -17,38 +16,46 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
   @Autowired
   private lateinit var clientTrackingInterceptor: ClientTrackingInterceptor
 
-  @BeforeEach
-  fun setup() {
-    ThreadContext.setRequestTelemetryContext(RequestTelemetryContext(1L))
-  }
-
-  @AfterEach
-  fun tearDown() {
-    ThreadContext.remove()
-  }
+  private val tracer: Tracer = otelTesting.openTelemetry.getTracer("test")
 
   @Test
-  fun shouldAddClientIdAndUserNameToInsightTelemetry() {
+  fun `should add client and username to telemetry`() {
     val token = jwtAuthHelper.createJwt("bob")
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
-    clientTrackingInterceptor.preHandle(req, res, "null")
-    val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).hasSize(2)
-    assertThat(insightTelemetry["username"]).isEqualTo("bob")
-    assertThat(insightTelemetry["clientId"]).isEqualTo("send-legal-mail-client")
+    tracer.spanBuilder("span").startSpan().run {
+      makeCurrent().use { clientTrackingInterceptor.preHandle(req, res, "null") }
+      end()
+    }
+    otelTesting.assertTraces().hasTracesSatisfyingExactly({ t ->
+      t.hasSpansSatisfyingExactly({
+        it.hasAttribute(AttributeKey.stringKey("username"), "bob")
+        it.hasAttribute(AttributeKey.stringKey("clientId"), "send-legal-mail-client")
+      },)
+    },)
   }
 
   @Test
-  fun shouldAddOnlyClientIdIfUsernameNullToInsightTelemetry() {
+  fun `should add only clientId if username null to insight telemetry`() {
     val token = jwtAuthHelper.createJwt(null)
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
-    clientTrackingInterceptor.preHandle(req, res, "null")
-    val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).hasSize(1)
-    assertThat(insightTelemetry["clientId"]).isEqualTo("send-legal-mail-client")
+    tracer.spanBuilder("span").startSpan().run {
+      makeCurrent().use { clientTrackingInterceptor.preHandle(req, res, "null") }
+      end()
+    }
+    otelTesting.assertTraces().hasTracesSatisfyingExactly({ t ->
+      t.hasSpansSatisfyingExactly({
+        it.hasAttribute(AttributeKey.stringKey("clientId"), "send-legal-mail-client")
+      },)
+    },)
+  }
+
+  private companion object {
+    @JvmStatic
+    @RegisterExtension
+    private val otelTesting: OpenTelemetryExtension = OpenTelemetryExtension.create()
   }
 }

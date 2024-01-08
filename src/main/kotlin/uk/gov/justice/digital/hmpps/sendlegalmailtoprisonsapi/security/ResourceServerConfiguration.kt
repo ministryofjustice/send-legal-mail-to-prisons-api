@@ -5,34 +5,33 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.ProviderManager
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
-class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDetailsService) :
-  WebSecurityConfigurerAdapter() {
+@EnableMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
+class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDetailsService) {
 
-  override fun configure(http: HttpSecurity) {
-    http
-      .sessionManagement()
-      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and().headers().frameOptions().sameOrigin()
-      .and().csrf().disable()
-      .addFilterAfter(createBarcodeAuthenticationFilter(), RequestHeaderAuthenticationFilter::class.java)
-      .authorizeRequests { auth ->
-        auth.antMatchers(
-          "/webjars/**",
-          "favicon.ico",
+  @Bean
+  @Throws(Exception::class)
+  fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    http {
+      headers { frameOptions { sameOrigin = true } }
+      sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+      // Can't have CSRF protection as requires session
+      csrf { disable() }
+      authorizeHttpRequests {
+        listOf(
           "/health/**",
           "/info",
           "/swagger-resources/**",
@@ -42,8 +41,14 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
           "/cjsm/directory/refresh", // Protected by the ingress - see Kube config in helm_deploy
           "/barcode-stats-report", // Protected by the ingress - see Kube config in helm_deploy
           "/prisons",
-        ).permitAll().anyRequest().authenticated()
-      }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
+        ).forEach { authorize(it, permitAll) }
+        authorize(anyRequest, authenticated)
+      }
+      addFilterAfter<RequestHeaderAuthenticationFilter>(createBarcodeAuthenticationFilter())
+
+      oauth2ResourceServer { jwt { jwtAuthenticationConverter = AuthAwareTokenConverter() } }
+    }
+    return http.build()
   }
 
   @Bean
@@ -56,7 +61,7 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
       }
 
   @Bean
-  override fun authenticationManager(): AuthenticationManager =
+  fun authenticationManager(): AuthenticationManager =
     ProviderManager(mutableListOf<AuthenticationProvider>(preAuthProvider()))
 
   @Bean

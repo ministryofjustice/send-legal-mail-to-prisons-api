@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 import io.swagger.v3.parser.OpenAPIV3Parser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import java.time.LocalDate

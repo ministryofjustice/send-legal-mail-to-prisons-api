@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -12,9 +15,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.HmppsAuthClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.UserDetails
-import javax.servlet.FilterChain
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 class UserContextFilterTest {
 

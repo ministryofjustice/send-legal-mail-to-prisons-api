@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import jakarta.validation.Validation
+import jakarta.validation.Validator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Duration
-import javax.validation.Validation
-import javax.validation.Validator
 
 class BarcodeConfigTest {
 

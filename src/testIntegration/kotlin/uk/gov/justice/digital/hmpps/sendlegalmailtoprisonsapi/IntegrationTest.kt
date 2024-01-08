@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 import com.amazonaws.services.s3.AmazonS3
 import com.microsoft.applicationinsights.TelemetryClient
 import io.lettuce.core.ClientOptions
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -54,8 +56,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.Loc
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
 import java.util.concurrent.TimeUnit.SECONDS
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTest.RedisConfig::class)

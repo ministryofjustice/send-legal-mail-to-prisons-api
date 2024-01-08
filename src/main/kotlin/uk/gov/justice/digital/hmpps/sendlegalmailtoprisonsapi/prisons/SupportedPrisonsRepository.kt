@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons
 
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.hibernate.Hibernate
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
@@ -8,11 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.Id
-import javax.persistence.Table
 
 @Repository
 interface SupportedPrisonsRepository : JpaRepository<SupportedPrison, String> {

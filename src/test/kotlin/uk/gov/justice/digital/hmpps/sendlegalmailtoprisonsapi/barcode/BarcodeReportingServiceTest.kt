@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
+import jakarta.mail.Session
+import jakarta.mail.internet.MimeMessage
+import jakarta.mail.internet.MimeMultipart
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -16,9 +19,6 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import javax.mail.Session
-import javax.mail.internet.MimeMessage
-import javax.mail.internet.MimeMultipart
 
 class BarcodeReportingServiceTest {
 

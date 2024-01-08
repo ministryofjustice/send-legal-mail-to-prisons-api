@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
@@ -24,9 +27,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ErrorRespon
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.UserContext
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.validators.validateRequestHasDobOrPrisonNumber
 import java.time.LocalDate
-import javax.validation.Valid
-import javax.validation.constraints.Pattern
-import javax.validation.constraints.Size
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
