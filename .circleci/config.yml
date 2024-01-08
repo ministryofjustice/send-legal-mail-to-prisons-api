@@ -160,6 +160,11 @@ workflows:
           context: hmpps-common-vars
           requires:
             - request-dev-preview-approval
+      - run_smoke_test:
+          name: smoke_test_dev_preview
+          env: dev
+          requires:
+            - deploy_dev_preview
 
       - hmpps/deploy_env:
           <<: *main_branch
