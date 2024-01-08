@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
   id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.9.21"
-  kotlin("plugin.jpa") version "1.9.21"
+  kotlin("plugin.spring") version "1.9.22"
+  kotlin("plugin.jpa") version "1.9.22"
   id("jacoco")
   id("org.openapi.generator") version "6.0.1"
 }
@@ -34,7 +34,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.1.1")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.3.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
@@ -43,7 +42,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.3")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.622")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.631")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -62,8 +61,8 @@ dependencies {
 }
 
 // Language versions
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+kotlin {
+  jvmToolchain(21)
 }
 
 tasks {
