@@ -109,6 +109,9 @@ jobs:
           command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
       - hmpps/k8s_setup
       - run:
+          name: Install curl
+          command: apt-get update && apt-get install -y curl
+      - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
       - run:
