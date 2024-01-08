@@ -7,15 +7,15 @@ WORKDIR /app
 ADD . .
 RUN ./gradlew clean assemble -Dorg.gradle.daemon=false
 
+# Grab AWS RDS Root cert
+RUN apt-get update && apt-get install -y curl
+RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem  > root.crt
+
 FROM eclipse-temurin:21-jre-jammy
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ARG BUILD_NUMBER
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
-
-# Grab AWS RDS Root cert
-RUN apt-get update && apt-get install -y curl
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem  > root.crt
 
 RUN apt-get update && \
     apt-get -y upgrade && \
