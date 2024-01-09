@@ -111,9 +111,6 @@ jobs:
           name: Install curl
           command: apt-get update && apt-get install -y curl
       - run:
-          name: Install curl
-          command: apt-get update && apt-get install -y curl
-      - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
       - hmpps/k8s_setup
