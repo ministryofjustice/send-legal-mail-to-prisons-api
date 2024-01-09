@@ -107,13 +107,13 @@ jobs:
       - run:
           name: Checkout UI project
           command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
-      - hmpps/k8s_setup
       - run:
           name: Install curl
           command: apt-get update && apt-get install -y curl
       - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
+      - hmpps/k8s_setup
       - run:
           name: Run smoke tests in << parameters.env >>
           command: |
@@ -160,6 +160,11 @@ workflows:
           context: hmpps-common-vars
           requires:
             - request-dev-preview-approval
+      - run_smoke_test:
+          name: smoke_test_dev_preview
+          env: dev
+          requires:
+            - deploy_dev_preview
 
       - hmpps/deploy_env:
           <<: *main_branch
