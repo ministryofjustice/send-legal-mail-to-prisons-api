@@ -28,7 +28,7 @@ services:
       - PRISONER_SEARCH_URL=http://wiremock:8080
       - SPRING_MAIL_HOST=mailcatcher
       - APP_S3_LOCALSTACKURL=localstack
-      - SPRING_REDIS_HOST=send-legal-mail-api-cache
+      - SPRING_DATA_REDIS_HOST=send-legal-mail-api-cache
       - APP_SMOKETEST_LSJSECRET=LSJ_SECRET
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
