@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
+import jakarta.mail.Session
+import jakarta.mail.internet.MimeMessage
+import jakarta.mail.internet.MimeMultipart
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.check
@@ -9,9 +12,6 @@ import org.mockito.kotlin.verify
 import org.springframework.mail.javamail.JavaMailSender
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import javax.mail.Session
-import javax.mail.internet.MimeMessage
-import javax.mail.internet.MimeMultipart
 
 class OneTimeCodeEmailSenderTest {
   private val mockMailSender: JavaMailSender = mock()

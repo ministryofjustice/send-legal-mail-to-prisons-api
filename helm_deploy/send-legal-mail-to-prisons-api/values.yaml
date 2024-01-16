@@ -10,9 +10,7 @@ generic-service:
 
   ingress:
     enabled: true
-    v1_2_enabled: true
-    v0_47_enabled: false
-    host: app-hostname.local # override per environment
+    host: app-hostname.local    # override per environment
     tlsSecretName: send-legal-mail-api-cert
     annotations:
       nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -33,7 +31,7 @@ generic-service:
     SPRING_PROFILES_ACTIVE: "logstash"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    SPRING_REDIS_SSL: "true"
+    SPRING_DATA_REDIS_SSL_ENABLED: "true"
     HMPPS_SQS_USE_WEB_TOKEN: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
@@ -54,8 +52,8 @@ generic-service:
       DB_USER: "database_username"
       DB_PASS: "database_password"
     slmtp-api-elasticache-redis:
-      SPRING_REDIS_HOST: "primary_endpoint_address"
-      SPRING_REDIS_PASSWORD: "auth_token"
+      SPRING_DATA_REDIS_HOST: "primary_endpoint_address"
+      SPRING_DATA_REDIS_PASSWORD: "auth_token"
     send-legal-mail-s3-bucket-output:
       APP_S3_BUCKET_ARN: "bucket_arn"
       APP_S3_BUCKET_NAME: "bucket_name"
