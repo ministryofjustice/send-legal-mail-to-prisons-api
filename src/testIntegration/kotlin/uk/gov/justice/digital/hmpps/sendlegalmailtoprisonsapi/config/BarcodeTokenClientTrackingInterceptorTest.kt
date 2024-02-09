@@ -31,8 +31,8 @@ class BarcodeTokenClientTrackingInterceptorTest : IntegrationTest() {
       t.hasSpansSatisfyingExactly({
         it.hasAttribute(AttributeKey.stringKey("username"), "some.email@company.com")
         it.hasAttribute(AttributeKey.stringKey("clientId"), "send-legal-mail")
-      },)
-    },)
+      })
+    })
   }
 
   private companion object {

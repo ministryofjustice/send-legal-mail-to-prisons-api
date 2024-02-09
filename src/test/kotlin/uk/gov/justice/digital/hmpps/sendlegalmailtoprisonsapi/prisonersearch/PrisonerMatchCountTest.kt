@@ -176,14 +176,16 @@ class PrisonerMatchCountTest {
           firstName = "JOHN",
           lastName = "SMITH",
           dateOfBirth = dob,
-        ), // match main details
+        ),
+        // match main details
         aPrisoner.copy(
           prisonerNumber = "A1234BC",
           firstName = "JOHNNY",
           lastName = "SMITH",
           dateOfBirth = dob,
           aliases = listOf(
-            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob), // match alias details
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
+            // match alias details
             PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
           ),
         ),
@@ -192,14 +194,16 @@ class PrisonerMatchCountTest {
           firstName = "JOHN",
           lastName = "SMITH",
           dateOfBirth = LocalDate.MIN,
-        ), // no match
+        ),
+        // no match
         aPrisoner.copy(
           prisonerNumber = "Z9999BC",
           firstName = "JOHN",
           lastName = "SMITHSON",
           dateOfBirth = LocalDate.MIN,
           aliases = listOf(
-            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob), // match alias details
+            // match alias details
+            PrisonerAlias("John", lastName = "SMITH", dateOfBirth = dob),
           ),
         ),
       )
