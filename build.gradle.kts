@@ -42,7 +42,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.5")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.655")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.656")
   implementation("org.apache.commons:commons-csv:1.10.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
