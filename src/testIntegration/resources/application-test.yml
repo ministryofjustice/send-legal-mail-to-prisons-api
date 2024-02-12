@@ -55,3 +55,7 @@ prisoner:
 prison:
   register:
     url: http://localhost:8092
+manage:
+  users:
+    api:
+      url: http://localhost:8093
