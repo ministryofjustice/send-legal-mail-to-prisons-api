@@ -21,9 +21,7 @@ spring:
 
 mailcatcher.api.port: 1080
 
-hmpps:
-  auth:
-    url: http://localhost:9090/auth
+manage.users.api.url: https://manage-users-api-dev.hmpps.service.justice.gov.uk
 prisoner:
   search:
     url: http://localhost:9092

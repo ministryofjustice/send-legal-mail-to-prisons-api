@@ -13,31 +13,31 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.InsufficientAuthenticationException
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.HmppsAuthClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.UserDetails
 
 class UserContextFilterTest {
 
-  private val hmppsAuthClient = mock<HmppsAuthClient>()
+  private val manageUsersApiClient = mock<ManageUsersApiClient>()
   private val userContext = mock<UserContext>()
   private val jwtService = mock<JwtService>()
   private val servletRequest = mock<HttpServletRequest>()
   private val servletResponse = mock<HttpServletResponse>()
   private val filterChain = mock<FilterChain>()
 
-  private val userContextFilter = UserContextFilter(hmppsAuthClient, userContext, jwtService)
+  private val userContextFilter = UserContextFilter(manageUsersApiClient, userContext, jwtService)
 
   @Test
   fun `should save the auth token and caseload if there is an Authorization header`() {
     whenever(servletRequest.getHeader(anyString())).thenReturn("some_token")
-    whenever(hmppsAuthClient.getUserDetails()).thenReturn(UserDetails("some_caseload"))
+    whenever(manageUsersApiClient.getUserDetails()).thenReturn(UserDetails("some_caseload"))
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(false)
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(true)
 
     userContextFilter.doFilter(servletRequest, servletResponse, filterChain)
 
     verify(servletRequest).getHeader(HttpHeaders.AUTHORIZATION)
-    verify(hmppsAuthClient).getUserDetails()
+    verify(manageUsersApiClient).getUserDetails()
     verify(jwtService).isSmokeTestUserToken("some_token")
     verify(jwtService).isNomisUserToken("some_token")
     // The order is important as the authToken is used to retrieve the caseload
@@ -57,7 +57,7 @@ class UserContextFilterTest {
     verify(jwtService).isSmokeTestUserToken("some_token")
     verify(userContext).authToken = "some_token"
     verify(userContext).caseload = "SKI"
-    verifyNoInteractions(hmppsAuthClient)
+    verifyNoInteractions(manageUsersApiClient)
   }
 
   @Test
@@ -67,14 +67,14 @@ class UserContextFilterTest {
 
     userContextFilter.doFilter(servletRequest, servletResponse, filterChain)
 
-    verifyNoInteractions(hmppsAuthClient)
+    verifyNoInteractions(manageUsersApiClient)
     verifyNoInteractions(userContext)
   }
 
   @Test
   fun `should throw if the user has no active caseload returned from auth`() {
     whenever(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("some_token")
-    whenever(hmppsAuthClient.getUserDetails()).thenReturn(UserDetails())
+    whenever(manageUsersApiClient.getUserDetails()).thenReturn(UserDetails())
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(true)
 
     assertThatThrownBy {
@@ -82,6 +82,6 @@ class UserContextFilterTest {
     }.isInstanceOf(InsufficientAuthenticationException::class.java)
 
     verify(jwtService).isNomisUserToken("some_token")
-    verify(hmppsAuthClient).getUserDetails()
+    verify(manageUsersApiClient).getUserDetails()
   }
 }

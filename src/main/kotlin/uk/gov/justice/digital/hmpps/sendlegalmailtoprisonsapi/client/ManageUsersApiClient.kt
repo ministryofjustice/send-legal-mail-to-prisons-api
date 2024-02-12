@@ -1,16 +1,18 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
-class HmppsAuthClient(private val hmppsAuthWebClient: WebClient) {
-
+class ManageUsersApiClient(
+  @Qualifier("manageUsersApiWebClient") private val webClient: WebClient,
+) {
   fun getUserDetails() =
-    hmppsAuthWebClient.get()
-      .uri("/api/user/me")
+    webClient.get()
+      .uri("/users/me")
       .accept(MediaType.APPLICATION_JSON)
       .retrieve()
       .bodyToMono<UserDetails>()
