@@ -58,7 +58,7 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   }
   fun stubGetUserDetails() {
     stubFor(
-      get(WireMock.urlEqualTo("/auth/api/user/me"))
+      get(WireMock.urlEqualTo("/users/me"))
         .willReturn(
           aResponse()
             .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
@@ -76,7 +76,7 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   // If the user is not known then this endpoint still returns the username, just not the active caseload
   fun stubFailToGetUserDetails() {
     stubFor(
-      get(WireMock.urlEqualTo("/auth/api/user/me"))
+      get(WireMock.urlEqualTo("/users/me"))
         .willReturn(
           aResponse()
             .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))

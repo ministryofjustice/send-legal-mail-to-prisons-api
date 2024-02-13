@@ -11,13 +11,13 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.ManageUsersApiClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.HmppsAuthClient
 import java.io.IOException
 
 @Component
 @Order(1)
 class UserContextFilter(
-  private val manageUsersApiClient: ManageUsersApiClient,
+  private val hmppsAuthClient: HmppsAuthClient,
   private val userContext: UserContext,
   private val jwtService: JwtService,
 ) : Filter {
@@ -30,7 +30,7 @@ class UserContextFilter(
       userContext.caseload = "SKI"
     } else if (jwtService.isNomisUserToken(authToken)) {
       userContext.authToken = authToken
-      userContext.caseload = manageUsersApiClient.getUserDetails().activeCaseLoadId
+      userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
         ?: let {
           throw InsufficientAuthenticationException("User ${jwtService.getUser(authToken)} does not have an active caseload")
         }
