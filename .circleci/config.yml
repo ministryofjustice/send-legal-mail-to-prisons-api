@@ -59,11 +59,11 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew --daemon check
+          command: ./gradlew check
       - run:
-          command: ./gradlew --daemon testIntegration
+          command: ./gradlew testIntegration
       - run:
-          command: ./gradlew --daemon combineJacocoReports
+          command: ./gradlew combineJacocoReports
       - save_cache:
           paths:
             - ~/.gradle
