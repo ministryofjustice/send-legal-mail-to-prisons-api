@@ -93,6 +93,7 @@ class SmoketestTest : BarcodeResourceTest() {
 
     @Test
     fun `A mailroom staff smoke test checking barcodes receives an error because the user doesn't exist`() {
+      ManageUsersApiExtension.manageUsersApiMockServer.stubGetUserName()
       ManageUsersApiExtension.manageUsersApiMockServer.stubFailToGetUserDetails()
       val barcode = barcodeRepository.save(Barcode(code = "no-smoketest"))
       barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
