@@ -21,6 +21,7 @@ class ManageUsersApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachC
 
   override fun beforeAll(context: ExtensionContext) {
     manageUsersApiMockServer.start()
+    manageUsersApiMockServer.stubGetUserDetails()
   }
 
   override fun beforeEach(context: ExtensionContext) {

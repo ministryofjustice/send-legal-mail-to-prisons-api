@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEve
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeResourceTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
 class SmoketestTest : BarcodeResourceTest() {
@@ -93,7 +93,7 @@ class SmoketestTest : BarcodeResourceTest() {
 
     @Test
     fun `A mailroom staff smoke test checking barcodes receives an error because the user doesn't exist`() {
-      HmppsAuthExtension.hmppsAuthApi.stubFailToGetUserDetails()
+      ManageUsersApiExtension.manageUsersApiMockServer.stubFailToGetUserDetails()
       val barcode = barcodeRepository.save(Barcode(code = "no-smoketest"))
       barcodeEventRepository.save(BarcodeEvent(barcode = barcode, userId = "any-user", eventType = BarcodeEventType.CREATED, ipAddress = "127.0.0.1"))
       barcodeRecipientRepository.save(BarcodeRecipient(barcode = barcode, name = "John Smith", prisonCode = "BXI"))
