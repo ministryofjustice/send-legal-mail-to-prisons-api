@@ -79,14 +79,14 @@ class ManageUsersApiMockServer : WireMockServer(WIREMOCK_CONFIG) {
   // If the user is not known then this endpoint still returns the username, just not the active caseload
   fun stubFailToGetUserDetails() {
     stubFor(
-      WireMock.get(WireMock.urlEqualTo("/users/me"))
+      WireMock.get(WireMock.urlEqualTo("/users/DUMMY_USER"))
         .willReturn(
           aResponse()
             .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
             .withBody(
               """
               {
-                "username": "you"
+                "username": "DUMMY_USER"
               }
               """.trimIndent(),
             ),
