@@ -23,7 +23,7 @@ parameters:
 executors:
   integration-test-validator:
     docker:
-      - image: maven:3.9.5-eclipse-temurin-21
+      - image: cimg/openjdk:21.0.0
       - image: cimg/postgres:13.3
         environment:
           POSTGRES_PASSWORD: admin_password
@@ -59,9 +59,9 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew check
+          command: ./gradlew --daemon check
       - run:
-          command: ./gradlew testIntegration
+          command: ./gradlew --daemon testIntegration
       - run:
           command: ./gradlew --daemon combineJacocoReports
       - save_cache:
