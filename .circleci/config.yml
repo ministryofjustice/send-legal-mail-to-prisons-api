@@ -63,7 +63,7 @@ jobs:
       - run:
           command: ./gradlew testIntegration
       - run:
-          command: ./gradlew combineJacocoReports
+          command: ./gradlew --daemon combineJacocoReports
       - save_cache:
           paths:
             - ~/.gradle
