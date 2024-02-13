@@ -23,7 +23,7 @@ parameters:
 executors:
   integration-test-validator:
     docker:
-      - image: cimg/openjdk:21.0.0
+      - image: maven:3.9.5-eclipse-temurin-21
       - image: cimg/postgres:13.3
         environment:
           POSTGRES_PASSWORD: admin_password
