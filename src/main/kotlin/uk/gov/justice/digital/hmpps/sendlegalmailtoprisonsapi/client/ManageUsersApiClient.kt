@@ -18,3 +18,5 @@ class ManageUsersApiClient(
       .bodyToMono<UserDetails>()
       .block()!!
 }
+
+data class UserDetails(val activeCaseLoadId: String? = null)
