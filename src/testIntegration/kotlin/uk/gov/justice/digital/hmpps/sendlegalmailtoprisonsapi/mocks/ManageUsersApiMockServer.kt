@@ -21,6 +21,7 @@ class ManageUsersApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachC
 
   override fun beforeAll(context: ExtensionContext) {
     manageUsersApiMockServer.start()
+    manageUsersApiMockServer.stubGetUserName()
     manageUsersApiMockServer.stubGetUserDetails()
   }
 
@@ -41,9 +42,26 @@ class ManageUsersApiMockServer : WireMockServer(WIREMOCK_CONFIG) {
       .fileSource(SingleRootFileSource("src/testIntegration/resources"))
   }
 
-  fun stubGetUserDetails() {
+  fun stubGetUserName() {
     stubFor(
       WireMock.get(WireMock.urlEqualTo("/users/me"))
+        .willReturn(
+          aResponse()
+            .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
+            .withBody(
+              """
+              {
+                "username": "DUMMY_USER"
+              }
+              """.trimIndent(),
+            ),
+        ),
+    )
+  }
+
+  fun stubGetUserDetails() {
+    stubFor(
+      WireMock.get(WireMock.urlEqualTo("/users/DUMMY_USER"))
         .willReturn(
           aResponse()
             .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))

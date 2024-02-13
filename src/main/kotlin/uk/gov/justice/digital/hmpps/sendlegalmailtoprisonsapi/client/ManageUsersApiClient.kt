@@ -10,9 +10,16 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class ManageUsersApiClient(
   @Qualifier("manageUsersApiWebClient") private val webClient: WebClient,
 ) {
-  fun getUserDetails() =
+  fun getUsername() = webClient.get()
+    .uri("/users/me")
+    .accept(MediaType.APPLICATION_JSON)
+    .retrieve()
+    .bodyToMono<UserNameDetails>()
+    .block()!!
+
+  fun getUserDetails(userName: String) =
     webClient.get()
-      .uri("/users/me")
+      .uri("/users/$userName")
       .accept(MediaType.APPLICATION_JSON)
       .retrieve()
       .bodyToMono<UserDetails>()
@@ -20,3 +27,4 @@ class ManageUsersApiClient(
 }
 
 data class UserDetails(val activeCaseLoadId: String? = null)
+data class UserNameDetails(val username: String? = null)

@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.UserDetails
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.UserNameDetails
 
 class UserContextFilterTest {
 
@@ -30,14 +31,15 @@ class UserContextFilterTest {
   @Test
   fun `should save the auth token and caseload if there is an Authorization header`() {
     whenever(servletRequest.getHeader(anyString())).thenReturn("some_token")
-    whenever(manageUsersApiCLient.getUserDetails()).thenReturn(UserDetails("some_caseload"))
+    whenever(manageUsersApiCLient.getUsername()).thenReturn(UserNameDetails("dummy_user"))
+    whenever(manageUsersApiCLient.getUserDetails(anyString())).thenReturn(UserDetails("some_caseload"))
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(false)
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(true)
 
     userContextFilter.doFilter(servletRequest, servletResponse, filterChain)
 
     verify(servletRequest).getHeader(HttpHeaders.AUTHORIZATION)
-    verify(manageUsersApiCLient).getUserDetails()
+    verify(manageUsersApiCLient).getUserDetails(anyString())
     verify(jwtService).isSmokeTestUserToken("some_token")
     verify(jwtService).isNomisUserToken("some_token")
     // The order is important as the authToken is used to retrieve the caseload
@@ -74,7 +76,8 @@ class UserContextFilterTest {
   @Test
   fun `should throw if the user has no active caseload returned from auth`() {
     whenever(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("some_token")
-    whenever(manageUsersApiCLient.getUserDetails()).thenReturn(UserDetails())
+    whenever(manageUsersApiCLient.getUsername()).thenReturn(UserNameDetails("dummy_user"))
+    whenever(manageUsersApiCLient.getUserDetails(anyString())).thenReturn(UserDetails())
     whenever(jwtService.isNomisUserToken(anyString())).thenReturn(true)
 
     assertThatThrownBy {
@@ -82,6 +85,6 @@ class UserContextFilterTest {
     }.isInstanceOf(InsufficientAuthenticationException::class.java)
 
     verify(jwtService).isNomisUserToken("some_token")
-    verify(manageUsersApiCLient).getUserDetails()
+    verify(manageUsersApiCLient).getUserDetails(anyString())
   }
 }
