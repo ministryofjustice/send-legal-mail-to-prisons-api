@@ -107,9 +107,6 @@ jobs:
       - run:
           name: Checkout UI project
           command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
-      - run:
-          name: Install jq
-          command: apt-get update && apt-get install -y jq
       - hmpps/k8s_setup
       - run:
           name: Run smoke tests in << parameters.env >>
