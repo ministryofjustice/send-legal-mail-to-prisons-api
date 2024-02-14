@@ -110,8 +110,7 @@ jobs:
       - run:
           name: Install curl
           command: |
-            apt-get update && apt-get install -y gnupg
-            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
             apt-get update && apt-get install -y curl
       - run:
           name: Install jq
