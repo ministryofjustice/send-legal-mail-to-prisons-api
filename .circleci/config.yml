@@ -110,10 +110,9 @@ jobs:
       - run:
           name: Install curl
           command: |
-            apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
-            apt-get update -y
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-            apt-get update && apt-get install -y curl
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
+            sudo apt-get update -y
+            sudo apt-get update && apt-get install -y curl
       - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
