@@ -109,10 +109,7 @@ jobs:
           command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
       - run:
           name: Install curl
-          command: |
-            apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
-            apt-get update -y
-            apt-get update && apt-get install -y curl
+          command: apt-get update && apt-get install -y curl
       - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
