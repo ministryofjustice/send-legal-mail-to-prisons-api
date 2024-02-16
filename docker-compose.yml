@@ -21,7 +21,7 @@ services:
       - SPRING_REDIS_HOST=send-legal-mail-api-cache
 
   send-legal-mail-api-db:
-    image: postgres:13.3
+    image: postgres:15.5
     networks:
       - hmpps
     container_name: send-legal-mail-api-db
@@ -50,7 +50,7 @@ services:
       - '1025:1025'
 
   localstack:
-    image: localstack/localstack:0.13.1
+    image: localstack/localstack:3
     networks:
       - hmpps
     container_name: localstack

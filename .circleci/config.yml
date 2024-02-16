@@ -24,13 +24,13 @@ executors:
   integration-test-validator:
     docker:
       - image: cimg/openjdk:21.0.0
-      - image: cimg/postgres:13.3
+      - image: cimg/postgres:15.5
         environment:
           POSTGRES_PASSWORD: admin_password
           POSTGRES_USER: admin
           POSTGRES_DB: send_legal_mail_api_db
       - image: sj26/mailcatcher
-      - image: localstack/localstack:0.13.1
+      - image: localstack/localstack:3
         environment:
           SERVICES: s3
           DEBUG: ${DEBUG- }
