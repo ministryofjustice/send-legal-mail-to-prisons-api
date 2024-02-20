@@ -109,7 +109,10 @@ jobs:
           command: git clone https://github.com/ministryofjustice/send-legal-mail-to-prisons.git
       - run:
           name: Install curl
-          command: apt-get install -y curl
+          command: |
+            wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo gpg  --dearmor -o /usr/share/keyrings/dart.gpg
+            apt-get update
+            apt-get install -y curl
       - run:
           name: Install jq
           command: apt-get update && apt-get install -y jq
