@@ -33,3 +33,8 @@ generic-service:
 generic-prometheus-alerts:
   alertSeverity: send-legal-mail-alerts
   businessHoursOnly: true
+
+cron:
+  barcodeStatsReportSchedule: "5 8 * * 1-5"
+  cjsmDirectorySchedule: "15 8 * * 1-5"
+
