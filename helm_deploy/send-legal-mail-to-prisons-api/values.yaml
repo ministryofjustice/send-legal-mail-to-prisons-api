@@ -68,3 +68,8 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: send-legal-mail-to-prisons-api
+
+cron:
+  barcodeStatsReportSchedule: "5 6 * * *"
+  cjsmDirectorySchedule: "15 3 * * *"
+

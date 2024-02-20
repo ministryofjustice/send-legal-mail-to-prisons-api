@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: send-legal-mail-to-prisons-api-barcode-stats-report
 spec:
-  schedule: "5 6 * * *"
+  schedule: "{{ .Values.cron.barcodeStatsReportSchedule }}"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 6000
