@@ -191,7 +191,7 @@ workflows:
             - hmpps-common-vars
             - send-legal-mail-to-prisons-api-preprod
           requires:
-            - smoke_test_dev
+            - deploy_dev
 #      - run_smoke_test:
 #          name: smoke_test_preprod
 #          env: preprod
@@ -203,7 +203,7 @@ workflows:
       - request-prod-approval:
           type: approval
           requires:
-            - smoke_test_preprod
+            - deploy_preprod
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
