@@ -53,7 +53,7 @@ class OneTimeCodeEmailSender(
                                 <td style="font-family:Helvetica,Arial,sans-serif;padding:4px 0;border-bottom:solid 10px #005ea5" width="30">
 
                                     <a href="https://www.gov.uk/" title="Go to the GOV.UK" style="font-size:24px;font-weight:bold;text-decoration:none;color:#ffffff" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://www.gov.uk/&amp;source=gmail&amp;ust=1648555909470000&amp;usg=AOvVaw2uN4hTGDbOHXGNCBJLkYyo">
-                                        <img src="cid:crest.png" alt="" style="margin:10px 10px 10px 20px" class="CToWUd" width="30">
+                                        <img src="cid:crest.png" alt="" style="margin:10px 30px 10px 20px" class="CToWUd" width="30">
                                     </a>
 
                                 </td>
