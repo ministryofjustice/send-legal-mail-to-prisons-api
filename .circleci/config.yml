@@ -24,7 +24,7 @@ executors:
   integration-test-validator:
     docker:
       - image: cimg/openjdk:21.0.0
-      - image: cimg/postgres:13.3
+      - image: cimg/postgres:15.5
         environment:
           POSTGRES_PASSWORD: admin_password
           POSTGRES_USER: admin
