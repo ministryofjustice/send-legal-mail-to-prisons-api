@@ -22,7 +22,6 @@ class HmppsAuthExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   override fun beforeAll(context: ExtensionContext) {
     hmppsAuthApi.start()
     hmppsAuthApi.stubGrantToken()
-    hmppsAuthApi.stubGetUserDetails()
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -50,40 +49,6 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
               {
                 "token_type": "bearer",
                 "access_token": "atoken"
-              }
-              """.trimIndent(),
-            ),
-        ),
-    )
-  }
-  fun stubGetUserDetails() {
-    stubFor(
-      get(WireMock.urlEqualTo("/auth/api/user/me"))
-        .willReturn(
-          aResponse()
-            .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
-            .withBody(
-              """
-              {
-                "activeCaseLoadId": "LEI"
-              }
-              """.trimIndent(),
-            ),
-        ),
-    )
-  }
-
-  // If the user is not known then this endpoint still returns the username, just not the active caseload
-  fun stubFailToGetUserDetails() {
-    stubFor(
-      get(WireMock.urlEqualTo("/auth/api/user/me"))
-        .willReturn(
-          aResponse()
-            .withHeaders(HttpHeaders(HttpHeader("Content-Type", "application/json")))
-            .withBody(
-              """
-              {
-                "username": "you"
               }
               """.trimIndent(),
             ),
