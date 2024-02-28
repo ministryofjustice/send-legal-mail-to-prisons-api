@@ -11,13 +11,13 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.HmppsAuthClient
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.client.ManageUsersApiClient
 import java.io.IOException
 
 @Component
 @Order(1)
 class UserContextFilter(
-  private val hmppsAuthClient: HmppsAuthClient,
+  private val manageUsersApiCLient: ManageUsersApiClient,
   private val userContext: UserContext,
   private val jwtService: JwtService,
 ) : Filter {
@@ -30,10 +30,16 @@ class UserContextFilter(
       userContext.caseload = "SKI"
     } else if (jwtService.isNomisUserToken(authToken)) {
       userContext.authToken = authToken
-      userContext.caseload = hmppsAuthClient.getUserDetails().activeCaseLoadId
-        ?: let {
+
+      // this now needs 2 calls - 1 to get the username from manage-users-api and another to get activeCaseloadId by username
+      val userName = manageUsersApiCLient.getUsername().username
+      userName?.let {
+        userContext.caseload = manageUsersApiCLient.getUserDetails(userName).activeCaseLoadId ?: let {
           throw InsufficientAuthenticationException("User ${jwtService.getUser(authToken)} does not have an active caseload")
         }
+      } ?: let {
+        throw InsufficientAuthenticationException("Could not find username for User ${jwtService.getUser(authToken)}")
+      }
     }
     filterChain.doFilter(httpServletRequest, servletResponse)
   }
