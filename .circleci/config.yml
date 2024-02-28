@@ -46,7 +46,7 @@ executors:
 
   smoke-test:
     docker:
-      - image: cypress/included:12.5.1
+      - image: cypress/included:13.6.4
     working_directory: ~/tests
 
 jobs:
@@ -261,5 +261,3 @@ workflows:
     jobs:
       - artillery:
           name: Artillery Tests
-
-

@@ -1,4 +1,3 @@
----
 generic-service:
   nameOverride: send-legal-mail-to-prisons-api
   serviceAccountName: send-legal-mail-to-prisons
@@ -6,7 +5,7 @@ generic-service:
 
   image:
     repository: quay.io/hmpps/send-legal-mail-to-prisons-api
-    tag: app_version    # override at deployment time
+    tag: app_version # override at deployment time
     port: 8080
 
   ingress:
@@ -24,7 +23,6 @@ generic-service:
           deny all;
           return 401;
         }
-
 
   # Environment variables to load into the deployment
   env:
@@ -61,13 +59,8 @@ generic-service:
       APP_S3_BUCKET_NAME: "bucket_name"
 
   allowlist:
-    office: "217.33.148.210/32"
-    health-kick: "35.177.252.195/32"
-    mojvpn: "81.134.202.29/32"
-    moj-global-protect: "35.176.93.186/32"
-    cloudplatform-live1-1: "35.178.209.113/32"
-    cloudplatform-live1-2: "3.8.51.207/32"
-    cloudplatform-live1-3: "35.177.252.54/32"
+    groups:
+      - internal
 
   resources:
     requests:
@@ -75,3 +68,8 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: send-legal-mail-to-prisons-api
+
+cron:
+  barcodeStatsReportSchedule: "5 6 * * *"
+  cjsmDirectorySchedule: "15 3 * * *"
+

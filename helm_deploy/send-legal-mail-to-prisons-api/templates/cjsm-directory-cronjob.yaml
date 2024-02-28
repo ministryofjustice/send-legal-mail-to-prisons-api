@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: send-legal-mail-to-prisons-api-cjsm-directory
 spec:
-  schedule: "15 3 * * *"
+  schedule: "{{ .Values.cron.cjsmDirectorySchedule }}"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 6000
