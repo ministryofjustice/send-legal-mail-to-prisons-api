@@ -43,7 +43,9 @@ class BarcodeEventServiceTest {
     cjsmService,
   )
 
-  val IP_ADDRESS = "127.0.0.1"
+  companion object {
+    val IP_ADDRESS = "127.0.0.1"
+  }
 
   @BeforeEach
   fun `defaults to not requiring a random security check`() {

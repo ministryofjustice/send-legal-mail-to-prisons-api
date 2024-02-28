@@ -32,8 +32,8 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
       t.hasSpansSatisfyingExactly({
         it.hasAttribute(AttributeKey.stringKey("username"), "bob")
         it.hasAttribute(AttributeKey.stringKey("clientId"), "send-legal-mail-client")
-      },)
-    },)
+      })
+    })
   }
 
   @Test
@@ -49,8 +49,8 @@ class ClientTrackingConfigurationTest : IntegrationTest() {
     otelTesting.assertTraces().hasTracesSatisfyingExactly({ t ->
       t.hasSpansSatisfyingExactly({
         it.hasAttribute(AttributeKey.stringKey("clientId"), "send-legal-mail-client")
-      },)
-    },)
+      })
+    })
   }
 
   private companion object {

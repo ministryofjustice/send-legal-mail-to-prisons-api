@@ -32,9 +32,11 @@ fun prisonerSearchBestMatchCustomDimensions(prisoner: Prisoner, caseload: String
   )
 
 enum class PrisonerSearchDataSource {
-  MATCH_PRISONERS, GLOBAL_SEARCH
+  MATCH_PRISONERS,
+  GLOBAL_SEARCH,
 }
 
 enum class PrisonerSearchType {
-  PRISON_NUMBER, NAME_DOB
+  PRISON_NUMBER,
+  NAME_DOB,
 }

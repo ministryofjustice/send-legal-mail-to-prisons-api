@@ -43,7 +43,9 @@ class BarcodeServiceTest {
     telemetryClient,
   )
 
-  val IP_ADDRESS = "127.0.0.1"
+  companion object {
+    val IP_ADDRESS = "127.0.0.1"
+  }
 
   @Nested
   inner class CreateBarcode {
