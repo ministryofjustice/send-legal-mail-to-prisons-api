@@ -226,4 +226,4 @@ To create a public/private keypair for an environment:
 * The private key should be saved in Kubernetes secret `send-legal-mail-to-prisons-api` with key `JWT_PRIVATE_KEY`
 
 ## Barcode Stats Report
-The barcode stats report that was being sent out every night has been disabled and all code around it removed. Please refer to this PR in case you want to look at how it was being done -  
+The barcode stats report that was being sent out every night has been disabled and all code around it removed. Please refer to this [PR](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/pull/226) in case you want to look at how it was being done.
