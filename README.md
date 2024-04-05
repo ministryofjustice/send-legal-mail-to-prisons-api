@@ -224,3 +224,6 @@ To create a public/private keypair for an environment:
 * We now need to save the keys into Kubernetes secrets for the environment. A guide for creating secrets can be found on Cloud Platforms documentation [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application)
 * The public key should be saved in Kubernetes secret `send-legal-mail-to-prisons-api` with key `JWT_PUBLIC_KEY`
 * The private key should be saved in Kubernetes secret `send-legal-mail-to-prisons-api` with key `JWT_PRIVATE_KEY`
+
+## Barcode Stats Report
+The barcode stats report that was being sent out every night has been disabled and all code around it removed. Please refer to this PR in case you want to look at how it was being done -  
