@@ -40,8 +40,6 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
           "/swagger-ui.html",
           // Protected by the ingress - see Kube config in helm_deploy
           "/cjsm/directory/refresh",
-          // Protected by the ingress - see Kube config in helm_deploy
-          "/barcode-stats-report",
           "/prisons",
         ).forEach { authorize(it, permitAll) }
         authorize(anyRequest, authenticated)
