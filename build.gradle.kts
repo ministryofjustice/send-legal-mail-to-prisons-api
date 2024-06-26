@@ -6,7 +6,7 @@ plugins {
   kotlin("plugin.spring") version "1.9.23"
   kotlin("plugin.jpa") version "1.9.23"
   id("jacoco")
-  id("org.openapi.generator") version "6.0.1"
+  id("org.openapi.generator") version "7.6.0"
 }
 
 jacoco {
