@@ -2,15 +2,15 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
-  id("org.unbroken-dome.test-sets") version "4.0.0"
-  kotlin("plugin.spring") version "1.9.23"
-  kotlin("plugin.jpa") version "1.9.23"
+  id("org.unbroken-dome.test-sets") version "4.1.0"
+  kotlin("plugin.spring") version "1.9.24"
+  kotlin("plugin.jpa") version "1.9.24"
   id("jacoco")
-  id("org.openapi.generator") version "6.0.1"
+  id("org.openapi.generator") version "6.6.0"
 }
 
 jacoco {
-  toolVersion = "0.8.11"
+  toolVersion = "0.8.12"
 }
 
 testSets {
@@ -35,29 +35,29 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.5.0")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.5.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.6.0")
 
-  implementation("io.jsonwebtoken:jjwt:0.12.5")
+  implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.708")
-  implementation("org.apache.commons:commons-csv:1.10.0")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.761")
+  implementation("org.apache.commons:commons-csv:1.11.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.7.3")
 
-  testImplementation("org.testcontainers:postgresql:1.19.7")
+  testImplementation("org.testcontainers:postgresql:1.19.8")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.22")
-  testImplementation("org.testcontainers:localstack:1.19.7")
+  testImplementation("org.testcontainers:localstack:1.19.8")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.5.2")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.37.0")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.5.3")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.40.0")
 }
 
 // Language versions
