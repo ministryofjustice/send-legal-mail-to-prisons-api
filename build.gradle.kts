@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.0.0"
   kotlin("plugin.jpa") version "2.0.0"
@@ -48,7 +48,7 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.7.3")
 
-  testImplementation("org.testcontainers:postgresql:1.19.8")
+  testImplementation("org.testcontainers:postgresql:1.20.1")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
