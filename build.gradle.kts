@@ -4,7 +4,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "1.9.24"
-  kotlin("plugin.jpa") version "1.9.24"
+  kotlin("plugin.jpa") version "2.0.20"
   id("jacoco")
   id("org.openapi.generator") version "6.6.0"
 }
