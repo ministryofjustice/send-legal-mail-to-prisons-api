@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.4"
   id("org.unbroken-dome.test-sets") version "4.1.0"
-  kotlin("plugin.spring") version "1.9.24"
-  kotlin("plugin.jpa") version "1.9.24"
+  kotlin("plugin.spring") version "2.0.20"
+  kotlin("plugin.jpa") version "2.0.20"
   id("jacoco")
   id("org.openapi.generator") version "7.8.0"
 }
@@ -42,22 +42,23 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.761")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.770")
   implementation("org.apache.commons:commons-csv:1.11.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.7.3")
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql:42.7.4")
 
-  testImplementation("org.testcontainers:postgresql:1.19.8")
+  testImplementation("org.testcontainers:postgresql:1.20.1")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.22")
-  testImplementation("org.testcontainers:localstack:1.19.8")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
+  testImplementation("org.testcontainers:localstack:1.20.1")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.5.3")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.40.0")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.5.4")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.41.0")
 }
 
 // Language versions
@@ -141,6 +142,12 @@ tasks.named("compileKotlin") {
   dependsOn("buildPrisonerSearchModel")
   dependsOn("buildPrisonRegisterModel")
 }
+
+tasks.named("runKtlintCheckOverMainSourceSet") {
+  dependsOn("buildPrisonerSearchModel")
+  dependsOn("buildPrisonRegisterModel")
+}
+
 repositories {
   mavenCentral()
 }
