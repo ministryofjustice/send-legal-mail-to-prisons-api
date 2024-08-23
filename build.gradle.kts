@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
   id("org.unbroken-dome.test-sets") version "4.1.0"
-  kotlin("plugin.spring") version "1.9.24"
-  kotlin("plugin.jpa") version "1.9.24"
+  kotlin("plugin.spring") version "2.0.0"
+  kotlin("plugin.jpa") version "2.0.0"
   id("jacoco")
   id("org.openapi.generator") version "6.6.0"
 }
@@ -46,9 +46,10 @@ dependencies {
   implementation("org.apache.commons:commons-csv:1.11.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.3")
 
-  testImplementation("org.testcontainers:postgresql:1.19.8")
+  testImplementation("org.testcontainers:postgresql:1.20.1")
   testImplementation("it.ozimov:embedded-redis:0.7.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
@@ -141,6 +142,12 @@ tasks.named("compileKotlin") {
   dependsOn("buildPrisonerSearchModel")
   dependsOn("buildPrisonRegisterModel")
 }
+
+tasks.named("runKtlintCheckOverMainSourceSet") {
+  dependsOn("buildPrisonerSearchModel")
+  dependsOn("buildPrisonRegisterModel")
+}
+
 repositories {
   mavenCentral()
 }
