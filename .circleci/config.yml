@@ -144,7 +144,7 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
-      - hmpps/build_multiplatform_docker:
+      - hmpps/build_docker:
           name: build_docker
           jdk_tag: "21.0"
       - request-dev-preview-approval:
