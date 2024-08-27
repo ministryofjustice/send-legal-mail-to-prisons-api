@@ -10,7 +10,7 @@ feature_branch: &feature_branch
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@8
+  hmpps: ministryofjustice/hmpps@9.4.0
 
 parameters:
   alerts-slack-channel:
@@ -226,11 +226,13 @@ workflows:
           context:
             - hmpps-common-vars
           cache_key: "v2_0"
+          jdk_tag: "21.0"
       - hmpps/trivy_latest_scan:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          jdk_tag: "21.0"
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
@@ -245,6 +247,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          jdk_tag: "21.0"
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
