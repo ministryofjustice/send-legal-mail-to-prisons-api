@@ -139,6 +139,7 @@ workflows:
   build-test-and-deploy:
     jobs:
       - validate:
+          jdk_tag: "21.0"
           filters:
             tags:
               ignore: /.*/
