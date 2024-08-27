@@ -53,7 +53,6 @@ executors:
 jobs:
   validate:
     executor: integration-test-validator
-    jdk_tag: "21.0"
     steps:
       - checkout
       - restore_cache:
