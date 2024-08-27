@@ -146,6 +146,7 @@ workflows:
           name: helm_lint
       - hmpps/build_multiplatform_docker:
           name: build_docker
+          jdk_tag: "21.0"
       - request-dev-preview-approval:
           <<: *feature_branch
           type: approval
