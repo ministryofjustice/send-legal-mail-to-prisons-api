@@ -22,7 +22,6 @@ parameters:
 
 executors:
   integration-test-validator:
-    jdk_tag: "21.0"
     docker:
       - image: cimg/openjdk:21.0.0
       - image: cimg/postgres:15.5
