@@ -1,4 +1,3 @@
-#FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jre-jammy AS builder
 FROM --platform=$BUILDPLATFORM  eclipse-temurin:21-jre-jammy AS builder
 
 ARG BUILD_NUMBER
