@@ -51,6 +51,7 @@ executors:
 
 jobs:
   validate:
+    jdk_tag: "21.0"
     executor: integration-test-validator
     steps:
       - checkout
