@@ -13,7 +13,7 @@ generic-service:
     host: app-hostname.local    # override per environment
     tlsSecretName: send-legal-mail-api-cert
     annotations:
-      nginx.ingress.kubernetes.io/configuration-snippet: |
+      nginx.ingress.kubernetes.io/server-snippet: |
         server_tokens off;
         location /cjsm/directory/refresh {
           deny all;
