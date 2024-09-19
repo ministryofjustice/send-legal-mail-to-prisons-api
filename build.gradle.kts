@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.5"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.0.20"
   kotlin("plugin.jpa") version "2.0.20"
@@ -42,7 +42,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("com.amazonaws:aws-java-sdk-s3:1.12.770")
+  implementation("com.amazonaws:aws-java-sdk-s3:1.12.772")
   implementation("org.apache.commons:commons-csv:1.11.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -58,7 +58,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.5.4")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.41.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.42.1")
 }
 
 // Language versions
