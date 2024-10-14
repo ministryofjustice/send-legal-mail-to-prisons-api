@@ -3,8 +3,8 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
   id("org.unbroken-dome.test-sets") version "4.1.0"
-  kotlin("plugin.spring") version "2.0.20"
-  kotlin("plugin.jpa") version "2.0.20"
+  kotlin("plugin.spring") version "2.0.21"
+  kotlin("plugin.jpa") version "2.0.21"
   id("jacoco")
   id("org.openapi.generator") version "6.6.0"
 }
@@ -57,8 +57,8 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.20.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.5.4")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.42.1")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.6.1")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.43.0")
 }
 
 // Language versions
