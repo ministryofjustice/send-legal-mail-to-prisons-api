@@ -48,7 +48,8 @@ spring:
     username: fakeUsername
     password: fakePassword
     properties.mail.smtp:
-      auth: true
+      # TODO - revert later
+      auth: false
       starttls.enable: true
 
 server:
