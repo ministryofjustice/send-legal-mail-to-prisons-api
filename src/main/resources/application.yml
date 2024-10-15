@@ -43,12 +43,13 @@ spring:
           jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
 
   mail:
-    host: smtp.gmail.com
+    host: smtp.office365.com
     port: 587
     username: fakeUsername
     password: fakePassword
     properties.mail.smtp:
-      auth: true
+      # TODO - revert later
+      auth: false
       starttls.enable: true
 
 server:
