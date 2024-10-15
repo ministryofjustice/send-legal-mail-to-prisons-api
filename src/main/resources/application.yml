@@ -43,8 +43,8 @@ spring:
           jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
 
   mail:
-    host: smtp.internal.network.justice.gov.uk
-    port: 25
+    host: smtp.office365.com
+    port: 587
     username: fakeUsername
     password: fakePassword
     properties.mail.smtp:
