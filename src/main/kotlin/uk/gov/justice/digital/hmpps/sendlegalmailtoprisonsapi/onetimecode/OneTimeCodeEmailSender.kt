@@ -133,7 +133,7 @@ class OneTimeCodeEmailSender(
           log.info("about to send message to : {}", email)
           javaMailSender.send(mimeMessage)
           log.info("successfully sent message to : {}", email)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
           log.error("failed to send message to : {} as a result of {} - {}", email, e.message, e.toString())
           throw e
         }
