@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
+import mu.KotlinLogging
 import org.springframework.core.io.ClassPathResource
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -11,8 +12,10 @@ class OneTimeCodeEmailSender(
   private val oneTimeCodeConfig: OneTimeCodeConfig,
   private val javaMailSender: JavaMailSender,
 ) {
+  private val log = KotlinLogging.logger {}
 
   private companion object {
+
     fun textBodyTemplate(oneTimeCode: String, codeExpiry: String): String = """
       Your code for Send legal mail to prisons
       
@@ -126,7 +129,14 @@ class OneTimeCodeEmailSender(
         }
       }
       .also { mimeMessage ->
-        javaMailSender.send(mimeMessage)
+        try {
+          log.info("about to send message to : {}", email)
+          javaMailSender.send(mimeMessage)
+          log.info("successfully sent message to : {}", email)
+        }catch (e: Exception) {
+          log.error("failed to send message to : {} as a result of {} - {}", email, e.message, e.toString())
+          throw e
+        }
       }
   }
 }
