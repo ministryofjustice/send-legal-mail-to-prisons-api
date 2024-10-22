@@ -50,7 +50,7 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.7.4")
 
   testImplementation("org.testcontainers:postgresql:1.20.2")
-  testImplementation("it.ozimov:embedded-redis:0.7.3")
+  testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.22")
