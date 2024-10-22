@@ -14,7 +14,12 @@ class OneTimeCodeEmailSender(
 
   fun send(email: String, oneTmeCode: String) {
     log.info("sending one time code to email address - {}", email)
-    notificationService.sendEmail(oneTimeCodeEmailTemplateId, email, getOneTimeCodeValueMap(oneTmeCode))
+    try {
+      notificationService.sendEmail(oneTimeCodeEmailTemplateId, email, getOneTimeCodeValueMap(oneTmeCode))
+    } catch (e: Exception) {
+      log.error("Exception while trying to send email notification", e)
+      throw e
+    }
     log.info("sent one time code to email address - {}", email)
   }
 

@@ -4,7 +4,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.service.notify.NotificationClient
-import java.util.UUID
 
 @Service
 class NotificationService(
@@ -26,6 +25,6 @@ class NotificationService(
   }
 
   private fun generateReference(): String {
-    return UUID.randomUUID().toString()
+    return ""
   }
 }
