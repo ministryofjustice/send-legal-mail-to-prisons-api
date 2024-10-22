@@ -42,6 +42,7 @@ generic-service:
       SPRING_MAIL_PASSWORD: "EMAIL_PASSWORD"
       APP_JWT_PUBLICKEY: "JWT_PUBLIC_KEY"
       APP_JWT_PRIVATEKEY: "JWT_PRIVATE_KEY"
+      APP_NOTIFY_API_KEY: "NOTIFY_API_KEY"
     rds-instance-output:
       DB_SERVER: "rds_instance_address"
       DB_NAME: "database_name"

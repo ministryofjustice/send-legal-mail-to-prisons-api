@@ -5,7 +5,11 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -15,16 +19,19 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvali
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailMandatory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.SessionIdMandatory
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.notifications.NotificationService
 
 class OneTimeCodeResourceTest(
   @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
+  @Value("\${app.notify.template-id.one-time-code-email}") private val oneTimeCodeEmailTemplateId: String,
 ) : IntegrationTest() {
-
   private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
+
+  @SpyBean
+  lateinit var notificationServiceSpy: NotificationService
 
   @Nested
   inner class CreateOneTimeCode {
-
     @AfterEach
     fun `clear mail server`() {
       mailCatcherWebClient.delete().uri("/messages").retrieve().bodyToMono(Void::class.java).block()
@@ -138,21 +145,8 @@ class OneTimeCodeResourceTest(
         .expectStatus().isCreated
 
       val savedOneTimeCode = oneTimeCodeRepository.findAll().firstOrNull()
-      val messageJson = mailCatcherWebClient.get()
-        .uri("/messages/1.json")
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToMono(MessageJson::class.java)
-        .block()
-      val messageSource = mailCatcherWebClient.get()
-        .uri("/messages/1.source")
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToMono(String::class.java)
-        .block()
-
-      assertThat(messageJson?.recipients).containsExactly("<some.email@company.com.cjsm.net>")
-      assertThat(messageSource).contains(savedOneTimeCode!!.code)
+      val values = hashMapOf(Pair("code", savedOneTimeCode!!.code))
+      Mockito.verify(notificationServiceSpy, times(1)).sendEmail(eq(oneTimeCodeEmailTemplateId), eq("some.email@company.com.cjsm.net"), eq(values))
     }
   }
 
@@ -236,8 +230,3 @@ class OneTimeCodeResourceTest(
     }
   }
 }
-
-data class MessageJson(
-  val id: Int,
-  val recipients: List<String>,
-)

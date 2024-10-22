@@ -91,7 +91,6 @@ app:
     secret-expiry: 1h
     url: "http://localhost:3000/link/verify-link"
   one-time-code:
-    code-expiry: 30m
     code-length: 4
     max-attempts: 6
     supported-characters: ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
@@ -104,4 +103,8 @@ app:
   s3:
     region: eu-west-2
     cjsm-directory-csv-name: cjsm-directory.csv
-
+  notify:
+    apikey: ${app.notify.api.key}
+    template-id:
+      one-time-code-email: 85904166-e539-43f5-9f51-7ba106cc61bd
+    enabled: true
