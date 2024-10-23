@@ -164,35 +164,6 @@ abstract class IntegrationTest {
 
   internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit =
     jwtAuthHelper.setCreateBarcodeAuthorisation(email)
-/*
-  @TestConfiguration
-  class RedisConfig {
-    private val redisServer: RedisServer = RedisServer(6380)
-
-    @PostConstruct
-    fun postConstruct() {
-      if (!redisServer.isActive) {
-        redisServer.start()
-      }
-    }
-
-    @PreDestroy
-    fun preDestroy() {
-      if (redisServer.isActive) {
-        redisServer.stop()
-      }
-    }
-
-    @Bean
-    fun lettuceClientConfigurationBuilderCustomizer(): LettuceClientConfigurationBuilderCustomizer =
-      LettuceClientConfigurationBuilderCustomizer {
-        it.clientOptions(
-          ClientOptions.builder()
-            .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-            .build(),
-        )
-      }
-  }*/
 
   companion object {
     private val pgContainer = PostgresContainer.instance
