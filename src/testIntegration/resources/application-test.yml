@@ -42,6 +42,11 @@ app:
     localstack-url: http://127.0.0.1:4566
     region: eu-west-2
     bucket-name: ${random.uuid}
+  notify:
+    apikey: test-api-key
+    template-id:
+      one-time-code-email: test-template-id
+    enabled: false
 
 # Wiremock auth server
 hmpps:

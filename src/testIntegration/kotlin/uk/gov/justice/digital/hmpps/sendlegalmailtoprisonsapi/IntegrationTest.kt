@@ -2,9 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import com.amazonaws.services.s3.AmazonS3
 import com.microsoft.applicationinsights.TelemetryClient
-import io.lettuce.core.ClientOptions
-import jakarta.annotation.PostConstruct
-import jakarta.annotation.PreDestroy
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -14,19 +11,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
-import redis.embedded.RedisServer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventService
@@ -45,6 +37,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExt
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonRegisterExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.RedisExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeAttemptsRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode.OneTimeCodeRepository
@@ -58,8 +51,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.Pos
 import java.util.concurrent.TimeUnit.SECONDS
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(IntegrationTest.RedisConfig::class)
-@ExtendWith(HmppsAuthExtension::class, PrisonerSearchExtension::class, PrisonRegisterExtension::class, ManageUsersApiExtension::class)
+@ExtendWith(HmppsAuthExtension::class, PrisonerSearchExtension::class, PrisonRegisterExtension::class, ManageUsersApiExtension::class, RedisExtension::class)
 @ActiveProfiles("test")
 abstract class IntegrationTest {
 
@@ -172,31 +164,6 @@ abstract class IntegrationTest {
 
   internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit =
     jwtAuthHelper.setCreateBarcodeAuthorisation(email)
-
-  @TestConfiguration
-  class RedisConfig {
-    private val redisServer: RedisServer = RedisServer(6380)
-
-    @PostConstruct
-    fun postConstruct() {
-      redisServer.start()
-    }
-
-    @PreDestroy
-    fun preDestroy() {
-      redisServer.stop()
-    }
-
-    @Bean
-    fun lettuceClientConfigurationBuilderCustomizer(): LettuceClientConfigurationBuilderCustomizer =
-      LettuceClientConfigurationBuilderCustomizer {
-        it.clientOptions(
-          ClientOptions.builder()
-            .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
-            .build(),
-        )
-      }
-  }
 
   companion object {
     private val pgContainer = PostgresContainer.instance
