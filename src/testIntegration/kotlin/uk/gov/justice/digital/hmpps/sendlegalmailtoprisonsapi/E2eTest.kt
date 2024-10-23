@@ -2,11 +2,8 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
@@ -14,7 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeRequest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.CreateBarcodeResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
 class E2eTest(
@@ -39,32 +35,6 @@ class E2eTest(
     mailCatcherWebClient.delete().uri("/messages").retrieve().bodyToMono(Void::class.java).block()
   }
 
-  @Test
-  fun `can sign in with magic link then create and check a barcode`() {
-    requestMagicLink("some.email@company.com.cjsm.net")
-    val secretValue = getSecretFromReceivedEmail()
-    val jwt = requestVerifySecret(secretValue)
-    requestVerifySecretFails(secretValue)
-    val barcode = requestCreateBarcode(jwt).barcode
-
-    requestCheckBarcodeOk(barcode)
-    requestCheckBarcodeDuplicate(barcode)
-    with(PrisonerSearchExtension.prisonerSearchApi) {
-      await until { matchPrisonersHasBeenCalled() && globalSearchHasBeenCalled() }
-    }
-  }
-
-  private fun requestMagicLink(email: String) {
-    webTestClient.post()
-      .uri("/link/email")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation())
-      .body(BodyInserters.fromValue("""{ "email": "$email" }"""))
-      .exchange()
-      .expectStatus().isCreated
-  }
-
   private fun getSecretFromReceivedEmail(): String {
     val messageSource = mailCatcherWebClient.get()
       .uri("/messages/1.source")
@@ -75,21 +45,6 @@ class E2eTest(
     val (secretValue) = ".*secret=(.*)".toRegex().find(messageSource)!!.destructured
     return secretValue
   }
-
-  private fun requestVerifySecret(secretValue: String) =
-    webTestClient.post()
-      .uri("/link/verify")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation())
-      .body(BodyInserters.fromValue("""{ "secret": "$secretValue" }"""))
-      .exchange()
-      .expectStatus().isCreated
-      .returnResult(VerifyLinkResponse::class.java)
-      .responseBody
-      .blockFirst()
-      ?.token
-      ?: fail("Did not receive a response from /link/verify")
 
   private fun requestVerifySecretFails(secretValue: String) =
     webTestClient.post()

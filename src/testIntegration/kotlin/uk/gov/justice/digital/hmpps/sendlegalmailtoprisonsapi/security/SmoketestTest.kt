@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.until
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEve
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeRecipient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeResourceTest
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.VerifyLinkResponse
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonerSearchExtension
 
@@ -28,26 +26,6 @@ class SmoketestTest : BarcodeResourceTest() {
     fun `smoke test configuration`() {
       given(smokeTestConfig.lsjSecret).willReturn("some-lsj-secret")
       given(smokeTestConfig.msjSecret).willReturn("some-msj-secret")
-    }
-
-    @Test
-    fun `A legal sender smoke test can sign in as a smoke test user`() {
-      val jwt = webTestClient.post()
-        .uri("/link/verify")
-        .accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(user = null))
-        .body(BodyInserters.fromValue("""{ "secret": "some-lsj-secret" }"""))
-        .exchange()
-        .expectStatus().isCreated
-        .returnResult(VerifyLinkResponse::class.java)
-        .responseBody
-        .blockFirst()
-        ?: Assertions.fail("Did not receive a response from /link/verify")
-
-      assertThat(jwtService.validateToken(jwt.token)).isTrue
-      assertThat(jwtService.subject(jwt.token)).isEqualTo("smoke-test-lsj")
-      assertThat(jwtService.authorities(jwt.token)).containsExactly("ROLE_SLM_CREATE_BARCODE")
     }
 
     @Test
