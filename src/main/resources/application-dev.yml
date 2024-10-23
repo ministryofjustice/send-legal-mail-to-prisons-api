@@ -44,3 +44,5 @@ app:
     localstack-url: http://127.0.0.1:4566
     region: eu-west-2
     bucket-name: cjsm-orgs
+  notify:
+    apikey: dummy-api-key
