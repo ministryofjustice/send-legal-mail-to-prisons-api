@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config
 
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MAX_EMAIL_LENGTH
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+const val MAX_EMAIL_LENGTH = 254
 
 @Schema(subTypes = [StandardErrorCodes::class, AuthenticationRequestErrorCodes::class, CheckBarcodeErrorCodes::class])
 sealed class ErrorCode(

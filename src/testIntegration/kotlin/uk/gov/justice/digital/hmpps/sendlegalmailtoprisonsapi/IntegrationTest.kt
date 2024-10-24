@@ -31,8 +31,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.S3Config
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRepository
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonRegisterExtension
@@ -70,12 +68,6 @@ abstract class IntegrationTest {
 
   @SpyBean
   protected lateinit var barcodeGeneratorService: BarcodeGeneratorService
-
-  @Autowired
-  protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
-
-  @Autowired
-  protected lateinit var magicLinkConfig: MagicLinkConfig
 
   @Autowired
   protected lateinit var oneTimeCodeRepository: OneTimeCodeRepository
@@ -141,7 +133,6 @@ abstract class IntegrationTest {
     barcodeRecipientRepository.deleteAll()
     barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
-    magicLinkSecretRepository.deleteAll()
     cjsmDirectoryRepository.deleteAll()
     contactRepository.deleteAll()
     oneTimeCodeRepository.deleteAll()
