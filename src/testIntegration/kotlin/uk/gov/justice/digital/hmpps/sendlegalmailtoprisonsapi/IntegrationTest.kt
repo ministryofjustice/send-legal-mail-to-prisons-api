@@ -44,7 +44,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons.SupportedP
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -158,7 +157,6 @@ abstract class IntegrationTest {
 
   companion object {
     private val pgContainer = PostgresContainer.instance
-    private val mailcatcherContainer = MailcatcherContainer.instance
     private val localStackContainer = LocalStackContainer.instance
 
     @JvmStatic
@@ -173,10 +171,6 @@ abstract class IntegrationTest {
         registry.add("spring.flyway.url", pgContainer::getJdbcUrl)
         registry.add("spring.flyway.user", pgContainer::getUsername)
         registry.add("spring.flyway.password", pgContainer::getPassword)
-      }
-      mailcatcherContainer?.run {
-        registry.add("spring.mail.port") { getMappedPort(1025) }
-        registry.add("mailcatcher.api.port") { getMappedPort(1080) }
       }
       localStackContainer?.run {
         registry.add("app.s3.localstack-url") {

@@ -12,14 +12,6 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_DB=send_legal_mail_api_db
 
-  mailcatcher:
-    image: sj26/mailcatcher
-    networks:
-      - hmpps
-    ports:
-      - '1080:1080'
-      - '1025:1025'
-
   localstack:
     image: localstack/localstack:3
     networks:

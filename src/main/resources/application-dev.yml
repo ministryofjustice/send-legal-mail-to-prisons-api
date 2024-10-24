@@ -19,8 +19,6 @@ spring:
     redis:
       port: 6378
 
-mailcatcher.api.port: 1080
-
 hmpps:
   auth:
     url: http://localhost:9090/auth
