@@ -43,4 +43,4 @@ app:
     region: eu-west-2
     bucket-name: cjsm-orgs
   notify:
-    apikey: dev_and_preprod-eec4d279-2c8e-48a4-855e-1c8741856a35-9703d8ef-068f-4c0d-b885-e0492cb4ea09
+    apikey: dummy-api-key
