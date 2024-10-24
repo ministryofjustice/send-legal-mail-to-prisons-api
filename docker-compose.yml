@@ -16,7 +16,6 @@ services:
       - HMPPS_AUTH_URL=http://host.docker.internal:9090/auth
       - PRISONER_SEARCH_URL=http://send-legal-mail-api-wiremock:8080
       - PRISON_REGISTER_URL=https://prison-register-dev.hmpps.service.justice.gov.uk
-      - SPRING_MAIL_HOST=send-legal-mail-to-prisons-api_mailcatcher_1
       - APP_S3_LOCALSTACKURL=localstack
       - SPRING_REDIS_HOST=send-legal-mail-api-cache
 
@@ -40,14 +39,6 @@ services:
     ports:
       - '6378:6378'
     command: --port 6378
-
-  mailcatcher:
-    image: sj26/mailcatcher
-    networks:
-      - hmpps
-    ports:
-      - '1080:1080'
-      - '1025:1025'
 
   localstack:
     image: localstack/localstack:3

@@ -95,7 +95,6 @@ Note that there are two test source sets - `test` for unit tests and `testIntegr
 ### Dependent containers for integration tests
 The integration tests depend on:
 * a Postgres container running on port 5432
-* a mailcatcher container running on port 1080
 * a LocalStack instance emulating S3 on port 4566
 
 By default, Testcontainers will notice the dependent containers are not running and start an instance of each.
@@ -227,3 +226,11 @@ To create a public/private keypair for an environment:
 
 ## Barcode Stats Report
 The barcode stats report that was being sent out every night has been disabled and all code around it removed. Please refer to this [PR](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/pull/226) in case you want to look at how it was being done.
+
+## One Time Code (Emails)
+We now use GOV.UK Notify to send one time code emails instead of Spring Email. 
+
+To enable Notify on your local dev do the following:
+* Update app.notify.apikey to the actual Notify API key for Dev (available on namespace secrets for `send-legal-mail-to-prisons-dev` namespace). 
+* Make sure your CJSM email address e.g.` <<email>>.cjsm.net` is on the Notify Email Guest List.
+* This should ensure that the one time code email is sent to your registered email for testing purposes.
