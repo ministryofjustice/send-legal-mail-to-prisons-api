@@ -18,13 +18,6 @@ spring:
         jwt:
           jwk-set-uri: http://localhost:8090/.well-known/jwks.json
 
-  mail:
-    password: mailuser
-    username: mailpass
-    host: localhost
-    port: 1025
-    protocol: smtp
-    test-connection: false
   data:
     redis:
       port: 6380

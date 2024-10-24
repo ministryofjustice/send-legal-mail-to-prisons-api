@@ -8,13 +8,6 @@ spring:
       resourceserver:
         jwt:
           public-key-location: classpath:local-public-key.pub
-  mail:
-    password: mailuser
-    username: mailpass
-    host: localhost
-    port: 1025
-    protocol: smtp
-    test-connection: false
   data:
     redis:
       port: 6378
