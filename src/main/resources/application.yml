@@ -42,15 +42,6 @@ spring:
         jwt:
           jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: fakeUsername
-    password: fakePassword
-    properties.mail.smtp:
-      auth: true
-      starttls.enable: true
-
 server:
   port: 8080
   servlet:
@@ -87,9 +78,6 @@ springdoc:
   remove-broken-reference-definitions: false
 
 app:
-  magiclink:
-    secret-expiry: 1h
-    url: "http://localhost:3000/link/verify-link"
   one-time-code:
     code-length: 4
     max-attempts: 6

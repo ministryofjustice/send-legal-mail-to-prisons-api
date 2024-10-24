@@ -31,8 +31,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.S3Config
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRepository
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkConfig
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.magiclink.MagicLinkSecretRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonRegisterExtension
@@ -46,7 +44,6 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons.SupportedP
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.JwtService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.security.SmokeTestConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.LocalStackContainer
-import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.MailcatcherContainer
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.testcontainers.PostgresContainer
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -70,12 +67,6 @@ abstract class IntegrationTest {
 
   @SpyBean
   protected lateinit var barcodeGeneratorService: BarcodeGeneratorService
-
-  @Autowired
-  protected lateinit var magicLinkSecretRepository: MagicLinkSecretRepository
-
-  @Autowired
-  protected lateinit var magicLinkConfig: MagicLinkConfig
 
   @Autowired
   protected lateinit var oneTimeCodeRepository: OneTimeCodeRepository
@@ -141,7 +132,6 @@ abstract class IntegrationTest {
     barcodeRecipientRepository.deleteAll()
     barcodeEventRepository.deleteAll()
     barcodeRepository.deleteAll()
-    magicLinkSecretRepository.deleteAll()
     cjsmDirectoryRepository.deleteAll()
     contactRepository.deleteAll()
     oneTimeCodeRepository.deleteAll()
@@ -167,7 +157,6 @@ abstract class IntegrationTest {
 
   companion object {
     private val pgContainer = PostgresContainer.instance
-    private val mailcatcherContainer = MailcatcherContainer.instance
     private val localStackContainer = LocalStackContainer.instance
 
     @JvmStatic
@@ -182,10 +171,6 @@ abstract class IntegrationTest {
         registry.add("spring.flyway.url", pgContainer::getJdbcUrl)
         registry.add("spring.flyway.user", pgContainer::getUsername)
         registry.add("spring.flyway.password", pgContainer::getPassword)
-      }
-      mailcatcherContainer?.run {
-        registry.add("spring.mail.port") { getMappedPort(1025) }
-        registry.add("mailcatcher.api.port") { getMappedPort(1080) }
       }
       localStackContainer?.run {
         registry.add("app.s3.localstack-url") {

@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.onetimecode
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalid
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalidCjsm
@@ -22,21 +20,14 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.SessionIdMa
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.notifications.NotificationService
 
 class OneTimeCodeResourceTest(
-  @Value("\${mailcatcher.api.port}") private val mailcatcherApiPort: Int,
   @Value("\${app.notify.template-id.one-time-code-email}") private val oneTimeCodeEmailTemplateId: String,
 ) : IntegrationTest() {
-  private val mailCatcherWebClient = WebClient.builder().baseUrl("http://localhost:$mailcatcherApiPort").build()
 
   @SpyBean
   lateinit var notificationServiceSpy: NotificationService
 
   @Nested
   inner class CreateOneTimeCode {
-    @AfterEach
-    fun `clear mail server`() {
-      mailCatcherWebClient.delete().uri("/messages").retrieve().bodyToMono(Void::class.java).block()
-    }
-
     @Test
     fun `unauthorised without a valid auth token`() {
       webTestClient.post()
