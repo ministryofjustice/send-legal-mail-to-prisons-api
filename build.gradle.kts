@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.8"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.0.21"
   kotlin("plugin.jpa") version "2.0.21"
@@ -44,21 +44,21 @@ dependencies {
 
   implementation("com.amazonaws:aws-java-sdk-s3:1.12.777")
   implementation("org.apache.commons:commons-csv:1.12.0")
-  implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.4")
 
-  testImplementation("org.testcontainers:postgresql:1.20.2")
+  testImplementation("org.testcontainers:postgresql:1.20.3")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.22")
-  testImplementation("org.testcontainers:localstack:1.20.2")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.23")
+  testImplementation("org.testcontainers:localstack:1.20.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.6.1")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.6.2")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.43.0")
 }
 
