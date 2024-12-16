@@ -39,7 +39,16 @@ class CjsmResourceUserTest : IntegrationTest() {
 
   @Test
   fun `OK if user found`() {
-    cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some-email", "some-first-name", "some-last-name", "some-org", "some-town-city", "some-business-type"))
+    cjsmDirectoryRepository.save(
+      CjsmDirectoryEntry(
+        secureEmail = "some-email",
+        firstName = "some-first-name",
+        lastName = "some-last-name",
+        organisation = "some-org",
+        townCity = "some-town-city",
+        businessType = "some-business-type",
+      ),
+    )
 
     webTestClient.get()
       .uri("/cjsm/user/me")

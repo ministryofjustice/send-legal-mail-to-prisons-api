@@ -20,7 +20,7 @@ interface CjsmDirectoryRepository : JpaRepository<CjsmDirectoryEntry, Long> {
 data class CjsmDirectoryEntry(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long = 0,
 
   @Column(unique = true)
   val secureEmail: String,
