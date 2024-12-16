@@ -29,7 +29,16 @@ import java.time.format.DateTimeFormatter
 class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
   @BeforeEach
   fun `add the user's organisation to the CJSM directory`() {
-    cjsmDirectoryRepository.save(CjsmDirectoryEntry(1L, "some.user@company.com.cjsm.net", "anyfirstname", "anylastname", "Some Company", "Anytown", "Any type"))
+    cjsmDirectoryRepository.save(
+      CjsmDirectoryEntry(
+        secureEmail = "some.user@company.com.cjsm.net",
+        firstName = "anyfirstname",
+        lastName = "anylastname",
+        organisation = "Some Company",
+        townCity = "Anytown",
+        businessType = "Any type",
+      ),
+    )
   }
 
   @BeforeEach
