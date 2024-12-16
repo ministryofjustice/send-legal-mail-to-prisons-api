@@ -45,7 +45,7 @@ interface BarcodeEventRepository : JpaRepository<BarcodeEvent, Long> {
 data class BarcodeEvent(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long = 0,
 
   @ManyToOne
   @JoinColumn(name = "barcode")
