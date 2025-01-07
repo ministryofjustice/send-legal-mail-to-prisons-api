@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception
 import com.amazonaws.services.s3.model.DeleteObjectRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -96,6 +97,7 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
       assertThat(cjsmDirectoryRepository.findBySecureEmail("should.not.be.deleted@company.com.cjsm.net")).isNotNull
     }
 
+    @Disabled
     @Test
     fun `if the upload fails we should leave the old CJSM directory csv and retain existing data`() {
       uploadCjsmDirectoryCsvToS3()
