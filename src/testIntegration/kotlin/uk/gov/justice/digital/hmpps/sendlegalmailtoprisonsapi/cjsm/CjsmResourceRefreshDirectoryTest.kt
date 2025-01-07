@@ -96,9 +96,8 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
       assertThat(cjsmDirectoryRepository.findBySecureEmail("should.not.be.deleted@company.com.cjsm.net")).isNotNull
     }
 
-
     @Test
-    fun `if the upload fails we should leave the old CJSM directory csv and retain existing data`() {
+    fun `if the upload fails we should leave the old CJSM directory csv and retain existing data - change`() {
       uploadCjsmDirectoryCsvToS3()
       saveCjsmDirectoryEntry("should.not.be.deleted@company.com.cjsm.net")
       whenever(amazonS3.copyObject(anyString(), anyString(), anyString(), anyString()))
