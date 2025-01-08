@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.whenever
+import org.mockito.Mockito.`when`
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
@@ -64,7 +64,7 @@ class BarcodeResourceCreateMoreChecksRequestedEventTest : BarcodeResourceTest() 
 
   @Test
   fun `Created if barcode exists`() {
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
     webTestClient.post()
       .uri("/barcode")
