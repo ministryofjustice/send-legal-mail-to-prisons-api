@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.kotlin.whenever
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
@@ -102,8 +102,14 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
     fun `if the upload fails we should leave the old CJSM directory csv and retain existing data`() {
       uploadCjsmDirectoryCsvToS3()
       saveCjsmDirectoryEntry("should.not.be.deleted@company.com.cjsm.net")
-      whenever(amazonS3.copyObject(anyString(), anyString(), anyString(), anyString()))
-        .thenThrow(AmazonS3Exception::class.java)
+      `when`(
+        amazonS3.copyObject(
+          anyString(),
+          anyString(),
+          anyString(),
+          anyString(),
+        ),
+      ).thenThrow(AmazonS3Exception("Mocked exception"))
 
       webTestClient.post()
         .uri("/cjsm/directory/refresh")

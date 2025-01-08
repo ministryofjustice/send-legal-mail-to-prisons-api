@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.AuthenticationError
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.MalformedRequest
@@ -48,7 +48,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `can create a barcode and record the recipient`() {
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_CODE")
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_CODE")
 
     webTestClient.post()
       .uri("/barcode")
@@ -82,7 +82,7 @@ class BarcodeResourceCreateBarcodeTest : BarcodeResourceTest() {
   @Test
   fun `will retry if the barcode already exists`() {
     barcodeRepository.save(Barcode(code = "SOME_CODE"))
-    whenever(barcodeGeneratorService.generateBarcode())
+    `when`(barcodeGeneratorService.generateBarcode())
       .thenReturn("SOME_CODE")
       .thenReturn("ANOTHER_CODE")
 

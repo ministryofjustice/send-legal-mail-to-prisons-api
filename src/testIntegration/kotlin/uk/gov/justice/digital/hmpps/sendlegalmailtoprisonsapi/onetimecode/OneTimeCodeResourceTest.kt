@@ -8,8 +8,8 @@ import org.mockito.Mockito
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.EmailInvalid
@@ -23,7 +23,7 @@ class OneTimeCodeResourceTest(
   @Value("\${app.notify.template-id.one-time-code-email}") private val oneTimeCodeEmailTemplateId: String,
 ) : IntegrationTest() {
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var notificationServiceSpy: NotificationService
 
   @Nested
