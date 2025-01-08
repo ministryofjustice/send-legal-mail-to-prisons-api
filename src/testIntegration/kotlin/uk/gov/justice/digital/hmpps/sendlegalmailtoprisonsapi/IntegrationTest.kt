@@ -9,15 +9,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.reset
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
@@ -59,13 +58,13 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var jwtAuthHelper: JwtAuthHelper
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var barcodeRepository: BarcodeRepository
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var barcodeEventRepository: BarcodeEventRepository
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var barcodeGeneratorService: BarcodeGeneratorService
 
   @Autowired
@@ -80,16 +79,16 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var jwtService: JwtService
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var barcodeConfig: BarcodeConfig
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var randomCheckService: RandomCheckService
 
   @Autowired
   protected lateinit var cjsmDirectoryRepository: CjsmDirectoryRepository
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var amazonS3: AmazonS3
 
   @Autowired
@@ -101,7 +100,7 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var contactRepository: ContactRepository
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var barcodeRecipientRepository: BarcodeRecipientRepository
 
   @Autowired
@@ -110,13 +109,13 @@ abstract class IntegrationTest {
   @Autowired
   protected lateinit var barcodeEventService: BarcodeEventService
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var telemetryClient: TelemetryClient
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var smokeTestConfig: SmokeTestConfig
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var supportedPrisonsService: SupportedPrisonsService
 
   @Autowired
@@ -124,7 +123,7 @@ abstract class IntegrationTest {
 
   @BeforeEach
   fun `turn off random checks`() {
-    doReturn(false).whenever(randomCheckService).requiresRandomCheck()
+    doReturn(false).`when`(randomCheckService).requiresRandomCheck()
   }
 
   @AfterEach

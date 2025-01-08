@@ -6,13 +6,13 @@ import org.awaitility.kotlin.until
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectoryEntry
@@ -135,7 +135,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `OK if barcode exists`() {
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
     webTestClient.post()
       .uri("/barcode")
@@ -179,7 +179,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `OK if barcode exists but no CJSM organisation in the directory`() {
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
     cjsmDirectoryRepository.deleteAll()
 
     webTestClient.post()
@@ -222,7 +222,7 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `Bad request duplicate if barcode already checked`() {
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
     webTestClient.post()
       .uri("/barcode")
@@ -284,8 +284,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `Bad request expired if barcode created before expiry period`() {
-    whenever(barcodeConfig.expiry).thenReturn(Duration.ZERO)
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(barcodeConfig.expiry).thenReturn(Duration.ZERO)
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
     webTestClient.post()
       .uri("/barcode")
@@ -334,8 +334,8 @@ class BarcodeResourceCheckBarcodeTest : BarcodeResourceTest() {
 
   @Test
   fun `Bad request with random check if barcode has been selected for a random check`() {
-    whenever(randomCheckService.requiresRandomCheck()).thenReturn(true)
-    whenever(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
+    `when`(randomCheckService.requiresRandomCheck()).thenReturn(true)
+    `when`(barcodeGeneratorService.generateBarcode()).thenReturn("SOME_BARCODE")
 
     webTestClient.post()
       .uri("/barcode")
