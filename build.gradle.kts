@@ -43,6 +43,7 @@ dependencies {
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
   implementation("software.amazon.awssdk:s3:2.30.0")
+  implementation("software.amazon.awssdk:sts:2.30.0")
   implementation("org.apache.commons:commons-csv:1.12.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
