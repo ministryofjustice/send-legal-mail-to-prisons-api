@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
-import com.amazonaws.services.s3.AmazonS3
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -9,10 +8,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import software.amazon.awssdk.services.s3.S3Client
 
 class CjsmServiceTest {
 
-  private val amazonS3 = mock<AmazonS3>()
+  private val amazonS3 = mock<S3Client>()
   private val s3Config = mock<S3Config>()
   private val cjsmDirectoryRepository = mock<CjsmDirectoryRepository>()
   private val cjsmService = CjsmService(amazonS3, s3Config, cjsmDirectoryRepository)
