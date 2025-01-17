@@ -35,5 +35,5 @@ generic-prometheus-alerts:
 
 cron:
   barcodeStatsReportSchedule: "5 8 * * 1-5"
-  cjsmDirectorySchedule: "*/5 * * * *"
+  cjsmDirectorySchedule: "15 8 * * 1-5"
 
