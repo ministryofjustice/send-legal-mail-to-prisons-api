@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi
 
-import com.amazonaws.services.s3.AmazonS3
 import com.microsoft.applicationinsights.TelemetryClient
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterEach
@@ -18,6 +17,7 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
+import software.amazon.awssdk.services.s3.S3Client
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeConfig
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventRepository
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.barcode.BarcodeEventService
@@ -89,7 +89,7 @@ abstract class IntegrationTest {
   protected lateinit var cjsmDirectoryRepository: CjsmDirectoryRepository
 
   @MockitoSpyBean
-  protected lateinit var amazonS3: AmazonS3
+  protected lateinit var amazonS3: S3Client
 
   @Autowired
   protected lateinit var s3Config: S3Config

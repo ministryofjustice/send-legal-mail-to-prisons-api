@@ -1,18 +1,21 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
-import com.amazonaws.services.s3.model.AmazonS3Exception
-import com.amazonaws.services.s3.model.DeleteObjectRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.doThrow
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
+import java.nio.file.Path
 
 class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
 
@@ -21,9 +24,11 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
 
   @BeforeEach
   fun `clear the s3 bucket`() {
-    val bucketObjects = amazonS3.listObjects(s3Config.bucketName)
-    bucketObjects.objectSummaries.forEach {
-      amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, it.key))
+    val listObjectRequest = ListObjectsRequest.builder().bucket(s3Config.bucketName).build()
+    val bucketObjects = amazonS3.listObjects(listObjectRequest)
+    bucketObjects.contents().forEach {
+      val deleteObjectsRequest = DeleteObjectRequest.builder().bucket(s3Config.bucketName).key(it.key()).build()
+      amazonS3.deleteObject(deleteObjectsRequest)
     }
   }
 
@@ -46,12 +51,13 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
 
       // The old database entries should have been deleted
       assertThat(cjsmDirectoryRepository.findBySecureEmail("should.be.deleted@company.com.cjsm.net")).isNull()
+      val listObjectsRequest = ListObjectsRequest.builder().bucket(s3Config.bucketName).build()
 
-      val bucketObjects = amazonS3.listObjects(s3Config.bucketName)
+      val bucketObjects = amazonS3.listObjects(listObjectsRequest)
       // The CJSM directory csv should have been removed the bucket
-      assertThat(bucketObjects.objectSummaries.find { it.key == s3Config.cjsmDirectoryCsvName }).isNull()
+      assertThat(bucketObjects.contents().find { it.key() == s3Config.cjsmDirectoryCsvName }).isNull()
       // But the archived CJSM directory csv should exist in the bucket
-      assertThat(bucketObjects.objectSummaries.find { it.key.contains(s3Config.cjsmDirectoryCsvName) }).isNotNull
+      assertThat(bucketObjects.contents().find { it.key().contains(s3Config.cjsmDirectoryCsvName) }).isNotNull
     }
 
     @Test
@@ -97,19 +103,13 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
       assertThat(cjsmDirectoryRepository.findBySecureEmail("should.not.be.deleted@company.com.cjsm.net")).isNotNull
     }
 
-    @Disabled
     @Test
     fun `if the upload fails we should leave the old CJSM directory csv and retain existing data`() {
       uploadCjsmDirectoryCsvToS3()
       saveCjsmDirectoryEntry("should.not.be.deleted@company.com.cjsm.net")
-      `when`(
-        amazonS3.copyObject(
-          anyString(),
-          anyString(),
-          anyString(),
-          anyString(),
-        ),
-      ).thenThrow(AmazonS3Exception("Mocked exception"))
+      doThrow(S3Exception::class.java).`when`(
+        amazonS3,
+      ).copyObject(any<CopyObjectRequest>())
 
       webTestClient.post()
         .uri("/cjsm/directory/refresh")
@@ -123,13 +123,16 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
       assertThat(cjsmDirectoryRepository.findBySecureEmail("should.not.be.deleted@company.com.cjsm.net")).isNotNull
 
       // The CJSM directory csv should still be in the bucket
-      val bucketObjects = amazonS3.listObjects(s3Config.bucketName)
-      assertThat(bucketObjects.objectSummaries.find { it.key == s3Config.cjsmDirectoryCsvName }).isNotNull
+      val listObjectsRequest = ListObjectsRequest.builder().bucket(s3Config.bucketName).build()
+      val bucketObjects = amazonS3.listObjects(listObjectsRequest)
+      assertThat(bucketObjects.contents().find { it.key() == s3Config.cjsmDirectoryCsvName }).isNotNull
     }
   }
 
   fun uploadCjsmDirectoryCsvToS3() {
-    amazonS3.putObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName, cjsmCsvResource.file)
+    val putObjectRequest = PutObjectRequest.builder().bucket(s3Config.bucketName).key(s3Config.cjsmDirectoryCsvName).build()
+    val path = Path.of(cjsmCsvResource.uri)
+    amazonS3.putObject(putObjectRequest, path)
   }
 
   fun saveCjsmDirectoryEntry(secureEmail: String) =

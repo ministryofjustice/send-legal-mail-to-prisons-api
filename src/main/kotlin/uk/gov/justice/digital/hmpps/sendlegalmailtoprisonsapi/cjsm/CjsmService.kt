@@ -1,14 +1,16 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm
 
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.AmazonS3Exception
-import com.amazonaws.services.s3.model.DeleteObjectRequest
 import jakarta.transaction.Transactional
 import mu.KotlinLogging
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.config.ResourceNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -20,7 +22,7 @@ private val log = KotlinLogging.logger {}
 
 @Service
 class CjsmService(
-  private val amazonS3: AmazonS3,
+  private val amazonS3: S3Client,
   private val s3Config: S3Config,
   private val cjsmDirectoryRepository: CjsmDirectoryRepository,
 ) {
@@ -28,11 +30,10 @@ class CjsmService(
   @Transactional
   fun saveCjsmDirectoryCsv() =
     try {
-      amazonS3.getObject(s3Config.bucketName, s3Config.cjsmDirectoryCsvName)
-        .also { log.info("Found CJSM directory file upgrade for S3Object ${it.key}") }
-        .objectContent
-        .let { saveCjsmDirectoryStream(it) }
-    } catch (ex: AmazonS3Exception) {
+      val getObjectRequest = GetObjectRequest.builder().bucket(s3Config.bucketName).key(s3Config.cjsmDirectoryCsvName).build()
+      val response = amazonS3.getObject(getObjectRequest)
+      saveCjsmDirectoryStream(response)
+    } catch (ex: S3Exception) {
       log.error("Failed CJSM directory upload due to AmazonS3Exception", ex)
       throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
     } catch (ex: IOException) {
@@ -45,14 +46,16 @@ class CjsmService(
     val archiveFileName =
       """/done/${s3Config.cjsmDirectoryCsvName}-${DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())}"""
     log.info("Attempting to archive CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
-    amazonS3.copyObject(
-      s3Config.bucketName,
-      s3Config.cjsmDirectoryCsvName,
-      s3Config.bucketName,
-      archiveFileName,
-    )
+    val copyObjectRequest = CopyObjectRequest.builder().sourceBucket(s3Config.bucketName)
+      .sourceKey(s3Config.cjsmDirectoryCsvName)
+      .destinationBucket(s3Config.bucketName)
+      .destinationKey(archiveFileName)
+      .build()
+    amazonS3.copyObject(copyObjectRequest)
     log.info("Copied the existing CJSM directory file ${s3Config.cjsmDirectoryCsvName} to $archiveFileName")
-    amazonS3.deleteObject(DeleteObjectRequest(s3Config.bucketName, s3Config.cjsmDirectoryCsvName))
+
+    val deleteObjectRequest = DeleteObjectRequest.builder().bucket(s3Config.bucketName).key(s3Config.cjsmDirectoryCsvName).build()
+    amazonS3.deleteObject(deleteObjectRequest)
     log.info("Deleted the existing ${s3Config.cjsmDirectoryCsvName}")
   }
 
