@@ -25,8 +25,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://send-legal-mail-api-db:5432/send_legal_mail_api_db
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
       - PRISONER_SEARCH_URL=http://wiremock:8080
-      - APP_S3_LOCALSTACKURL=localstack
-      - SPRING_DATA_REDIS_HOST=send-legal-mail-api-cache
+      - APP_S3_LOCALSTACK_URL=http://127.0.0.1:4566
+      - SPRING_REDIS_HOST=send-legal-mail-api-cache
       - APP_SMOKETEST_LSJSECRET=LSJ_SECRET
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
@@ -47,6 +47,8 @@ services:
 
   localstack:
     image: localstack/localstack:3.7
+    ports:
+      - "4566:4566"
     networks:
       - artillery
     environment:
