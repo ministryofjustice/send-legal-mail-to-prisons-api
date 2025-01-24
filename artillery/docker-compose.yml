@@ -26,7 +26,7 @@ services:
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
       - PRISONER_SEARCH_URL=http://wiremock:8080
       - APP_S3_LOCALSTACK_URL=http://127.0.0.1:4566
-      - SPRING_REDIS_HOST=send-legal-mail-api-cache
+      - SPRING_DATA_REDIS_HOST=send-legal-mail-api-cache
       - APP_SMOKETEST_LSJSECRET=LSJ_SECRET
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
@@ -43,10 +43,12 @@ services:
     image: redis
     networks:
       - artillery
+    ports:
+      - '6378:6378'
     command: --port 6378
 
   localstack:
-    image: localstack/localstack:3.7
+    image: localstack/localstack:3
     ports:
       - "4566:4566"
     networks:
