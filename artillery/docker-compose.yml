@@ -31,7 +31,7 @@ services:
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
   send-legal-mail-api-db:
-    image: postgres:13.3
+    image: postgres:15.5
     networks:
       - artillery
     environment:
@@ -46,7 +46,7 @@ services:
     command: --port 6378
 
   localstack:
-    image: localstack/localstack:0.13.1
+    image: localstack/localstack:3.7
     networks:
       - artillery
     environment:
