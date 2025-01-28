@@ -18,7 +18,7 @@ parameters:
     default: send-legal-mail-alerts
   releases-slack-channel:
     type: string
-    default: send-legal-mail-alerts
+    default: visits-releases
 
 executors:
   integration-test-validator:
