@@ -15,7 +15,7 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: send-legal-mail-alerts
+    default: send-legal-mail-alerts-nonprod
   releases-slack-channel:
     type: string
     default: visits-releases
