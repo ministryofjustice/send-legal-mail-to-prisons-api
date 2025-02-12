@@ -135,15 +135,14 @@ class CjsmResourceRefreshDirectoryTest : IntegrationTest() {
     amazonS3.putObject(putObjectRequest, path)
   }
 
-  fun saveCjsmDirectoryEntry(secureEmail: String) =
-    cjsmDirectoryRepository.save(
-      CjsmDirectoryEntry(
-        secureEmail = secureEmail,
-        firstName = "any",
-        lastName = "any",
-        organisation = "any",
-        townCity = "any",
-        businessType = "any",
-      ),
-    )
+  fun saveCjsmDirectoryEntry(secureEmail: String) = cjsmDirectoryRepository.save(
+    CjsmDirectoryEntry(
+      secureEmail = secureEmail,
+      firstName = "any",
+      lastName = "any",
+      organisation = "any",
+      townCity = "any",
+      businessType = "any",
+    ),
+  )
 }

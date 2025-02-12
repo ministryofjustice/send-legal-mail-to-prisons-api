@@ -212,6 +212,5 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
     }
   }
 
-  private fun aSupportedPrison(code: String, active: Boolean, updated: Instant = Instant.now()): SupportedPrison =
-    SupportedPrison(code = code, active = active, updatedBy = "anyone", updated = updated)
+  private fun aSupportedPrison(code: String, active: Boolean, updated: Instant = Instant.now()): SupportedPrison = SupportedPrison(code = code, active = active, updatedBy = "anyone", updated = updated)
 }

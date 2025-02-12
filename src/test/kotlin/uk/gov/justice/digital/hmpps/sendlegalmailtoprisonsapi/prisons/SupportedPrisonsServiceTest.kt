@@ -143,18 +143,16 @@ class SupportedPrisonsServiceTest {
     }
   }
 
-  private fun aSupportedPrison(code: String = "some-prison", active: Boolean = true): SupportedPrison =
-    SupportedPrison(code = code, active = active, updatedBy = "anyone", updated = Instant.now())
+  private fun aSupportedPrison(code: String = "some-prison", active: Boolean = true): SupportedPrison = SupportedPrison(code = code, active = active, updatedBy = "anyone", updated = Instant.now())
 
-  private fun aPrisonDto(code: String, active: Boolean = true): PrisonDto =
-    PrisonDto(
-      prisonId = code,
-      prisonName = "Any name",
-      active = active,
-      male = true,
-      female = true,
-      contracted = false,
-      types = listOf(PrisonTypeDto(PrisonTypeDto.Code.hMP, "hmp")),
-      addresses = listOf(),
-    )
+  private fun aPrisonDto(code: String, active: Boolean = true): PrisonDto = PrisonDto(
+    prisonId = code,
+    prisonName = "Any name",
+    active = active,
+    male = true,
+    female = true,
+    contracted = false,
+    types = listOf(PrisonTypeDto(PrisonTypeDto.Code.hMP, "hmp")),
+    addresses = listOf(),
+  )
 }

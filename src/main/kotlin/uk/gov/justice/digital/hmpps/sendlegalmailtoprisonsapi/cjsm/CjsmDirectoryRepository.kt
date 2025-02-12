@@ -45,7 +45,5 @@ data class CjsmDirectoryEntry(
 
   override fun hashCode(): Int = secureEmail.hashCode()
 
-  override fun toString(): String {
-    return "CjsmDirectoryEntry(secureEmail=$secureEmail, firstName='$firstName', lastName=$lastName, organisation=$organisation, townCity=$townCity, businessType=$businessType)"
-  }
+  override fun toString(): String = "CjsmDirectoryEntry(secureEmail=$secureEmail, firstName='$firstName', lastName=$lastName, organisation=$organisation, townCity=$townCity, businessType=$businessType)"
 }

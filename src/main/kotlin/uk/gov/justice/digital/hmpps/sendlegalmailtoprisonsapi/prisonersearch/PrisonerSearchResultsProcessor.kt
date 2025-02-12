@@ -117,26 +117,20 @@ data class PrisonerMatch(
       }
     }
 
-    private fun Prisoner.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
-      firstName?.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName?.uppercase() == prisonerSearchRequest.lastName.uppercase()
+    private fun Prisoner.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean = firstName?.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName?.uppercase() == prisonerSearchRequest.lastName.uppercase()
 
-    private fun Prisoner.matchesPrisonNumber(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
-      prisonerNumber == prisonerSearchRequest.prisonNumber
+    private fun Prisoner.matchesPrisonNumber(prisonerSearchRequest: PrisonerSearchRequest): Boolean = prisonerNumber == prisonerSearchRequest.prisonNumber
 
-    private fun Prisoner.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
-      dateOfBirth == prisonerSearchRequest.dob
+    private fun Prisoner.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean = dateOfBirth == prisonerSearchRequest.dob
 
-    private fun PrisonerAlias.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
-      firstName.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName.uppercase() == prisonerSearchRequest.lastName.uppercase()
+    private fun PrisonerAlias.matchesName(prisonerSearchRequest: PrisonerSearchRequest): Boolean = firstName.uppercase() == prisonerSearchRequest.firstName?.uppercase() && lastName.uppercase() == prisonerSearchRequest.lastName.uppercase()
 
-    private fun PrisonerAlias.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean =
-      dateOfBirth == prisonerSearchRequest.dob
+    private fun PrisonerAlias.matchesDateOfBirth(prisonerSearchRequest: PrisonerSearchRequest): Boolean = dateOfBirth == prisonerSearchRequest.dob
 
-    private fun bestPrisonerMatch(prisonersMatchingMainDetails: Collection<Prisoner>, prisonersMatchingAliasDetails: Collection<Prisoner>): Prisoner? =
-      if (prisonersMatchingMainDetails.size + prisonersMatchingAliasDetails.size != 1) {
-        null
-      } else {
-        if (prisonersMatchingMainDetails.isNotEmpty()) prisonersMatchingMainDetails.first() else prisonersMatchingAliasDetails.first()
-      }
+    private fun bestPrisonerMatch(prisonersMatchingMainDetails: Collection<Prisoner>, prisonersMatchingAliasDetails: Collection<Prisoner>): Prisoner? = if (prisonersMatchingMainDetails.size + prisonersMatchingAliasDetails.size != 1) {
+      null
+    } else {
+      if (prisonersMatchingMainDetails.isNotEmpty()) prisonersMatchingMainDetails.first() else prisonersMatchingAliasDetails.first()
+    }
   }
 }

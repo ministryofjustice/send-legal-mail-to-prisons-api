@@ -29,23 +29,22 @@ class S3ClientsConfig(
 
   @Bean
   @ConditionalOnProperty(name = ["app.s3.localstack-url"])
-  fun amazonS3Test(): S3Client =
-    S3Client.builder()
-      .region(Region.of(s3Config.region))
-      .endpointOverride(URI.create(s3Config.localstackUrl))
-      .credentialsProvider(
-        StaticCredentialsProvider.create(
-          AwsBasicCredentials.builder().accessKeyId("any").secretAccessKey("any").build(),
-        ),
-      )
-      .forcePathStyle(true)
-      .build()
-      .also {
-        val request = CreateBucketRequest.builder()
-          .bucket(s3Config.bucketName).build()
+  fun amazonS3Test(): S3Client = S3Client.builder()
+    .region(Region.of(s3Config.region))
+    .endpointOverride(URI.create(s3Config.localstackUrl))
+    .credentialsProvider(
+      StaticCredentialsProvider.create(
+        AwsBasicCredentials.builder().accessKeyId("any").secretAccessKey("any").build(),
+      ),
+    )
+    .forcePathStyle(true)
+    .build()
+    .also {
+      val request = CreateBucketRequest.builder()
+        .bucket(s3Config.bucketName).build()
 
-        runCatching {
-          it.createBucket(request)
-        }.onFailure { log.info("Failed to create S3 bucket ${s3Config.bucketName} due to error ${it.message}") }
-      }
+      runCatching {
+        it.createBucket(request)
+      }.onFailure { log.info("Failed to create S3 bucket ${s3Config.bucketName} due to error ${it.message}") }
+    }
 }

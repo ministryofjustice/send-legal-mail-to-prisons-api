@@ -18,39 +18,29 @@ class WebClientConfiguration(
   private val userContext: UserContext,
 ) {
   @Bean
-  fun manageUsersApiWebClient(): WebClient {
-    return WebClient.builder()
-      .baseUrl(manageUsersApiUrl)
-      .filter(addAuthHeaderFilterFunction())
-      .build()
-  }
+  fun manageUsersApiWebClient(): WebClient = WebClient.builder()
+    .baseUrl(manageUsersApiUrl)
+    .filter(addAuthHeaderFilterFunction())
+    .build()
 
   @Bean
-  fun manageUsersApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(manageUsersApiUrl).build()
-  }
+  fun manageUsersApiHealthWebClient(): WebClient = WebClient.builder().baseUrl(manageUsersApiUrl).build()
 
   @Bean
-  fun prisonerSearchWebClient(): WebClient {
-    return WebClient.builder()
-      .baseUrl(prisonerSearchApiUrl)
-      .filter(addAuthHeaderFilterFunction())
-      .build()
-  }
+  fun prisonerSearchWebClient(): WebClient = WebClient.builder()
+    .baseUrl(prisonerSearchApiUrl)
+    .filter(addAuthHeaderFilterFunction())
+    .build()
 
   @Bean
-  fun prisonRegisterWebClient(): WebClient {
-    return WebClient.builder()
-      .baseUrl(prisonRegisterApiUrl)
-      .build()
-  }
+  fun prisonRegisterWebClient(): WebClient = WebClient.builder()
+    .baseUrl(prisonRegisterApiUrl)
+    .build()
 
-  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
-    return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
-      val filtered = ClientRequest.from(request)
-        .header(HttpHeaders.AUTHORIZATION, userContext.authToken)
-        .build()
-      next.exchange(filtered)
-    }
+  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction = ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
+    val filtered = ClientRequest.from(request)
+      .header(HttpHeaders.AUTHORIZATION, userContext.authToken)
+      .build()
+    next.exchange(filtered)
   }
 }

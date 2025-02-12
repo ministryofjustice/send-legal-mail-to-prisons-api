@@ -13,7 +13,10 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class PrisonerSearchExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class PrisonerSearchExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
 
   companion object {
     @JvmField
@@ -63,19 +66,17 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_CONFIG) {
     )
   }
 
-  fun matchPrisonersHasBeenCalled(): Boolean =
-    try {
-      verify(postRequestedFor(WireMock.urlEqualTo("/match-prisoners")))
-      true
-    } catch (verificationException: VerificationException) {
-      false
-    }
+  fun matchPrisonersHasBeenCalled(): Boolean = try {
+    verify(postRequestedFor(WireMock.urlEqualTo("/match-prisoners")))
+    true
+  } catch (verificationException: VerificationException) {
+    false
+  }
 
-  fun globalSearchHasBeenCalled(): Boolean =
-    try {
-      verify(postRequestedFor(WireMock.urlEqualTo("/global-search")))
-      true
-    } catch (verificationException: VerificationException) {
-      false
-    }
+  fun globalSearchHasBeenCalled(): Boolean = try {
+    verify(postRequestedFor(WireMock.urlEqualTo("/global-search")))
+    true
+  } catch (verificationException: VerificationException) {
+    false
+  }
 }

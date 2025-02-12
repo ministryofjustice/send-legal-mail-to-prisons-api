@@ -151,8 +151,7 @@ abstract class IntegrationTest {
 
   internal fun setSlmClientIp(): (HttpHeaders) -> Unit = { it.set("x-slm-client-ip", "127.0.0.1") }
 
-  internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit =
-    jwtAuthHelper.setCreateBarcodeAuthorisation(email)
+  internal fun setCreateBarcodeAuthorisation(email: String = "some.user@company.com.cjsm.net"): (HttpHeaders) -> Unit = jwtAuthHelper.setCreateBarcodeAuthorisation(email)
 
   companion object {
     private val pgContainer = PostgresContainer.instance

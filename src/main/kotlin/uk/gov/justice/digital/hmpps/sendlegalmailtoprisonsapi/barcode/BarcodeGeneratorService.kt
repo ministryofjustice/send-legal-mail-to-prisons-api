@@ -7,7 +7,6 @@ import kotlin.random.Random
 class BarcodeGeneratorService {
   private val maxBarcode = 999_999_999_999
 
-  fun generateBarcode(): String =
-    Random.nextLong(maxBarcode).toString()
-      .padStart(12, '0')
+  fun generateBarcode(): String = Random.nextLong(maxBarcode).toString()
+    .padStart(12, '0')
 }

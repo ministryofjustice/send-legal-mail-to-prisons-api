@@ -16,7 +16,5 @@ class LogMemoryConfigurationAtStartupEvent : ApplicationListener<ContextRefreshe
     }
   }
 
-  private fun Long.renderAsMb(): String {
-    return "${this / 1024 / 1024}MB"
-  }
+  private fun Long.renderAsMb(): String = "${this / 1024 / 1024}MB"
 }

@@ -28,72 +28,59 @@ class JwtService(jwtConfig: JwtConfig, private val smokeTestConfig: SmokeTestCon
   private val publicKey: PublicKey = readPublicKey(jwtConfig.publicKey)
   private val expiry: Duration = jwtConfig.expiry
 
-  private fun readPrivateKey(privateKeyString: String): PrivateKey =
-    PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyString))
-      .let { KeyFactory.getInstance("RSA").generatePrivate(it) }
+  private fun readPrivateKey(privateKeyString: String): PrivateKey = PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyString))
+    .let { KeyFactory.getInstance("RSA").generatePrivate(it) }
 
-  private fun readPublicKey(publicKeyString: String): PublicKey =
-    X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString))
-      .let { KeyFactory.getInstance("RSA").generatePublic(it) }
+  private fun readPublicKey(publicKeyString: String): PublicKey = X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString))
+    .let { KeyFactory.getInstance("RSA").generatePublic(it) }
 
-  fun generateToken(email: String, organisation: String?): String =
-    Jwts.builder()
-      .id(UUID.randomUUID().toString())
-      .subject(email)
-      .expiration(Date.from(calculateExpiryAtMidnight(expiry)))
-      .claims(
-        mapOf(
-          "authorities" to listOf("ROLE_SLM_CREATE_BARCODE"),
-          "client_id" to "send-legal-mail",
-          "user_name" to email,
-          "organisation" to organisation,
-        ),
-      )
-      .signWith(privateKey, Jwts.SIG.RS256)
-      .compact()
+  fun generateToken(email: String, organisation: String?): String = Jwts.builder()
+    .id(UUID.randomUUID().toString())
+    .subject(email)
+    .expiration(Date.from(calculateExpiryAtMidnight(expiry)))
+    .claims(
+      mapOf(
+        "authorities" to listOf("ROLE_SLM_CREATE_BARCODE"),
+        "client_id" to "send-legal-mail",
+        "user_name" to email,
+        "organisation" to organisation,
+      ),
+    )
+    .signWith(privateKey, Jwts.SIG.RS256)
+    .compact()
 
-  private fun calculateExpiryAtMidnight(expiry: Duration) =
-    Instant.now(clock)
-      .plus(expiry.toMillis(), ChronoUnit.MILLIS)
-      .plus(1, ChronoUnit.DAYS)
-      .truncatedTo(ChronoUnit.DAYS)
+  private fun calculateExpiryAtMidnight(expiry: Duration) = Instant.now(clock)
+    .plus(expiry.toMillis(), ChronoUnit.MILLIS)
+    .plus(1, ChronoUnit.DAYS)
+    .truncatedTo(ChronoUnit.DAYS)
 
-  fun validateToken(jwt: String): Boolean =
-    runCatching {
-      Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt)
-    }.onFailure {
-      log.warn("Found an invalid JWT: $jwt", it)
-    }.isSuccess
+  fun validateToken(jwt: String): Boolean = runCatching {
+    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt)
+  }.onFailure {
+    log.warn("Found an invalid JWT: $jwt", it)
+  }.isSuccess
 
-  fun subject(jwt: String): String =
-    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.subject
+  fun subject(jwt: String): String = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.subject
 
-  fun organisation(jwt: String): String? =
-    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["organisation"] as? String
+  fun organisation(jwt: String): String? = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["organisation"] as? String
 
   @Suppress("UNCHECKED_CAST")
-  fun authorities(jwt: String): List<String>? =
-    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["authorities"] as? List<String>
+  fun authorities(jwt: String): List<String>? = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["authorities"] as? List<String>
 
-  fun clientId(jwt: String): String? =
-    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["client_id"] as? String
+  fun clientId(jwt: String): String? = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload["client_id"] as? String
 
-  fun expiresAt(jwt: String): Instant =
-    Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.expiration.toInstant()
+  fun expiresAt(jwt: String): Instant = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(jwt).payload.expiration.toInstant()
 
-  fun isSmokeTestUserToken(authToken: String?) =
-    authToken?.isNotBlank()
-      ?.and(getUser(authToken)?.lowercase() == smokeTestConfig.msjSecret?.lowercase())
-      ?: false
+  fun isSmokeTestUserToken(authToken: String?) = authToken?.isNotBlank()
+    ?.and(getUser(authToken)?.lowercase() == smokeTestConfig.msjSecret?.lowercase())
+    ?: false
 
-  fun isNomisUserToken(authToken: String?) =
-    authToken?.isNotBlank()
-      ?.and(getUser(authToken).isNullOrBlank().not())
-      ?: false
+  fun isNomisUserToken(authToken: String?) = authToken?.isNotBlank()
+    ?.and(getUser(authToken).isNullOrBlank().not())
+    ?: false
 
   fun getUser(authToken: String): String? = getClaimsFromJWT(authToken).getClaim("user_name") as String?
 
   @Throws(ParseException::class)
-  private fun getClaimsFromJWT(token: String): JWTClaimsSet =
-    SignedJWT.parse(token.replace("Bearer ", "")).jwtClaimsSet
+  private fun getClaimsFromJWT(token: String): JWTClaimsSet = SignedJWT.parse(token.replace("Bearer ", "")).jwtClaimsSet
 }

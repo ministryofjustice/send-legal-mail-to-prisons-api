@@ -24,7 +24,5 @@ class NotificationService(
     }
   }
 
-  private fun generateReference(): String {
-    return ""
-  }
+  private fun generateReference(): String = ""
 }

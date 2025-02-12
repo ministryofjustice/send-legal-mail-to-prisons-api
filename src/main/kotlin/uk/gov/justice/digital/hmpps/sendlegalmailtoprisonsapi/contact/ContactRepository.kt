@@ -60,7 +60,5 @@ data class Contact(
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(id = $id , owner = $owner , prisonCode = $prisonCode )"
-  }
+  override fun toString(): String = this::class.simpleName + "(id = $id , owner = $owner , prisonCode = $prisonCode )"
 }

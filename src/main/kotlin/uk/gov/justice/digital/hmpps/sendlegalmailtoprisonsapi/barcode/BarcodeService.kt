@@ -23,16 +23,15 @@ class BarcodeService(
   enum class TelemetryEventType(val eventName: String) { CREATE("barcode-created"), SCAN("barcode-scanned") }
 
   @Transactional
-  fun createBarcode(userId: String, sourceIp: String, createBarcodeRequest: CreateBarcodeRequest): String =
-    createBarcode()
-      .also { barcode ->
-        barcodeEventService.createEvent(barcode = barcode, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp)
-          .also {
-            trackCreateEvent(barcode, userId, createBarcodeRequest)
-          }
-      }
-      .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
-      .code
+  fun createBarcode(userId: String, sourceIp: String, createBarcodeRequest: CreateBarcodeRequest): String = createBarcode()
+    .also { barcode ->
+      barcodeEventService.createEvent(barcode = barcode, userId = userId, eventType = BarcodeEventType.CREATED, sourceIp = sourceIp)
+        .also {
+          trackCreateEvent(barcode, userId, createBarcodeRequest)
+        }
+    }
+    .also { barcodeRecipientService.saveBarcodeRecipient(it, createBarcodeRequest) }
+    .code
 
   private fun createBarcode(): Barcode {
     var barcode = barcodeGeneratorService.generateBarcode()
@@ -42,40 +41,39 @@ class BarcodeService(
     return barcodeRepository.save(Barcode(barcode))
   }
 
-  fun checkBarcode(userId: String, code: String, location: String, sourceIp: String): String =
-    barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
-      .also { barcode ->
-        with(barcodeEventService) {
-          createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
-          try {
-            checkForCreated(barcode)
-          } catch (e: ResourceNotFoundException) {
-            // if ResourceNotFoundException thrown track the event
-            // else track the event post call to lookupRecipient
-            trackScanEvent(ScanEventType.NON_EXISTENT_BARCODE, barcode, userId, location)
-            throw e
+  fun checkBarcode(userId: String, code: String, location: String, sourceIp: String): String = barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
+    .also { barcode ->
+      with(barcodeEventService) {
+        createEvent(barcode, userId, BarcodeEventType.CHECKED, location, sourceIp)
+        try {
+          checkForCreated(barcode)
+        } catch (e: ResourceNotFoundException) {
+          // if ResourceNotFoundException thrown track the event
+          // else track the event post call to lookupRecipient
+          trackScanEvent(ScanEventType.NON_EXISTENT_BARCODE, barcode, userId, location)
+          throw e
+        }
+
+        barcodeRecipientService.getBarcodeRecipient(barcode)
+          ?.lookupRecipient()
+          ?: log.info { "No BarcodeRecipient record for barcode ${barcode.code}" }
+
+        try {
+          checkForDuplicate(barcode, userId, location, sourceIp)
+          checkForExpired(barcode, userId, location, sourceIp)
+          checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
+
+          // if no validation exception thrown above it means that the barcode is ready for delivery
+          trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location)
+        } catch (e: ValidationException) {
+          when (e.errorCode.code) {
+            "DUPLICATE", "EXPIRED", "RANDOM_CHECK" -> trackScanEvent(ScanEventType.valueOf(e.errorCode.code), barcode, userId, location)
           }
-
-          barcodeRecipientService.getBarcodeRecipient(barcode)
-            ?.lookupRecipient()
-            ?: log.info { "No BarcodeRecipient record for barcode ${barcode.code}" }
-
-          try {
-            checkForDuplicate(barcode, userId, location, sourceIp)
-            checkForExpired(barcode, userId, location, sourceIp)
-            checkForRandomSecurityCheck(barcode, userId, location, sourceIp)
-
-            // if no validation exception thrown above it means that the barcode is ready for delivery
-            trackScanEvent(ScanEventType.READY_FOR_DELIVERY, barcode, userId, location)
-          } catch (e: ValidationException) {
-            when (e.errorCode.code) {
-              "DUPLICATE", "EXPIRED", "RANDOM_CHECK" -> trackScanEvent(ScanEventType.valueOf(e.errorCode.code), barcode, userId, location)
-            }
-            throw e
-          }
+          throw e
         }
       }
-      .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
+    }
+    .let { barcode -> barcodeEventService.getCreatedBy(barcode) }
 
   fun registerEvent(userId: String, location: String, sourceIp: String, code: String, barcodeEventType: BarcodeEventType) {
     barcodeRepository.findById(code).orElseGet { barcodeRepository.save(Barcode(code)) }
@@ -116,6 +114,5 @@ class BarcodeService(
     )
   }
 
-  fun trackEvent(event: TelemetryEventType, properties: Map<String, String?>) =
-    telemetryClient.trackEvent(event.eventName, properties, null)
+  fun trackEvent(event: TelemetryEventType, properties: Map<String, String?>) = telemetryClient.trackEvent(event.eventName, properties, null)
 }

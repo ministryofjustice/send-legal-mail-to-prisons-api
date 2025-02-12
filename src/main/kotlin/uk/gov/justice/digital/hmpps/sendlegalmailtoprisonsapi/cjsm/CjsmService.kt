@@ -28,19 +28,18 @@ class CjsmService(
 ) {
 
   @Transactional
-  fun saveCjsmDirectoryCsv() =
-    try {
-      val getObjectRequest = GetObjectRequest.builder().bucket(s3Config.bucketName).key(s3Config.cjsmDirectoryCsvName).build()
-      val response = amazonS3.getObject(getObjectRequest)
-      saveCjsmDirectoryStream(response)
-    } catch (ex: S3Exception) {
-      log.error("Failed CJSM directory upload due to AmazonS3Exception", ex)
-      throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
-    } catch (ex: IOException) {
-      log.error("Failed CJSM directory upload due to IOException", ex)
-      throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
-    }
-      .also { archiveCjsmDirectoryFile() }
+  fun saveCjsmDirectoryCsv() = try {
+    val getObjectRequest = GetObjectRequest.builder().bucket(s3Config.bucketName).key(s3Config.cjsmDirectoryCsvName).build()
+    val response = amazonS3.getObject(getObjectRequest)
+    saveCjsmDirectoryStream(response)
+  } catch (ex: S3Exception) {
+    log.error("Failed CJSM directory upload due to AmazonS3Exception", ex)
+    throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
+  } catch (ex: IOException) {
+    log.error("Failed CJSM directory upload due to IOException", ex)
+    throw ResourceNotFoundException("Failed to load the CJSM directory file due to ${ex.message}")
+  }
+    .also { archiveCjsmDirectoryFile() }
 
   private fun archiveCjsmDirectoryFile() {
     val archiveFileName =
@@ -92,8 +91,7 @@ class CjsmService(
 
   fun findOrganisation(secureEmail: String): String? = findUser(secureEmail)?.organisation
 
-  fun findUser(secureEmail: String): UserDetails? =
-    cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.let { toUserDetails(it) }
+  fun findUser(secureEmail: String): UserDetails? = cjsmDirectoryRepository.findBySecureEmail(secureEmail)?.let { toUserDetails(it) }
 
   private fun CSVRecord.firstName() = this[0]
   private fun CSVRecord.lastName() = this[1]
@@ -103,10 +101,9 @@ class CjsmService(
   private fun CSVRecord.businessType() = this[12]
 }
 
-private fun toUserDetails(cjsmDirectoryEntry: CjsmDirectoryEntry): UserDetails =
-  UserDetails(
-    cjsmDirectoryEntry.secureEmail,
-    cjsmDirectoryEntry.organisation,
-    cjsmDirectoryEntry.businessType,
-    cjsmDirectoryEntry.townCity,
-  )
+private fun toUserDetails(cjsmDirectoryEntry: CjsmDirectoryEntry): UserDetails = UserDetails(
+  cjsmDirectoryEntry.secureEmail,
+  cjsmDirectoryEntry.organisation,
+  cjsmDirectoryEntry.businessType,
+  cjsmDirectoryEntry.townCity,
+)

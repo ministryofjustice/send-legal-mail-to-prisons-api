@@ -18,22 +18,20 @@ data class PrisonerSearchRequest(
     barcodeRecipient.dob,
   )
 
-  fun toMatchPrisonersRequestBody(): Map<String, String?> =
-    mapOf(
-      "nomsNumber" to prisonNumber,
-      "firstName" to firstName,
-      "lastName" to lastName,
-      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
-    )
+  fun toMatchPrisonersRequestBody(): Map<String, String?> = mapOf(
+    "nomsNumber" to prisonNumber,
+    "firstName" to firstName,
+    "lastName" to lastName,
+    "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
+  )
 
-  fun toGlobalSearchRequestBody(): Map<String, String?> =
-    mapOf(
-      "prisonerIdentifier" to prisonNumber,
-      "firstName" to firstName,
-      "lastName" to lastName,
-      "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
-      "includeAliases" to "true",
-    )
+  fun toGlobalSearchRequestBody(): Map<String, String?> = mapOf(
+    "prisonerIdentifier" to prisonNumber,
+    "firstName" to firstName,
+    "lastName" to lastName,
+    "dateOfBirth" to dob?.format(DateTimeFormatter.ISO_LOCAL_DATE),
+    "includeAliases" to "true",
+  )
 }
 
 private val BarcodeRecipient.names: Pair<String?, String>
