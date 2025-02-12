@@ -61,9 +61,8 @@ class CjsmResource(private val cjsmService: CjsmService) {
   )
   fun getUserDetails(
     @Parameter(hidden = true) @AuthenticationPrincipal principalUserDetails: PrincipalUserDetails,
-  ): UserDetails =
-    cjsmService.findUser(principalUserDetails.username)
-      ?: throw ResourceNotFoundException("User ${principalUserDetails.username} not in CJSM directory")
+  ): UserDetails = cjsmService.findUser(principalUserDetails.username)
+    ?: throw ResourceNotFoundException("User ${principalUserDetails.username} not in CJSM directory")
 }
 
 data class UserDetails(

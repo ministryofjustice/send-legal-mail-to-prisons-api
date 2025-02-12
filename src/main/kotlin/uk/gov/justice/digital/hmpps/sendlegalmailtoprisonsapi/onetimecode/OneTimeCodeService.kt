@@ -29,33 +29,32 @@ class OneTimeCodeService(
       .also { oneTimeCode -> oneTimeCodeEmailSender.send(email, oneTimeCode.code) }
   }
 
-  fun verifyOneTimeCode(code: String, sessionId: String): String =
-    if (code == smokeTestConfig.lsjSecret) {
-      smokeTest()
-    } else {
-      val oneTimeCode = oneTimeCodeRepository.findById(sessionId).toNullable()
-      val attempts = oneTimeCodeAttemptsRepository.findById(sessionId).toNullable()
-        ?.let {
-          oneTimeCodeAttemptsRepository.save(
-            OneTimeCodeAttempts(sessionId, it.attempts?.plus(code.uppercase()) ?: mutableSetOf(code.uppercase())),
-          )
-        }
-      when {
-        oneTimeCode == null || attempts == null -> {
-          clearOneTimeCode(sessionId)
-          throw OneTimeCodeException(OneTimeCodeSessionNotFound)
-        }
-        oneTimeCode.code.equals(code, ignoreCase = true) -> {
-          clearOneTimeCode(sessionId)
-          jwtService.generateToken(oneTimeCode.email, findOrganisation(oneTimeCode.email))
-        }
-        attempts.attempts!!.size >= oneTimeCodeConfig.maxAttempts -> {
-          clearOneTimeCode(sessionId)
-          throw OneTimeCodeException(OneTimeCodeTooManyAttempts)
-        }
-        else -> throw OneTimeCodeException(OneTimeCodeNotFound)
+  fun verifyOneTimeCode(code: String, sessionId: String): String = if (code == smokeTestConfig.lsjSecret) {
+    smokeTest()
+  } else {
+    val oneTimeCode = oneTimeCodeRepository.findById(sessionId).toNullable()
+    val attempts = oneTimeCodeAttemptsRepository.findById(sessionId).toNullable()
+      ?.let {
+        oneTimeCodeAttemptsRepository.save(
+          OneTimeCodeAttempts(sessionId, it.attempts?.plus(code.uppercase()) ?: mutableSetOf(code.uppercase())),
+        )
       }
+    when {
+      oneTimeCode == null || attempts == null -> {
+        clearOneTimeCode(sessionId)
+        throw OneTimeCodeException(OneTimeCodeSessionNotFound)
+      }
+      oneTimeCode.code.equals(code, ignoreCase = true) -> {
+        clearOneTimeCode(sessionId)
+        jwtService.generateToken(oneTimeCode.email, findOrganisation(oneTimeCode.email))
+      }
+      attempts.attempts!!.size >= oneTimeCodeConfig.maxAttempts -> {
+        clearOneTimeCode(sessionId)
+        throw OneTimeCodeException(OneTimeCodeTooManyAttempts)
+      }
+      else -> throw OneTimeCodeException(OneTimeCodeNotFound)
     }
+  }
 
   private fun clearOneTimeCode(sessionId: String) {
     oneTimeCodeRepository.deleteById(sessionId)
@@ -64,7 +63,6 @@ class OneTimeCodeService(
 
   private fun smokeTest(): String = jwtService.generateToken("smoke-test-lsj", "smoke-test-lsj-org")
 
-  private fun findOrganisation(userId: String): String? =
-    cjsmService.findOrganisation(userId)
-      ?.takeIf { it.isNotBlank() }
+  private fun findOrganisation(userId: String): String? = cjsmService.findOrganisation(userId)
+    ?.takeIf { it.isNotBlank() }
 }

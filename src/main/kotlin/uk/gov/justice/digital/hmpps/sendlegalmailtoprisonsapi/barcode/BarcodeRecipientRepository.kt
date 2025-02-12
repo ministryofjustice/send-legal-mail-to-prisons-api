@@ -56,7 +56,5 @@ data class BarcodeRecipient(
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(id = $id , barcode = $barcode , prisonCode = $prisonCode , contactId = ${contact?.id} )"
-  }
+  override fun toString(): String = this::class.simpleName + "(id = $id , barcode = $barcode , prisonCode = $prisonCode , contactId = ${contact?.id} )"
 }

@@ -52,25 +52,21 @@ class ResourceServerConfiguration(private val barcodeUserDetailsService: UserDet
   }
 
   @Bean
-  fun createBarcodeAuthenticationFilter(): RequestHeaderAuthenticationFilter =
-    RequestHeaderAuthenticationFilter()
-      .apply {
-        setPrincipalRequestHeader("Create-Barcode-Token")
-        setAuthenticationManager(authenticationManager())
-        setExceptionIfHeaderMissing(false)
-      }
+  fun createBarcodeAuthenticationFilter(): RequestHeaderAuthenticationFilter = RequestHeaderAuthenticationFilter()
+    .apply {
+      setPrincipalRequestHeader("Create-Barcode-Token")
+      setAuthenticationManager(authenticationManager())
+      setExceptionIfHeaderMissing(false)
+    }
 
   @Bean
-  fun authenticationManager(): AuthenticationManager =
-    ProviderManager(mutableListOf<AuthenticationProvider>(preAuthProvider()))
+  fun authenticationManager(): AuthenticationManager = ProviderManager(mutableListOf<AuthenticationProvider>(preAuthProvider()))
 
   @Bean
-  fun preAuthProvider(): PreAuthenticatedAuthenticationProvider =
-    PreAuthenticatedAuthenticationProvider()
-      .apply { setPreAuthenticatedUserDetailsService(userDetailsServiceWrapper()) }
+  fun preAuthProvider(): PreAuthenticatedAuthenticationProvider = PreAuthenticatedAuthenticationProvider()
+    .apply { setPreAuthenticatedUserDetailsService(userDetailsServiceWrapper()) }
 
   @Bean
-  fun userDetailsServiceWrapper(): UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken> =
-    UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken>()
-      .apply { setUserDetailsService(barcodeUserDetailsService) }
+  fun userDetailsServiceWrapper(): UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken> = UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken>()
+    .apply { setUserDetailsService(barcodeUserDetailsService) }
 }

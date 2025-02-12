@@ -44,7 +44,6 @@ data class SupportedPrison(
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
-  override fun toString(): String =
-    this::class.simpleName + "(code = $code, active = $active, updatedBy = ${updatedBy ?: "null"}, " +
-      "updated = ${updated?.let { DateTimeFormatter.ISO_DATE_TIME.format(updated) } ?: "null"} )"
+  override fun toString(): String = this::class.simpleName + "(code = $code, active = $active, updatedBy = ${updatedBy ?: "null"}, " +
+    "updated = ${updated?.let { DateTimeFormatter.ISO_DATE_TIME.format(updated) } ?: "null"} )"
 }
