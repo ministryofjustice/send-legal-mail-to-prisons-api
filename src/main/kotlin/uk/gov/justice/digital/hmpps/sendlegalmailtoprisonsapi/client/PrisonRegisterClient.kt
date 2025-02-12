@@ -12,15 +12,13 @@ import uk.gov.justice.digital.hmpps.prisonregister.model.PrisonDto
 @Component
 class PrisonRegisterClient(private val prisonRegisterWebClient: WebClient) {
 
-  fun getPrison(prisonCode: String): PrisonDto? =
-    prisonRegisterWebClient.get()
-      .uri { it.path("/prisons/id/{id}").build(prisonCode) }
-      .accept(MediaType.APPLICATION_JSON)
-      .retrieve()
-      .bodyToMono<PrisonDto>()
-      .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
-      .block()
+  fun getPrison(prisonCode: String): PrisonDto? = prisonRegisterWebClient.get()
+    .uri { it.path("/prisons/id/{id}").build(prisonCode) }
+    .accept(MediaType.APPLICATION_JSON)
+    .retrieve()
+    .bodyToMono<PrisonDto>()
+    .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
+    .block()
 
-  fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> =
-    if (exception.rawStatusCode == NOT_FOUND.value()) Mono.empty() else Mono.error(exception)
+  fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = if (exception.rawStatusCode == NOT_FOUND.value()) Mono.empty() else Mono.error(exception)
 }

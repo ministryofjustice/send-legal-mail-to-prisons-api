@@ -12,7 +12,10 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class HmppsAuthExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class HmppsAuthExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
 
   companion object {
     @JvmField

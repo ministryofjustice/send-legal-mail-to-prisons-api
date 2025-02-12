@@ -213,9 +213,8 @@ class ContactResource(private val contactService: ContactService) {
       ),
     ],
   )
-  fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse =
-    contactService.getContactByPrisonNumber(authentication.name, prisonNumber)
-      ?: throw ResourceNotFoundException("Could not find a matching Contact [${authentication.name}, $prisonNumber]")
+  fun getContactByPrisonNumber(@PathVariable prisonNumber: String, authentication: Authentication): ContactResponse = contactService.getContactByPrisonNumber(authentication.name, prisonNumber)
+    ?: throw ResourceNotFoundException("Could not find a matching Contact [${authentication.name}, $prisonNumber]")
 
   @GetMapping(value = ["/contacts"])
   @ResponseBody
@@ -253,9 +252,7 @@ class ContactResource(private val contactService: ContactService) {
   fun searchContactsByName(
     @RequestParam(required = true) name: String,
     authentication: Authentication,
-  ): Collection<ContactResponse> {
-    return contactService.searchContactsByName(authentication.name, name)
-  }
+  ): Collection<ContactResponse> = contactService.searchContactsByName(authentication.name, name)
 }
 
 data class ContactRequest(

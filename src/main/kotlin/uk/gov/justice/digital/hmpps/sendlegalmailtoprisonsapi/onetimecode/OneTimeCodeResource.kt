@@ -87,8 +87,7 @@ class OneTimeCodeResource(
       ),
     ],
   )
-  fun verifyOneTimeCode(@RequestBody request: VerifyCodeRequest) =
-    VerifyCodeResponse(oneTimeCodeService.verifyOneTimeCode(request.code, request.sessionID))
+  fun verifyOneTimeCode(@RequestBody request: VerifyCodeRequest) = VerifyCodeResponse(oneTimeCodeService.verifyOneTimeCode(request.code, request.sessionID))
 }
 
 data class OneTimeCodeRequest(

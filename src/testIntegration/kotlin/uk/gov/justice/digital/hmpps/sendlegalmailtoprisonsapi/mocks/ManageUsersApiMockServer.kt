@@ -12,7 +12,10 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class ManageUsersApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class ManageUsersApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
 
   companion object {
     @JvmField
