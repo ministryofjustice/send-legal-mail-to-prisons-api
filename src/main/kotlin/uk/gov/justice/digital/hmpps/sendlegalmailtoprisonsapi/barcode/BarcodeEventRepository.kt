@@ -73,9 +73,7 @@ data class BarcodeEvent(
 
   override fun hashCode(): Int = barcode.hashCode() * createdDateTime.hashCode()
 
-  override fun toString(): String {
-    return "BarcodeEvent(barcode=$barcode, userId='$userId', eventType=$eventType, dateTime=$createdDateTime, location=$location, ipAddress=$ipAddress)"
-  }
+  override fun toString(): String = "BarcodeEvent(barcode=$barcode, userId='$userId', eventType=$eventType, dateTime=$createdDateTime, location=$location, ipAddress=$ipAddress)"
 }
 
 enum class BarcodeEventType { CREATED, CHECKED, DUPLICATE, EXPIRED, RANDOM_CHECK, MORE_CHECKS_REQUESTED }

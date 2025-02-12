@@ -284,33 +284,28 @@ class BarcodeEventServiceTest {
     location: String = "",
     eventType: BarcodeEventType,
     ipAddress: String = IP_ADDRESS,
-  ) =
-    BarcodeEvent(
-      barcode = aBarcode(),
-      userId = userId,
-      eventType = eventType,
-      createdDateTime = createdTime,
-      location = location,
-      ipAddress = ipAddress,
-    )
+  ) = BarcodeEvent(
+    barcode = aBarcode(),
+    userId = userId,
+    eventType = eventType,
+    createdDateTime = createdTime,
+    location = location,
+    ipAddress = ipAddress,
+  )
 
   private fun aBarcodeRecipient() = BarcodeRecipient(barcode = aBarcode(), name = "some_name", prisonCode = "some_prison_code", prisonNumber = "some_prison_number", dob = LocalDate.of(1990, 1, 1))
 
-  private fun mockFindBarcodeEventCreated(barcodeEvent: BarcodeEvent?) =
-    whenever(barcodeEventRepository.findByBarcodeAndEventTypeCreated(aBarcode()))
-      .thenReturn(barcodeEvent)
+  private fun mockFindBarcodeEventCreated(barcodeEvent: BarcodeEvent?) = whenever(barcodeEventRepository.findByBarcodeAndEventTypeCreated(aBarcode()))
+    .thenReturn(barcodeEvent)
 
-  private fun mockFindBarcodeEvents(eventType: BarcodeEventType, barcodeEvents: List<BarcodeEvent>) =
-    whenever(barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(any(), eq(eventType)))
-      .thenReturn(barcodeEvents)
+  private fun mockFindBarcodeEvents(eventType: BarcodeEventType, barcodeEvents: List<BarcodeEvent>) = whenever(barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(any(), eq(eventType)))
+    .thenReturn(barcodeEvents)
 
-  private fun mockSaveBarcodeEvent(eventType: BarcodeEventType) =
-    whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(eventType = eventType))
+  private fun mockSaveBarcodeEvent(eventType: BarcodeEventType) = whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(eventType = eventType))
 
   private fun mockUserOrganisation(userId: String, organisation: String?) {
     whenever(cjsmService.findOrganisation(userId)).thenReturn(organisation)
   }
 
-  private fun mockGetBarcodeRecipient(barcodeRecipient: BarcodeRecipient?, barcode: Barcode = barcodeRecipient?.barcode ?: aBarcode()) =
-    whenever(barcodeRecipientRepository.getByBarcode(barcode)).thenReturn(barcodeRecipient)
+  private fun mockGetBarcodeRecipient(barcodeRecipient: BarcodeRecipient?, barcode: Barcode = barcodeRecipient?.barcode ?: aBarcode()) = whenever(barcodeRecipientRepository.getByBarcode(barcode)).thenReturn(barcodeRecipient)
 }

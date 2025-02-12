@@ -23,7 +23,5 @@ class OneTimeCodeEmailSender(
     log.info("sent one time code to email address - {}", email)
   }
 
-  private fun getOneTimeCodeValueMap(oneTmeCode: String): HashMap<String, String> {
-    return hashMapOf(Pair("code", oneTmeCode))
-  }
+  private fun getOneTimeCodeValueMap(oneTmeCode: String): HashMap<String, String> = hashMapOf(Pair("code", oneTmeCode))
 }

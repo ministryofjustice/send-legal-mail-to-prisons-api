@@ -30,29 +30,26 @@ class PrisonerSearchClient(private val prisonerSearchWebClient: WebClient) {
     // .subscribeOn(Schedulers.parallel())
   }
 
-  fun globalSearch(prisonerSearchRequest: PrisonerSearchRequest): Mono<PagePrisoner> {
-    return prisonerSearchWebClient
-      .post()
-      .uri("/global-search")
-      .accept(MediaType.APPLICATION_JSON)
-      .bodyValue(prisonerSearchRequest.toGlobalSearchRequestBody())
-      .retrieve()
-      .bodyToMono<PagePrisoner>()
-      .onErrorResume { webClientErrorHandler(it) }
-  }
+  fun globalSearch(prisonerSearchRequest: PrisonerSearchRequest): Mono<PagePrisoner> = prisonerSearchWebClient
+    .post()
+    .uri("/global-search")
+    .accept(MediaType.APPLICATION_JSON)
+    .bodyValue(prisonerSearchRequest.toGlobalSearchRequestBody())
+    .retrieve()
+    .bodyToMono<PagePrisoner>()
+    .onErrorResume { webClientErrorHandler(it) }
 
-  private fun <API_RESPONSE_BODY_TYPE> webClientErrorHandler(exception: Throwable): Mono<API_RESPONSE_BODY_TYPE> =
-    with(exception) {
-      if (this is WebClientResponseException) {
-        val uriPath = request?.uri?.path
-        if (statusCode == FORBIDDEN) {
-          log.info { "Client token does not have correct role to call prisoner-offender-search $uriPath" }
-        } else {
-          log.error { "Failed to call prisoner-offender-search $uriPath [statusCode: $statusCode, body: ${this.responseBodyAsString}]" }
-        }
+  private fun <API_RESPONSE_BODY_TYPE> webClientErrorHandler(exception: Throwable): Mono<API_RESPONSE_BODY_TYPE> = with(exception) {
+    if (this is WebClientResponseException) {
+      val uriPath = request?.uri?.path
+      if (statusCode == FORBIDDEN) {
+        log.info { "Client token does not have correct role to call prisoner-offender-search $uriPath" }
       } else {
-        log.error("Failed to call prisoner-offender-search", exception)
+        log.error { "Failed to call prisoner-offender-search $uriPath [statusCode: $statusCode, body: ${this.responseBodyAsString}]" }
       }
+    } else {
+      log.error("Failed to call prisoner-offender-search", exception)
     }
-      .let { Mono.empty() }
+  }
+    .let { Mono.empty() }
 }

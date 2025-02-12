@@ -17,13 +17,12 @@ class ManageUsersApiClient(
     .bodyToMono<UserNameDetails>()
     .block()!!
 
-  fun getUserDetails(userName: String) =
-    webClient.get()
-      .uri("/users/$userName")
-      .accept(MediaType.APPLICATION_JSON)
-      .retrieve()
-      .bodyToMono<UserDetails>()
-      .block()!!
+  fun getUserDetails(userName: String) = webClient.get()
+    .uri("/users/$userName")
+    .accept(MediaType.APPLICATION_JSON)
+    .retrieve()
+    .bodyToMono<UserDetails>()
+    .block()!!
 }
 
 data class UserDetails(val activeCaseLoadId: String? = null)

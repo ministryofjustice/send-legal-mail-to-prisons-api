@@ -8,18 +8,16 @@ class BarcodeRecipientService(
   private val barcodeRecipientRepository: BarcodeRecipientRepository,
   private val contactRepository: ContactRepository,
 ) {
-  fun saveBarcodeRecipient(barcode: Barcode, createBarcodeRequest: CreateBarcodeRequest): BarcodeRecipient =
-    BarcodeRecipient(
-      barcode = barcode,
-      name = createBarcodeRequest.prisonerName,
-      prisonCode = createBarcodeRequest.prisonId,
-      prisonNumber = createBarcodeRequest.prisonNumber,
-      dob = createBarcodeRequest.dob,
-      contact = createBarcodeRequest.contactId?.let { contactId -> contactRepository.getById(contactId) },
-    ).let {
-      barcodeRecipientRepository.save(it)
-    }
+  fun saveBarcodeRecipient(barcode: Barcode, createBarcodeRequest: CreateBarcodeRequest): BarcodeRecipient = BarcodeRecipient(
+    barcode = barcode,
+    name = createBarcodeRequest.prisonerName,
+    prisonCode = createBarcodeRequest.prisonId,
+    prisonNumber = createBarcodeRequest.prisonNumber,
+    dob = createBarcodeRequest.dob,
+    contact = createBarcodeRequest.contactId?.let { contactId -> contactRepository.getById(contactId) },
+  ).let {
+    barcodeRecipientRepository.save(it)
+  }
 
-  fun getBarcodeRecipient(barcode: Barcode): BarcodeRecipient? =
-    barcodeRecipientRepository.getByBarcode(barcode)
+  fun getBarcodeRecipient(barcode: Barcode): BarcodeRecipient? = barcodeRecipientRepository.getByBarcode(barcode)
 }

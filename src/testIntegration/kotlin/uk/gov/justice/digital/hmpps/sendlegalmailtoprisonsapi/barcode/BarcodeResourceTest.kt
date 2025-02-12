@@ -5,8 +5,7 @@ import org.assertj.core.groups.Tuple
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.IntegrationTest
 
 abstract class BarcodeResourceTest : IntegrationTest() {
-  protected fun aCreateBarcodeRequest(): CreateBarcodeRequest =
-    CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
+  protected fun aCreateBarcodeRequest(): CreateBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC")
 
   protected fun assertBarcodeEventCreated(
     expectedBarcode: Barcode,
