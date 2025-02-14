@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.2"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.1.10"
   kotlin("plugin.jpa") version "2.1.10"
@@ -42,8 +42,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.30.19")
-  implementation("software.amazon.awssdk:sts:2.30.19")
+  implementation("software.amazon.awssdk:s3:2.30.20")
+  implementation("software.amazon.awssdk:sts:2.30.20")
   implementation("org.apache.commons:commons-csv:1.13.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
