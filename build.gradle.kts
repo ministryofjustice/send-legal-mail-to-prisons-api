@@ -35,15 +35,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.5")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.5")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.6")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.6")
 
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.31.5")
-  implementation("software.amazon.awssdk:sts:2.31.5")
+  implementation("software.amazon.awssdk:s3:2.31.6")
+  implementation("software.amazon.awssdk:sts:2.31.6")
   implementation("org.apache.commons:commons-csv:1.14.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
