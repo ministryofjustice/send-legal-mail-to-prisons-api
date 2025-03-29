@@ -42,8 +42,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.31.7")
-  implementation("software.amazon.awssdk:sts:2.31.7")
+  implementation("software.amazon.awssdk:s3:2.31.11")
+  implementation("software.amazon.awssdk:sts:2.31.11")
   implementation("org.apache.commons:commons-csv:1.14.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
@@ -55,7 +55,7 @@ dependencies {
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.25")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.26")
   testImplementation("org.testcontainers:localstack:1.20.6")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("org.springframework.security:spring-security-test")
