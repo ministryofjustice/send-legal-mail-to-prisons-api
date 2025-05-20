@@ -76,6 +76,8 @@ First start the dependent containers with command:
 
 `docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
 
+Note: Prior to this - update the app.jwt.private-key and app.jwt.public-key in application-dev.yml with actual keys from kubernetes secrets.
+
 In Intellij find the Run Configuration for Spring Boot called SendLegalMailToPrisonsApi. In the `ActiveProfiles` section enter `dev,stdout`.
 
 Run the configuration and the app should start. See `http://localhost:8080/health` to check the app is running.
@@ -84,6 +86,8 @@ Run the configuration and the app should start. See `http://localhost:8080/healt
 First start the dependent containers with command:
 
 `docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
+
+Note: Prior to this - update the app.jwt.private-key and app.jwt.public-key in application-dev.yml with actual keys from kubernetes secrets.
 
 Then run the following command:
 
