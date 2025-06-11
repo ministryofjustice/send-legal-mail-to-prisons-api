@@ -35,21 +35,21 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.8")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.8")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.9")
 
   implementation("io.jsonwebtoken:jjwt:0.12.6")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.31.57")
-  implementation("software.amazon.awssdk:sts:2.31.56")
+  implementation("software.amazon.awssdk:s3:2.31.61")
+  implementation("software.amazon.awssdk:sts:2.31.61")
   implementation("org.apache.commons:commons-csv:1.14.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.6")
+  runtimeOnly("org.postgresql:postgresql:42.7.7")
 
   testImplementation("org.testcontainers:postgresql:1.21.1")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
@@ -60,7 +60,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.3")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.50.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.51.0")
 }
 
 // Language versions
