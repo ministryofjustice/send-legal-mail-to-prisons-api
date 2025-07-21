@@ -6,6 +6,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "applicationinsights": "^2.5.1"
+    "applicationinsights": "^2.9.7"
   }
 }
