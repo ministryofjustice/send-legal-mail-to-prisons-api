@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.2.10"
   kotlin("plugin.jpa") version "2.2.10"
@@ -35,15 +35,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.9")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.11")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.11")
 
-  implementation("io.jsonwebtoken:jjwt:0.12.7")
+  implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.32.24")
-  implementation("software.amazon.awssdk:sts:2.32.24")
+  implementation("software.amazon.awssdk:s3:2.32.31")
+  implementation("software.amazon.awssdk:sts:2.32.31")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
