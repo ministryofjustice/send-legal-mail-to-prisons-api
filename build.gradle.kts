@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.0.2"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.2.20"
   kotlin("plugin.jpa") version "2.2.20"
@@ -42,14 +42,14 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.33.11")
-  implementation("software.amazon.awssdk:sts:2.33.11")
+  implementation("software.amazon.awssdk:s3:2.34.0")
+  implementation("software.amazon.awssdk:sts:2.34.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.7")
+  runtimeOnly("org.postgresql:postgresql:42.7.8")
 
   testImplementation("org.testcontainers:postgresql:1.21.3")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
@@ -60,7 +60,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.4")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.54.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.54.1")
 }
 
 // Language versions
