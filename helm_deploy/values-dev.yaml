@@ -21,6 +21,7 @@ generic-service:
     APP_JWT_EXPIRY: 1d
     APP_BARCODE_EXPIRY: 2d
     APP_BARCODE_RANDOM_CHECK_PERCENTAGE: 25
+    ENVIRONMENT_NAME: dev
 
   namespace_secrets:
     smoke-test:
