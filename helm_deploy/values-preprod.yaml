@@ -18,6 +18,7 @@ generic-service:
     MANAGE_USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     PRISONER_SEARCH_URL: https://prisoner-search-preprod.prison.service.justice.gov.uk
     PRISON_REGISTER_URL: https://prison-register-preprod.hmpps.service.justice.gov.uk
+    ENVIRONMENT_NAME: preprod
 
   namespace_secrets:
     smoke-test:
