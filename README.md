@@ -1,4 +1,6 @@
 # send-legal-mail-to-prisons-api
+
+[![pipeline](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/actions/workflows/pipeline.yml/badge.svg)](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api) [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
  
 ## About
 A Kotlin application providing APIs to support a UI application for creating and scanning barcodes for legal mail (aka rule39 mail).
@@ -12,11 +14,6 @@ The application has a health endpoint found at `/health` which indicates if the 
 ### Ping
 The application has a ping endpoint found at `/ping` which indicates that the app is responding to requests.
 
-### Build
-<em>Requires membership of Github team `book-a-prison-visit`</em>
-
-The application is built on [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/send-legal-mail-to-prisons-api).
-
 ### Alerting and monitoring
 
 Please see the [UI readme](https://github.com/ministryofjustice/send-legal-mail-to-prisons#alerting-and-monitoring) for more information.
@@ -28,7 +25,7 @@ The application version currently running can be found on the `/info` endpoint a
 
 * <em>Requires CLI tools `kubectl` and `helm`</em>
 * <em>Requires access to Cloud Platform Kubernetes `live` cluster</em>
-* <em>Requires membership of Github team `book-a-prison-visit`</em>
+* <em>Requires membership of Github team `hmpps-send-legal-mail-live`</em>
 
 For example in the dev environment:
 1. Set the Kube context with command `kubectl config use-context live.cloud-platform.service.justice.gov.uk`

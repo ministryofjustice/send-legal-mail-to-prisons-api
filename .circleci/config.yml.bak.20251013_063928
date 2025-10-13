@@ -1,14 +1,17 @@
-main_branch:
+main_branch: &main_branch
   filters:
     branches:
       only: main
-feature_branch:
+feature_branch: &feature_branch
   filters:
     branches:
       ignore: main
+
 version: 2.1
+
 orbs:
   hmpps: ministryofjustice/hmpps@11
+
 parameters:
   alerts-slack-channel:
     type: string
@@ -16,6 +19,7 @@ parameters:
   releases-slack-channel:
     type: string
     default: visits-releases
+
 executors:
   integration-test-validator:
     docker:
@@ -38,10 +42,12 @@ executors:
     environment:
       _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
     working_directory: ~/app
+
   smoke-test:
     docker:
       - image: cypress/included:13.7.0
     working_directory: ~/tests
+
 jobs:
   validate:
     executor: integration-test-validator
@@ -67,6 +73,7 @@ jobs:
           path: build/reports/tests
       - store_artifacts:
           path: build/reports/jacoco
+
   artillery:
     machine:
       image: ubuntu-2204:current
@@ -87,6 +94,7 @@ jobs:
           path: artillery/test-run-report.json
       - store_artifacts:
           path: artillery/test-run-report.json.html
+
   run_smoke_test:
     circleci_ip_ranges: true
     executor: smoke-test
@@ -127,16 +135,93 @@ jobs:
           path: /tmp/slm-smoke-test-<< parameters.env >>/screenshots
       - store_artifacts:
           path: /tmp/slm-smoke-test-<< parameters.env >>/downloads
-# workflows:
-#   version: 2
-#   artillery-nightly:
-#     triggers:
-#       - schedule:
-#           cron: "0 3 * * 1-5" # 3am Monday-Friday
-#           filters:
-#             branches:
-#               only:
-#                 - main
-#     jobs:
-#       - artillery:
-#           name: Artillery Tests
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - validate:
+          filters:
+            tags:
+              ignore: /.*/
+      - hmpps/helm_lint:
+          name: helm_lint
+      - hmpps/build_multiplatform_docker:
+          name: build_docker
+      - request-dev-preview-approval:
+          <<: *feature_branch
+          type: approval
+          requires:
+            - helm_lint
+            - validate
+            - build_docker
+      - hmpps/deploy_env:
+          <<: *feature_branch
+          name: deploy_dev_preview
+          env: "dev"
+          context: hmpps-common-vars
+          requires:
+            - request-dev-preview-approval
+      - run_smoke_test:
+          name: smoke_test_dev_preview
+          env: dev
+          requires:
+            - deploy_dev_preview
+
+      - hmpps/deploy_env:
+          <<: *main_branch
+          name: deploy_dev
+          env: "dev"
+          context: hmpps-common-vars
+          requires:
+            - helm_lint
+            - validate
+            - build_docker
+
+      - run_smoke_test:
+          name: smoke_test_dev
+          env: dev
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-api-preprod
+          requires:
+            - smoke_test_dev
+      - run_smoke_test:
+          name: smoke_test_preprod
+          env: preprod
+          requires:
+            - deploy_preprod
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-preprod
+      - request-prod-approval:
+          type: approval
+          requires:
+            - smoke_test_preprod
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          context:
+            - hmpps-common-vars
+            - send-legal-mail-to-prisons-api-prod
+          requires:
+            - request-prod-approval
+
+  artillery-nightly:
+    triggers:
+      - schedule:
+          cron: "0 3 * * 1-5" # 3am Monday-Friday
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - artillery:
+          name: Artillery Tests
