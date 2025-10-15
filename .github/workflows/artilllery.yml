@@ -1,0 +1,54 @@
+name: Artillery
+on:
+  schedule:
+    - cron: '0 3 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: false
+        default: 'dev'
+      node_version_file:
+        description: "Passed to setup-node action to specify where to source the version of node from"
+        required: false
+        type: string
+        default: ".nvmrc"
+
+permissions:
+  contents: read
+jobs:
+  artillery:
+    name: Run artillery
+    runs-on: [self-hosted, hmpps-github-actions-runner]
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Authenticate
+        uses: ministryofjustice/hmpps-github-actions/.github/actions/build-test-and-deploy/cloud-platform-auth@v2 # WORKFLOW_VERSION
+        with:
+          api: https://${{ secrets.KUBE_CLUSTER }}
+          cert: ${{ secrets.KUBE_CERT }}
+          cluster: ${{ secrets.KUBE_CLUSTER }}
+          namespace: ${{ secrets.KUBE_NAMESPACE }}
+          token: ${{ secrets.KUBE_TOKEN }}
+      - name: Use Node.js ${{ inputs.node_version_file }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+      - name: update npm
+        shell: bash
+        run: |
+          sudo npm install -g npm@latest
+      - name: Execute load tests
+        run: |
+          cd artillery
+          ./artillery --ramp-up-target-vusers 25 --sustained-load-vusers 25 --sustained-load-duration 600 --quiet
+      - name: Upload the artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artillery-results
+          path: |
+            artillery/test-run-report.json
+            artillery/test-run-report.json.html
