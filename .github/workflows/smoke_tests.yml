@@ -1,0 +1,41 @@
+name: Smoke tests
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: false
+        default: 'dev'
+
+permissions:
+  contents: read
+jobs:
+  smoke_test:
+    name: Run the smoke test
+    runs-on: [self-hosted, hmpps-github-actions-runner]
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: 'ministryofjustice/send-legal-mail-to-prisons'
+      - name: Run smoke tests in ${{ inputs.environment }}
+        shell: bash
+        run: |
+          cd smoke_tests
+          ./run-smoke-test.sh \
+            --env ${{ inputs.environment }} \
+            --lsj-secret ${{ secrets.APP_SMOKETEST_LSJSECRET }} \
+            --msj-secret ${{ secrets.APP_SMOKETEST_MSJSECRET }} \
+            --lsj-url https://send-legal-mail-${{ inputs.environment }}.prison.service.justice.gov.uk \
+            --msj-url https://check-rule39-mail-${{ inputs.environment }}.prison.service.justice.gov.uk
+      - name: Upload the artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results-${{ inputs.environment }}
+          path: |
+            /tmp/slm-smoke-test-${{ inputs.environment }}/videos
+            /tmp/slm-smoke-test-${{ inputs.environment }}/screenshots
+            /tmp/slm-smoke-test-${{ inputs.environment }}/downloads
+            /tmp/slm-smoke-test-${{ inputs.environment }}/test_results
