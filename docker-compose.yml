@@ -20,7 +20,7 @@ services:
       - SPRING_REDIS_HOST=send-legal-mail-api-cache
 
   send-legal-mail-api-db:
-    image: postgres:15.5
+    image: postgres:15.14
     networks:
       - hmpps
     container_name: send-legal-mail-api-db

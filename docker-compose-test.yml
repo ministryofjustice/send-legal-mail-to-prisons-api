@@ -1,7 +1,7 @@
 version: "3"
 services:
   send-legal-mail-api-db:
-    image: postgres:15.5
+    image: postgres:15.14
     networks:
       - hmpps
     container_name: send-legal-mail-api-db

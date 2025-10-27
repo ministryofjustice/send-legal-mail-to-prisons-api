@@ -31,7 +31,7 @@ services:
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
   send-legal-mail-api-db:
-    image: postgres:15.5
+    image: postgres:15.14
     networks:
       - artillery
     environment:
