@@ -31,7 +31,7 @@ jobs:
             --msj-url https://check-rule39-mail-${{ inputs.environment }}.prison.service.justice.gov.uk
       - name: Upload the artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: smoke-test-results-${{ inputs.environment }}
           path: |
