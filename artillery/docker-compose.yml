@@ -84,7 +84,7 @@ services:
       - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
 
   wiremock:
-    image: wiremock/wiremock:2.32.0
+    image: wiremock/wiremock:3.13.1
     networks:
       - artillery
     ports:
