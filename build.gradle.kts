@@ -42,8 +42,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.36.2")
-  implementation("software.amazon.awssdk:sts:2.36.2")
+  implementation("software.amazon.awssdk:s3:2.36.3")
+  implementation("software.amazon.awssdk:sts:2.36.3")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
@@ -59,7 +59,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.21.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.7.5")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.7.6")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.55.0")
 }
 
