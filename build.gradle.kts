@@ -35,15 +35,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.14")
 
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.36.3")
-  implementation("software.amazon.awssdk:sts:2.36.3")
+  implementation("software.amazon.awssdk:s3:2.38.5")
+  implementation("software.amazon.awssdk:sts:2.38.5")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
@@ -60,7 +60,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.6")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.55.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.56.0")
 }
 
 // Language versions
