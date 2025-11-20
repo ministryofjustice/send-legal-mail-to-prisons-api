@@ -31,7 +31,7 @@ services:
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
   send-legal-mail-api-db:
-    image: postgres:15.5
+    image: postgres:15.15
     networks:
       - artillery
     environment:
@@ -84,7 +84,7 @@ services:
       - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
 
   wiremock:
-    image: wiremock/wiremock:3.13.1
+    image: wiremock/wiremock:3.13.2
     networks:
       - artillery
     ports:
