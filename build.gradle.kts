@@ -42,8 +42,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.38.5")
-  implementation("software.amazon.awssdk:sts:2.38.5")
+  implementation("software.amazon.awssdk:s3:2.39.0")
+  implementation("software.amazon.awssdk:sts:2.39.0")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
