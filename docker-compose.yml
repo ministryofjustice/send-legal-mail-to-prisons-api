@@ -50,12 +50,8 @@ services:
     environment:
       - SERVICES=s3
       - DEBUG=${DEBUG- }
-      - DATA_DIR=/tmp/localstack/data
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - DEFAULT_REGION=eu-west-2
     volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
 
   wiremock:
     image: wiremock/wiremock:3.13.1
