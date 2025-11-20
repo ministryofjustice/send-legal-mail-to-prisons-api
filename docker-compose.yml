@@ -58,7 +58,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   wiremock:
-    image: wiremock/wiremock:3.13.1
+    image: wiremock/wiremock:3.13.2
     container_name: send-legal-mail-api-wiremock
     networks:
       - hmpps
