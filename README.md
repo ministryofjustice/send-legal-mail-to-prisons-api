@@ -71,7 +71,7 @@ See `http://localhost:8080/health` to check the app is running.
 ### Running the app for development - Intellij
 First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache localstack wiremock`
 
 Note: Prior to this - update the app.jwt.private-key and app.jwt.public-key in application-dev.yml with actual keys from kubernetes secrets.
 
@@ -82,7 +82,7 @@ Run the configuration and the app should start. See `http://localhost:8080/healt
 ### Running the app for development - Gradle
 First start the dependent containers with command:
 
-`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache mailcatcher localstack wiremock`
+`docker-compose up send-legal-mail-api-db send-legal-mail-api-cache localstack wiremock`
 
 Note: Prior to this - update the app.jwt.private-key and app.jwt.public-key in application-dev.yml with actual keys from kubernetes secrets.
 
