@@ -31,7 +31,7 @@ services:
       - APP_SMOKETEST_MSJSECRET=MSJ_SECRET
 
   send-legal-mail-api-db:
-    image: postgres:15.5
+    image: postgres:15.15
     networks:
       - artillery
     environment:
@@ -64,7 +64,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
+    image: ghcr.io/ministryofjustice/hmpps-auth:latest
     networks:
       - artillery
     ports:
