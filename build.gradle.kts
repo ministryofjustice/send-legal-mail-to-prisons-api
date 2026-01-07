@@ -37,7 +37,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
-  implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.1")
 
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
