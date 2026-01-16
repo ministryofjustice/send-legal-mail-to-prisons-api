@@ -35,7 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
 
