@@ -16,7 +16,7 @@ jobs:
     runs-on: [self-hosted, hmpps-github-actions-runner]
     environment: ${{ inputs.environment }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: 'ministryofjustice/send-legal-mail-to-prisons'
       - name: Run smoke tests in ${{ inputs.environment }}
