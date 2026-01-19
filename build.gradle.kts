@@ -36,7 +36,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-mail")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.15")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
   implementation("org.springdoc:springdoc-openapi-starter-common:2.8.15")
 
   implementation("io.jsonwebtoken:jjwt:0.13.0")
