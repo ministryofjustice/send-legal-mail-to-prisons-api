@@ -42,14 +42,14 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.41.5")
-  implementation("software.amazon.awssdk:sts:2.41.5")
+  implementation("software.amazon.awssdk:s3:2.41.11")
+  implementation("software.amazon.awssdk:sts:2.41.11")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.8")
+  runtimeOnly("org.postgresql:postgresql:42.7.9")
 
   testImplementation("org.testcontainers:postgresql:1.21.4")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
