@@ -57,8 +57,12 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.9")
 
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
+
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
@@ -66,11 +70,6 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.6")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.58.0")
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.springframework.boot:spring-boot-webclient-test")
-  testImplementation("org.springframework.boot:spring-boot-webtestclient")
-  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
