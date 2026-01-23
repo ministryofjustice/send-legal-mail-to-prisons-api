@@ -27,6 +27,7 @@ configurations {
 
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.0")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -56,22 +57,20 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.9")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.8.2")
   testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
-    exclude(group = "io.swagger.core.v3")
-  }
-  testImplementation("org.testcontainers:localstack:1.21.4")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.6")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.58.0")
-  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test:4.0.1")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.springframework.boot:spring-boot-webclient-test")
+  testImplementation("org.springframework.boot:spring-boot-webtestclient")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
@@ -81,42 +80,6 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.2")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("org.springframework.boot:spring-boot-webclient-test")
-  testImplementation("org.springframework.boot:spring-boot-webtestclient")
-
-  /*
-    //testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
-   // testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
-    testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
-    testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
-    testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.37")
-    testImplementation("com.microsoft.azure:applicationinsights-web:3.7.6")
-    testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.58.0")
-
-    // Test dependencies
-    testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.8.2")
-    testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test:4.0.1")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
-    testImplementation("org.springframework.boot:spring-boot-webtestclient")
-    implementation("org.springframework.boot:spring-boot-webtestclient")
-    testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-    testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
-    testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.37")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
-    testImplementation("org.testcontainers:testcontainers:2.0.3")
-    testImplementation("org.testcontainers:localstack:1.21.4")
-    testImplementation("org.testcontainers:postgresql:1.21.4")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testImplementation("io.github.hakky54:logcaptor:2.12.2")
-    testImplementation("org.mockito.kotlin:mockito-kotlin")
-   */
-  testImplementation(kotlin("test"))
 }
 
 // Language versions
