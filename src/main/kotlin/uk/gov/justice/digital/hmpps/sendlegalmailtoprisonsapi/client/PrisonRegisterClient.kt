@@ -20,5 +20,5 @@ class PrisonRegisterClient(private val prisonRegisterWebClient: WebClient) {
     .onErrorResume(WebClientResponseException::class.java) { emptyWhenNotFound(it) }
     .block()
 
-  fun <T> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = if (exception.rawStatusCode == NOT_FOUND.value()) Mono.empty() else Mono.error(exception)
+  fun <T : WebClientResponseException> emptyWhenNotFound(exception: WebClientResponseException): Mono<T> = if (exception.statusCode == NOT_FOUND) Mono.empty() else Mono.error(exception)
 }
