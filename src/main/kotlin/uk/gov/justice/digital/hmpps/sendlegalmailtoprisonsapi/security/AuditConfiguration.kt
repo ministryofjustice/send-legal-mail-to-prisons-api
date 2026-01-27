@@ -28,7 +28,7 @@ interface AuthenticationFacade {
 class UserDetails : AuthenticationFacade {
   override val currentUsername: String?
     get() = when (val userPrincipal: Any? = getUserPrincipal()) {
-      is String -> userPrincipal.toString()
+      is String -> userPrincipal
       is UserDetails -> userPrincipal.username
       is Map<*, *> -> userPrincipal.get("username").toString()
       else -> null

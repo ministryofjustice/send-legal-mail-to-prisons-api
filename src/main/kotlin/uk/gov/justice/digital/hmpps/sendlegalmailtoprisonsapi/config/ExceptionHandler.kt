@@ -97,7 +97,7 @@ class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler
   }
 
   @ExceptionHandler(OneTimeCodeException::class)
-  fun handleException(e: OneTimeCodeException): ResponseEntity<ErrorResponse?>? {
+  fun handleException(e: OneTimeCodeException): ResponseEntity<ErrorResponse>? {
     log.info("Failed attempt to resolve a one time code", e)
     return ResponseEntity
       .status(UNAUTHORIZED)
@@ -105,7 +105,7 @@ class SendLegalMailToPrisonsApiExceptionHandler : ResponseEntityExceptionHandler
   }
 
   @ExceptionHandler(Exception::class)
-  fun handleException(e: Exception): ResponseEntity<ErrorResponse?>? {
+  fun handleException(e: Exception): ResponseEntity<ErrorResponse>? {
     log.error("Unexpected exception", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)

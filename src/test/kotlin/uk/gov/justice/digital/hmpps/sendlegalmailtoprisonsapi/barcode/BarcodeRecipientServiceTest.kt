@@ -27,7 +27,7 @@ class BarcodeRecipientServiceTest {
       val createBarcodeRequest = CreateBarcodeRequest(prisonerName = "Fred Bloggs", prisonId = "BXI", prisonNumber = "A1234BC", contactId = 1234)
 
       val contact = Contact(id = 1, owner = "a-user@cjsm.net", name = "Fred Bloggs", prisonCode = "BXI", prisonNumber = "A1234BC", created = Instant.now(), updated = Instant.now())
-      given { contactRepository.getById(any()) }.willReturn(contact)
+      given { contactRepository.getReferenceById(any()) }.willReturn(contact)
 
       val expectedBarcodeRecipient = BarcodeRecipient(
         barcode = barcode,
@@ -36,7 +36,7 @@ class BarcodeRecipientServiceTest {
         prisonNumber = "A1234BC",
         contact = contact,
       )
-      given { barcodeRecipientRepository.save(any()) }.willReturn(expectedBarcodeRecipient)
+      given { barcodeRecipientRepository.save(any<BarcodeRecipient>()) }.willReturn(expectedBarcodeRecipient)
 
       val barcodeRecipient = barcodeRecipientService.saveBarcodeRecipient(barcode, createBarcodeRequest)
 
@@ -46,7 +46,7 @@ class BarcodeRecipientServiceTest {
           assertThat(it).usingRecursiveComparison().isEqualTo(expectedBarcodeRecipient)
         },
       )
-      verify(contactRepository).getById(1234)
+      verify(contactRepository).getReferenceById(1234)
     }
 
     @Test
@@ -61,7 +61,7 @@ class BarcodeRecipientServiceTest {
         prisonNumber = "A1234BC",
         contact = null,
       )
-      given { barcodeRecipientRepository.save(any()) }.willReturn(expectedBarcodeRecipient)
+      given { barcodeRecipientRepository.save(any<BarcodeRecipient>()) }.willReturn(expectedBarcodeRecipient)
 
       val barcodeRecipient = barcodeRecipientService.saveBarcodeRecipient(barcode, createBarcodeRequest)
 

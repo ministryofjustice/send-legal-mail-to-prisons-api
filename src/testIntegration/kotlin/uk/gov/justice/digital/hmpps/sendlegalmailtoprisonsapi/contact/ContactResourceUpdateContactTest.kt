@@ -153,8 +153,8 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .expectBody()
       .jsonPath("$.errorCode.code").isEqualTo(DuplicateContact.code)
 
-    val existingContact = contactRepository.getById(existingContactId)
-    val updatedContact = contactRepository.getById(updateContactId)
+    val existingContact = contactRepository.getReferenceById(existingContactId!!)
+    val updatedContact = contactRepository.getReferenceById(updateContactId!!)
     assertThat(existingContact.prisonNumber).isNotEqualTo(updatedContact.prisonNumber)
   }
 
@@ -185,7 +185,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .jsonPath("$.prisonId").isEqualTo(JOHN_SMITH.prisonId)
       .jsonPath("$.prisonNumber").isEqualTo(JOHN_SMITH.prisonNumber!!)
 
-    val savedContact = contactRepository.getById(existingContactId!!)
+    val savedContact = contactRepository.getReferenceById(existingContactId!!)
     assertThat(savedContact.name).isEqualTo(JOHN_SMITH.prisonerName)
     assertThat(savedContact.prisonNumber).isEqualTo(JOHN_SMITH.prisonNumber)
     assertThat(savedContact.prisonCode).isEqualTo(JOHN_SMITH.prisonId)
