@@ -39,7 +39,7 @@ class PrisonerSearchClient(private val prisonerSearchWebClient: WebClient) {
     .bodyToMono<PagePrisoner>()
     .onErrorResume { webClientErrorHandler(it) }
 
-  private fun <API_RESPONSE_BODY_TYPE> webClientErrorHandler(exception: Throwable): Mono<API_RESPONSE_BODY_TYPE> = with(exception) {
+  private fun <API_RESPONSE_BODY_TYPE : Any> webClientErrorHandler(exception: Throwable): Mono<API_RESPONSE_BODY_TYPE> = with(exception) {
     if (this is WebClientResponseException) {
       val uriPath = request?.uri?.path
       if (statusCode == FORBIDDEN) {

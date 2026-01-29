@@ -93,7 +93,7 @@ class ContactServiceTest {
         prisonId = "BXI",
         prisonNumber = "A1234BC",
       )
-      given { contactRepository.save(any()) }.willReturn(savedContact)
+      given { contactRepository.save(any<Contact>()) }.willReturn(savedContact)
 
       val contactResponse = contactService.createContact("a-user@cjsm.net", contactRequest)
 
@@ -127,7 +127,7 @@ class ContactServiceTest {
         prisonId = "BXI",
         dob = LocalDate.of(1990, 12, 20),
       )
-      given { contactRepository.save(any()) }.willReturn(savedContact)
+      given { contactRepository.save(any<Contact>()) }.willReturn(savedContact)
 
       val contactResponse = contactService.createContact("a-user@cjsm.net", contactRequest)
 
@@ -146,7 +146,7 @@ class ContactServiceTest {
         prisonId = "BXI",
         prisonNumber = "A1234BC",
       )
-      given { contactRepository.save(any()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
+      given { contactRepository.save(any<Contact>()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
 
       assertThrows<DuplicateContactException> {
         contactService.createContact("a-user@cjsm.net", contactRequest)
@@ -211,7 +211,7 @@ class ContactServiceTest {
     @Test
     fun `should return saved contact if contact exists`() {
       given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(existingContact)
-      given { contactRepository.save(any()) }.willReturn(updatedContact)
+      given { contactRepository.save(any<Contact>()) }.willReturn(updatedContact)
 
       val contactResponse = contactService.updateContact("some-user", 1L, aContactRequest)
 
@@ -236,7 +236,7 @@ class ContactServiceTest {
     @Test
     fun `should throw DuplicateContactException given database throws constraint violation`() {
       given { contactRepository.getContactByOwnerAndId(anyString(), anyLong()) }.willReturn(existingContact)
-      given { contactRepository.save(any()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
+      given { contactRepository.save(any<Contact>()) }.willThrow(DataIntegrityViolationException("Duplicate record on index contacts_uni_idx_owner_prison_number"))
 
       assertThatThrownBy {
         contactService.updateContact("some-user", 1L, aContactRequest)

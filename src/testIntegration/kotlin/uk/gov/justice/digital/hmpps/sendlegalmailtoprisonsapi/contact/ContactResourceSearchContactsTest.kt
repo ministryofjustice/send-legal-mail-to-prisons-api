@@ -43,7 +43,7 @@ class ContactResourceSearchContactsTest : IntegrationTest() {
 
   @Test
   fun `returns matching Contacts given owner and name that match records`() {
-    val contacts: List<ContactResponse> = webTestClient.get()
+    val contacts: List<ContactResponse>? = webTestClient.get()
       .uri("/contacts?name=john")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setCreateBarcodeAuthorisation(email = "some.user@company.com.cjsm.net"))
@@ -51,7 +51,7 @@ class ContactResourceSearchContactsTest : IntegrationTest() {
       .expectStatus().isOk
       .expectBodyList(ContactResponse::class.java).hasSize(4).returnResult().responseBody
 
-    val contactNames = contacts.map { it.prisonerName }
+    val contactNames = contacts?.map { it.prisonerName }
     Assertions.assertThat(contactNames).containsExactly("John Smith", "Johnathon Evans", "Malcolm Johnston", "Bart Johnson")
   }
 

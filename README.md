@@ -225,11 +225,8 @@ To create a public/private keypair for an environment:
 * The public key should be saved in Kubernetes secret `send-legal-mail-to-prisons-api` with key `JWT_PUBLIC_KEY`
 * The private key should be saved in Kubernetes secret `send-legal-mail-to-prisons-api` with key `JWT_PRIVATE_KEY`
 
-## Barcode Stats Report
-The barcode stats report that was being sent out every night has been disabled and all code around it removed. Please refer to this [PR](https://github.com/ministryofjustice/send-legal-mail-to-prisons-api/pull/226) in case you want to look at how it was being done.
-
 ## One Time Code (Emails)
-We now use GOV.UK Notify to send one time code emails instead of Spring Email. 
+We use GOV.UK Notify to send one time code emails.
 
 To enable Notify on your local dev do the following:
 * Update app.notify.apikey to the actual Notify API key for Dev (available on namespace secrets for `send-legal-mail-to-prisons-dev` namespace). 
