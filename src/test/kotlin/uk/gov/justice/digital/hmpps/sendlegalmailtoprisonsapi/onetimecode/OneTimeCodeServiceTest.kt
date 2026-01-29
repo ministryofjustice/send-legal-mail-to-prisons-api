@@ -68,7 +68,7 @@ class OneTimeCodeServiceTest {
     val savedOneTimeCodeAttempts = OneTimeCodeAttempts(sessionId, setOf(code))
     given { oneTimeCodeRepository.findById(any()) }.willReturn(Optional.of(oneTimeCode))
     given { oneTimeCodeAttemptsRepository.findById(any()) }.willReturn(Optional.of(oneTimeCodeAttempts))
-    given { oneTimeCodeAttemptsRepository.save(any()) }.willReturn(savedOneTimeCodeAttempts)
+    given { oneTimeCodeAttemptsRepository.save(any<OneTimeCodeAttempts>()) }.willReturn(savedOneTimeCodeAttempts)
     given { cjsmService.findOrganisation(any()) }.willReturn(organisation)
     given { jwtService.generateToken(any(), any()) }.willReturn("a-valid-token")
 
@@ -94,7 +94,7 @@ class OneTimeCodeServiceTest {
     val savedOneTimeCodeAttempts = OneTimeCodeAttempts(sessionId, setOf(code))
     given { oneTimeCodeRepository.findById(any()) }.willReturn(Optional.of(oneTimeCode))
     given { oneTimeCodeAttemptsRepository.findById(any()) }.willReturn(Optional.of(oneTimeCodeAttempts))
-    given { oneTimeCodeAttemptsRepository.save(any()) }.willReturn(savedOneTimeCodeAttempts)
+    given { oneTimeCodeAttemptsRepository.save(any<OneTimeCodeAttempts>()) }.willReturn(savedOneTimeCodeAttempts)
     given { cjsmService.findOrganisation(any()) }.willReturn(organisation)
     given { jwtService.generateToken(any(), any()) }.willReturn("a-valid-token")
 
@@ -120,7 +120,7 @@ class OneTimeCodeServiceTest {
     val savedOneTimeCodeAttempts = OneTimeCodeAttempts(sessionId, setOf("ZYXW"))
     given { oneTimeCodeRepository.findById(any()) }.willReturn(Optional.of(oneTimeCode))
     given { oneTimeCodeAttemptsRepository.findById(any()) }.willReturn(Optional.of(oneTimeCodeAttempts))
-    given { oneTimeCodeAttemptsRepository.save(any()) }.willReturn(savedOneTimeCodeAttempts)
+    given { oneTimeCodeAttemptsRepository.save(any<OneTimeCodeAttempts>()) }.willReturn(savedOneTimeCodeAttempts)
 
     assertThatThrownBy {
       oneTimeCodeService.verifyOneTimeCode("ZYXW", sessionId)
@@ -146,7 +146,7 @@ class OneTimeCodeServiceTest {
     val savedOneTimeCodeAttempts = OneTimeCodeAttempts(sessionId, setOf("AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "ZYXW"))
     given { oneTimeCodeRepository.findById(any()) }.willReturn(Optional.of(oneTimeCode))
     given { oneTimeCodeAttemptsRepository.findById(any()) }.willReturn(Optional.of(oneTimeCodeAttempts))
-    given { oneTimeCodeAttemptsRepository.save(any()) }.willReturn(savedOneTimeCodeAttempts)
+    given { oneTimeCodeAttemptsRepository.save(any<OneTimeCodeAttempts>()) }.willReturn(savedOneTimeCodeAttempts)
 
     assertThatThrownBy {
       oneTimeCodeService.verifyOneTimeCode("ZYXW", sessionId)

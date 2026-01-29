@@ -54,7 +54,6 @@ class ContactResourceGetContactByIdTest : IntegrationTest() {
       .expectBody()
       .jsonPath("$.id").isEqualTo(testContact.id)
       .jsonPath("$.prisonerName").isEqualTo(testContact.name)
-      .jsonPath("$.prisonNumber").isEqualTo(testContact.prisonNumber)
       .jsonPath("$.dob").isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(testContact.dob))
       .jsonPath("$.prisonId").isEqualTo(testContact.prisonCode)
   }

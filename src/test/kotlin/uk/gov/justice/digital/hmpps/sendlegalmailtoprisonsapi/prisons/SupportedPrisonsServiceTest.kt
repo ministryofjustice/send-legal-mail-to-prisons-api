@@ -83,7 +83,7 @@ class SupportedPrisonsServiceTest {
     @Test
     fun `should save prison code if found`() {
       given { prisonRegisterClient.getPrison(anyString()) }.willReturn(aPrisonDto("some-prison"))
-      given { supportedPrisonsRepository.save(any()) }.willReturn(aSupportedPrison("some-prison"))
+      given { supportedPrisonsRepository.save(any<SupportedPrison>()) }.willReturn(aSupportedPrison("some-prison"))
 
       val newSupportedPrisonCode = supportedPrisonsService.addPrisonCode("some-prison")
 

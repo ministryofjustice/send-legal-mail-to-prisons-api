@@ -42,7 +42,7 @@ class BarcodeRecipientRepositoryTest : IntegrationTest() {
 
     assertThatExceptionOfType(InvalidDataAccessApiUsageException::class.java)
       .isThrownBy { barcodeRecipientRepository.save(barcodeRecipient) }
-      .withMessageContaining("save the transient instance before flushing")
+      .withMessageContaining("persist the transient instance before flushing")
   }
 
   @Test

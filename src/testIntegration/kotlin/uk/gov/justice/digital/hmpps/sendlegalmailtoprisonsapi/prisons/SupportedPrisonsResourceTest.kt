@@ -85,7 +85,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getById("ABC")
+      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
 
       assertThat(supportedPrison)
         .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
@@ -108,7 +108,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getById("ABC")
+      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
 
       assertThat(supportedPrison)
         .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
@@ -131,7 +131,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getById("CDE")
+      val supportedPrison = supportedPrisonsRepository.getReferenceById("CDE")
 
       assertThat(supportedPrison)
         .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
@@ -184,7 +184,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
 
-      val supportedPrison = supportedPrisonsRepository.getById("ABC")
+      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
       assertThat(supportedPrison)
         .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
         .isEqualTo(listOf("ABC", false, "SOME_USER"))
@@ -204,7 +204,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
 
-      val supportedPrison = supportedPrisonsRepository.getById("CDE")
+      val supportedPrison = supportedPrisonsRepository.getReferenceById("CDE")
       assertThat(supportedPrison)
         .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
         .isEqualTo(listOf("CDE", false, "SOME_USER"))

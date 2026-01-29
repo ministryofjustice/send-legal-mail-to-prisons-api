@@ -7,6 +7,7 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.function.client.WebClientResponseException.create
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.prisonersearch.model.PagePrisoner
@@ -60,11 +61,14 @@ class PrisonerSearchServiceTest {
         name = "John Smith",
         dob = null,
       )
+
+      val httpHeaders = HttpHeaders().apply { set("Authorization", "Bearer SOME_TOKEN") }
+
       given { prisonerSearchClient.matchPrisoners(any()) }.willReturn(
-        Mono.error(create(403, "Forbidden", null, null, null)),
+        Mono.error(create(403, "Forbidden", httpHeaders, "".toByteArray(), null)),
       )
       given { prisonerSearchClient.globalSearch(any()) }.willReturn(
-        Mono.error(create(403, "Forbidden", null, null, null)),
+        Mono.error(create(403, "Forbidden", httpHeaders, "".toByteArray(), null)),
       )
 
       prisonerSearchService.lookupPrisoner(barcodeRecipient)
