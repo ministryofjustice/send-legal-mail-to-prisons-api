@@ -51,7 +51,7 @@ dependencies {
   implementation("software.amazon.awssdk:s3:2.41.17")
   implementation("software.amazon.awssdk:sts:2.41.17")
   implementation("org.apache.commons:commons-csv:1.14.1")
-  implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
