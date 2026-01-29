@@ -45,5 +45,5 @@ data class SupportedPrison(
 
   @Override
   override fun toString(): String = this::class.simpleName + "(code = $code, active = $active, updatedBy = ${updatedBy ?: "null"}, " +
-    "updated = ${updated?.let { DateTimeFormatter.ISO_DATE_TIME.format(updated) } ?: "null"} )"
+    "updated = ${updated?.let { DateTimeFormatter.ISO_INSTANT.format(updated) } ?: "null"} )"
 }
