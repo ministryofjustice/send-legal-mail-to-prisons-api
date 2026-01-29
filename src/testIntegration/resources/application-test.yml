@@ -12,6 +12,9 @@ spring:
   jpa:
     show-sql: true
 
+  main:
+    allow-bean-definition-overriding: true
+
   security:
     oauth2:
       resourceserver:
