@@ -35,6 +35,9 @@ jobs:
     name: Validate the kotlin
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
+    with:
+      localstack-tag: "4"
+      java-version: '25'
   build:
     name: Build docker image from hmpps-github-actions
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
