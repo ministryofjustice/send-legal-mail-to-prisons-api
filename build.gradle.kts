@@ -40,7 +40,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-mail")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-  implementation("org.springframework.data:spring-data-commons:4.0.2")
+  implementation("org.springframework.data:spring-data-commons:4.0.3")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
   implementation("org.springdoc:springdoc-openapi-starter-common:3.0.1")
@@ -48,14 +48,14 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.41.25")
-  implementation("software.amazon.awssdk:sts:2.41.25")
+  implementation("software.amazon.awssdk:s3:2.41.32")
+  implementation("software.amazon.awssdk:sts:2.41.32")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.9")
+  runtimeOnly("org.postgresql:postgresql:42.7.10")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.security:spring-security-test")
@@ -64,7 +64,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
 
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.38")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
@@ -72,7 +72,7 @@ dependencies {
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.59.0")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
   testImplementation("org.testcontainers:testcontainers-localstack:2.0.3")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
