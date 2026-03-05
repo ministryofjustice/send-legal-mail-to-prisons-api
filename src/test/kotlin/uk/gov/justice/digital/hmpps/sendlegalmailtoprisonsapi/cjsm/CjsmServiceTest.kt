@@ -80,7 +80,7 @@ class CjsmServiceTest {
       Bridlington,AJU,smtpgroup,Humberside Police,ajubridlington@humberside.pnn.police.uk.cjsm.net,"Sessions House, New Walk","Sessions House, New Walk",Beverley,HU17 7AF, , , ,Police,Humberside,Active
     """.trimIndent()
 
-    whenever(cjsmDirectoryRepository.save(any()))
+    whenever(cjsmDirectoryRepository.save(any<CjsmDirectoryEntry>()))
       .thenThrow(RuntimeException::class.java)
       .thenReturn(CjsmDirectoryEntry(1L, "any", "any", "any", "any", "any", "any"))
 

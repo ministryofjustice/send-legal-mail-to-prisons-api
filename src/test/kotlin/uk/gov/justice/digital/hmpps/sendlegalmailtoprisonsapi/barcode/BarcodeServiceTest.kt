@@ -293,7 +293,7 @@ class BarcodeServiceTest {
 
   private fun mockFindBarcode(barcode: Barcode? = aBarcode()) = whenever(barcodeRepository.findById("SOME_BARCODE")).thenReturn(Optional.ofNullable(barcode))
 
-  private fun mockSaveBarcode() = whenever(barcodeRepository.save(any())).thenReturn(aBarcode())
+  private fun mockSaveBarcode() = whenever(barcodeRepository.save(any<Barcode>())).thenReturn(aBarcode())
 
   private fun mockFindBarcodeRecipient(barcode: Barcode = aBarcode()): BarcodeRecipient {
     val barcodeRecipient = BarcodeRecipient(id = 1, barcode = barcode, name = "John Smith", prisonCode = "SKI")
