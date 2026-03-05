@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.4"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.3.10"
   kotlin("plugin.jpa") version "2.3.10"
@@ -27,7 +27,7 @@ configurations {
 
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.2")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -41,15 +41,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
   implementation("org.springframework.data:spring-data-commons:4.0.3")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.1")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
-  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.1")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.2")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
+  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.2")
 
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.41.33")
-  implementation("software.amazon.awssdk:sts:2.41.33")
+  implementation("software.amazon.awssdk:s3:2.42.6")
+  implementation("software.amazon.awssdk:sts:2.42.6")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
@@ -76,7 +76,7 @@ dependencies {
   testImplementation("org.testcontainers:testcontainers-localstack:2.0.3")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.2")
+  testImplementation("io.github.hakky54:logcaptor:2.12.5")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
 }
 
