@@ -301,7 +301,7 @@ class BarcodeEventServiceTest {
   private fun mockFindBarcodeEvents(eventType: BarcodeEventType, barcodeEvents: List<BarcodeEvent>) = whenever(barcodeEventRepository.findByBarcodeAndEventTypeOrderByCreatedDateTime(any(), eq(eventType)))
     .thenReturn(barcodeEvents)
 
-  private fun mockSaveBarcodeEvent(eventType: BarcodeEventType) = whenever(barcodeEventRepository.save(any())).thenReturn(aBarcodeEvent(eventType = eventType))
+  private fun mockSaveBarcodeEvent(eventType: BarcodeEventType) = whenever(barcodeEventRepository.save(any<BarcodeEvent>())).thenReturn(aBarcodeEvent(eventType = eventType))
 
   private fun mockUserOrganisation(userId: String, organisation: String?) {
     whenever(cjsmService.findOrganisation(userId)).thenReturn(organisation)
