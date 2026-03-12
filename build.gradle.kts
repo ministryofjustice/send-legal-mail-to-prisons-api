@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.5"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.3.10"
   kotlin("plugin.jpa") version "2.3.10"
@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.42.9")
-  implementation("software.amazon.awssdk:sts:2.42.9")
+  implementation("software.amazon.awssdk:s3:2.42.11")
+  implementation("software.amazon.awssdk:sts:2.42.11")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
@@ -64,7 +64,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
 
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.38")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.39")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
