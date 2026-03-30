@@ -31,6 +31,14 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
+  app_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.app_version.outputs.version }}
+    steps:
+      - id: app_version
+        name: Application version creators
+        uses: ministryofjustice/hmpps-github-actions/.github/actions/build-test-and-deploy/create_app_version@v2 # WORKFLOW_VERSION
   kotlin_validate:
     name: Validate the kotlin
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
@@ -38,6 +46,8 @@ jobs:
     with:
       localstack-tag: "4"
       java-version: '25'
+    needs:
+      - app_version
   build:
     name: Build docker image from hmpps-github-actions
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
