@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.prisons
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -85,12 +83,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
-
-      assertThat(supportedPrison)
-        .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
-        .isEqualTo(listOf("ABC", true, "SOME_USER"))
-      assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
+      assertHelper.assertPrison(prisonCode = "ABC", expectedCode = "ABC", expectedActive = true, expectedUpdatedBy = "SOME_USER")
     }
 
     @Test
@@ -108,12 +101,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
-
-      assertThat(supportedPrison)
-        .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
-        .isEqualTo(listOf("ABC", true, "SOME_USER"))
-      assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
+      assertHelper.assertPrison(prisonCode = "ABC", expectedCode = "ABC", expectedActive = true, expectedUpdatedBy = "SOME_USER")
     }
 
     @Test
@@ -131,12 +119,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isCreated
 
-      val supportedPrison = supportedPrisonsRepository.getReferenceById("CDE")
-
-      assertThat(supportedPrison)
-        .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
-        .isEqualTo(listOf("CDE", true, "SOME_USER"))
-      assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
+      assertHelper.assertPrison(prisonCode = "CDE", expectedCode = "CDE", expectedActive = true, expectedUpdatedBy = "SOME_USER")
     }
   }
 
@@ -184,11 +167,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
 
-      val supportedPrison = supportedPrisonsRepository.getReferenceById("ABC")
-      assertThat(supportedPrison)
-        .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
-        .isEqualTo(listOf("ABC", false, "SOME_USER"))
-      assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
+      assertHelper.assertPrison(prisonCode = "ABC", expectedCode = "ABC", expectedActive = false, expectedUpdatedBy = "SOME_USER")
     }
 
     @Test
@@ -204,11 +183,7 @@ class SupportedPrisonsResourceTest : IntegrationTest() {
         .exchange()
         .expectStatus().isOk
 
-      val supportedPrison = supportedPrisonsRepository.getReferenceById("CDE")
-      assertThat(supportedPrison)
-        .extracting(SupportedPrison::code, SupportedPrison::active, SupportedPrison::updatedBy)
-        .isEqualTo(listOf("CDE", false, "SOME_USER"))
-      assertThat(supportedPrison.updated).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS))
+      assertHelper.assertPrison(prisonCode = "CDE", expectedCode = "CDE", expectedActive = false, expectedUpdatedBy = "SOME_USER")
     }
   }
 

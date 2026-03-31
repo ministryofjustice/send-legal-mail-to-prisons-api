@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmDirectory
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.CjsmService
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.cjsm.S3Config
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact.ContactRepository
+import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.helper.AssertHelper
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.HmppsAuthExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.mocks.PrisonRegisterExtension
@@ -122,6 +123,9 @@ abstract class IntegrationTest {
 
   @Autowired
   protected lateinit var supportedPrisonsRepository: SupportedPrisonsRepository
+
+  @Autowired
+  lateinit var assertHelper: AssertHelper
 
   @BeforeEach
   fun `turn off random checks`() {

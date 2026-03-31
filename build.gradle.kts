@@ -1,10 +1,10 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.1"
   id("org.unbroken-dome.test-sets") version "4.1.0"
-  kotlin("plugin.spring") version "2.3.10"
-  kotlin("plugin.jpa") version "2.3.10"
+  kotlin("plugin.spring") version "2.3.20"
+  kotlin("plugin.jpa") version "2.3.20"
   id("jacoco")
   id("org.openapi.generator") version "6.6.0"
 }
@@ -27,20 +27,20 @@ configurations {
 
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.1.0")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springframework.boot:spring-boot-starter-data-redis")
   implementation("org.springframework.boot:spring-boot-starter-mail")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-  implementation("org.springframework.data:spring-data-commons:4.0.3")
+  implementation("org.springframework.data:spring-data-commons:4.0.4")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.2")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
   implementation("org.springdoc:springdoc-openapi-starter-common:3.0.2")
@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.42.11")
-  implementation("software.amazon.awssdk:sts:2.42.11")
+  implementation("software.amazon.awssdk:s3:2.42.23")
+  implementation("software.amazon.awssdk:sts:2.42.23")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
@@ -68,15 +68,15 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
-  testImplementation("com.microsoft.azure:applicationinsights-web:3.7.7")
+  testImplementation("com.microsoft.azure:applicationinsights-web:3.7.8")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.60.1")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
-  testImplementation("org.testcontainers:testcontainers-localstack:2.0.3")
-  testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
+  testImplementation("org.testcontainers:testcontainers-localstack:2.0.4")
+  testImplementation("org.testcontainers:testcontainers-postgresql:2.0.4")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.5")
+  testImplementation("io.github.hakky54:logcaptor:2.12.6")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
 }
 
