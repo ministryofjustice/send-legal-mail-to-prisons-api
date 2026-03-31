@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.sendlegalmailtoprisonsapi.contact
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -153,9 +152,7 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .expectBody()
       .jsonPath("$.errorCode.code").isEqualTo(DuplicateContact.code)
 
-    val existingContact = contactRepository.getReferenceById(existingContactId!!)
-    val updatedContact = contactRepository.getReferenceById(updateContactId!!)
-    assertThat(existingContact.prisonNumber).isNotEqualTo(updatedContact.prisonNumber)
+    assertHelper.assertContactPrisonerNumberNoMatch(existingContactId!!, updateContactId!!)
   }
 
   @Test
@@ -185,10 +182,6 @@ class ContactResourceUpdateContactTest : IntegrationTest() {
       .jsonPath("$.prisonId").isEqualTo(JOHN_SMITH.prisonId)
       .jsonPath("$.prisonNumber").isEqualTo(JOHN_SMITH.prisonNumber!!)
 
-    val savedContact = contactRepository.getReferenceById(existingContactId!!)
-    assertThat(savedContact.name).isEqualTo(JOHN_SMITH.prisonerName)
-    assertThat(savedContact.prisonNumber).isEqualTo(JOHN_SMITH.prisonNumber)
-    assertThat(savedContact.prisonCode).isEqualTo(JOHN_SMITH.prisonId)
-    assertThat(savedContact.updated).isAfter(savedContact.created)
+    assertHelper.assertContact(existingContactId = existingContactId!!, prisonerName = JOHN_SMITH.prisonerName, prisonNumber = JOHN_SMITH.prisonNumber!!, prisonId = JOHN_SMITH.prisonId)
   }
 }

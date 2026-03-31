@@ -83,6 +83,8 @@ management:
 
 springdoc:
   remove-broken-reference-definitions: false
+  swagger-ui:
+    version: 5.32.1
 
 app:
   one-time-code:
