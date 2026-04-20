@@ -38,3 +38,9 @@ app:
     bucket-name: cjsm-orgs
   notify:
     apikey: dummy-api-key
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
