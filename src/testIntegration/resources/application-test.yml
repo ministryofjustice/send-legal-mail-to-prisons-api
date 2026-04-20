@@ -54,3 +54,9 @@ manage:
   users:
     api:
       url: http://localhost:8093
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
