@@ -116,7 +116,7 @@ tasks.named<JacocoReport>("jacocoTestIntegrationReport") {
 }
 
 tasks.register<JacocoReport>("combineJacocoReports") {
-  executionData(fileTree(project.buildDir.absolutePath).include("jacoco/*.exec"))
+  executionData(fileTree(project.layout.buildDirectory.get().asFile.absolutePath).include("jacoco/*.exec"))
   classDirectories.setFrom(files(project.sourceSets.main.get().output))
   sourceDirectories.setFrom(files(project.sourceSets.main.get().allSource))
   reports {
@@ -127,7 +127,7 @@ tasks.register<JacocoReport>("combineJacocoReports") {
 tasks.register<GenerateTask>("buildPrisonerSearchModel") {
   generatorName.set("kotlin")
   inputSpec.set("$projectDir/src/main/resources/prisoner-offender-search-open-api.yml")
-  outputDir.set(layout.buildDirectory.dir("generated/prisoner-search").get().asFile.absolutePath)
+  outputDir.set(layout.buildDirectory.dir("generated").get().asFile.absolutePath)
   modelPackage.set("uk.gov.justice.digital.hmpps.prisonersearch.model")
   configOptions.set(
     mapOf(
@@ -145,7 +145,7 @@ tasks.register<GenerateTask>("buildPrisonerSearchModel") {
 tasks.register<GenerateTask>("buildPrisonRegisterModel") {
   generatorName.set("kotlin")
   inputSpec.set("$projectDir/src/main/resources/prison-register-open-api.yml")
-  outputDir.set(layout.buildDirectory.dir("generated/prison-register").get().asFile.absolutePath)
+  outputDir.set(layout.buildDirectory.dir("generated").get().asFile.absolutePath)
   modelPackage.set("uk.gov.justice.digital.hmpps.prisonregister.model")
   configOptions.set(
     mapOf(
@@ -165,6 +165,11 @@ tasks.named("compileKotlin") {
   dependsOn("buildPrisonRegisterModel")
 }
 
+tasks.named("processResources") {
+  dependsOn("buildPrisonerSearchModel")
+  dependsOn("buildPrisonRegisterModel")
+}
+
 tasks.named("runKtlintCheckOverMainSourceSet") {
   dependsOn("buildPrisonerSearchModel")
   dependsOn("buildPrisonRegisterModel")
@@ -176,7 +181,7 @@ repositories {
 
 kotlin {
   sourceSets["main"].apply {
-    kotlin.srcDir("$buildDir/generated/src/main/kotlin")
+    kotlin.srcDir(layout.buildDirectory.dir("generated/src/main/kotlin").get().asFile.absolutePath)
   }
 }
 
