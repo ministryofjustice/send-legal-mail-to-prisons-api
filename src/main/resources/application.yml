@@ -82,12 +82,14 @@ management:
         time-to-live: 2000ms
 
 springdoc:
-  remove-broken-reference-definitions: false
   api-docs:
     enabled: false
   swagger-ui:
+    tagsSorter: alpha
     enabled: false
-    version: 5.32.1
+    version: 5.32.2
+  writer-with-order-by-keys: true
+
 
 app:
   one-time-code:
