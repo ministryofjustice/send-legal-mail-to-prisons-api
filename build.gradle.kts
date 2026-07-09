@@ -127,7 +127,7 @@ tasks.register<JacocoReport>("combineJacocoReports") {
 tasks.register<GenerateTask>("buildPrisonerSearchModel") {
   generatorName.set("kotlin")
   inputSpec.set("$projectDir/src/main/resources/prisoner-offender-search-open-api.yml")
-  outputDir.set("$buildDir/generated")
+  outputDir.set(layout.buildDirectory.dir("generated/prisoner-search").get().asFile.absolutePath)
   modelPackage.set("uk.gov.justice.digital.hmpps.prisonersearch.model")
   configOptions.set(
     mapOf(
@@ -145,7 +145,7 @@ tasks.register<GenerateTask>("buildPrisonerSearchModel") {
 tasks.register<GenerateTask>("buildPrisonRegisterModel") {
   generatorName.set("kotlin")
   inputSpec.set("$projectDir/src/main/resources/prison-register-open-api.yml")
-  outputDir.set("$buildDir/generated")
+  outputDir.set(layout.buildDirectory.dir("generated/prison-register").get().asFile.absolutePath)
   modelPackage.set("uk.gov.justice.digital.hmpps.prisonregister.model")
   configOptions.set(
     mapOf(
