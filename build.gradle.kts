@@ -3,8 +3,8 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.7"
   id("org.unbroken-dome.test-sets") version "4.1.0"
-  kotlin("plugin.spring") version "2.4.0"
-  kotlin("plugin.jpa") version "2.4.0"
+  kotlin("plugin.spring") version "2.4.10"
+  kotlin("plugin.jpa") version "2.4.10"
   id("jacoco")
   id("org.openapi.generator") version "6.6.0"
 }
@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.47.4")
-  implementation("software.amazon.awssdk:sts:2.47.4")
+  implementation("software.amazon.awssdk:s3:2.48.2")
+  implementation("software.amazon.awssdk:sts:2.48.2")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.1-RELEASE")
 
@@ -69,10 +69,10 @@ dependencies {
   testImplementation("com.github.codemonstur:embedded-redis:1.4.3")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.9")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.63.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.64.0")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.1.1")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
   testImplementation("org.testcontainers:testcontainers-localstack:2.0.5")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
