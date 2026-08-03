@@ -1,7 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.2"
   id("org.unbroken-dome.test-sets") version "4.1.0"
   kotlin("plugin.spring") version "2.4.10"
   kotlin("plugin.jpa") version "2.4.10"
@@ -41,17 +41,17 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
   implementation("org.springframework.data:spring-data-commons:4.1.0")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.3")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
-  implementation("org.springdoc:springdoc-openapi-starter-common:3.0.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-common:3.1.0")
 
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.49.1")
-  implementation("software.amazon.awssdk:sts:2.49.1")
+  implementation("software.amazon.awssdk:s3:2.50.2")
+  implementation("software.amazon.awssdk:sts:2.50.2")
   implementation("org.apache.commons:commons-csv:1.14.1")
-  implementation("uk.gov.service.notify:notifications-java-client:6.0.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.1.0-RELEASE")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
