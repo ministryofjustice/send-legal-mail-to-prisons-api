@@ -1,7 +1,7 @@
 version: "3"
 services:
   send-legal-mail-to-prisons-api:
-    image: quay.io/hmpps/send-legal-mail-to-prisons-api
+    image: ghcr.io/ministryofjustice/send-legal-mail-to-prisons-api
     networks:
       - hmpps
     container_name: send-legal-mail-to-prisons-api

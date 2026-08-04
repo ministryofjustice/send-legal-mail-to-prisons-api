@@ -14,7 +14,7 @@ version: '3.1'
 services:
 
   send-legal-mail-to-prisons-api:
-    image: quay.io/hmpps/send-legal-mail-to-prisons-api:latest
+    image: ghcr.io/ministryofjustice/send-legal-mail-to-prisons-api:latest
     networks:
       - artillery
     ports:
@@ -75,7 +75,7 @@ services:
       - NOMIS_ENDPOINT_URL=http://nomis-user-roles-api:8080
 
   nomis-user-roles-api:
-    image: quay.io/hmpps/nomis-user-roles-api:latest
+    image: ghcr.io/ministryofjustice/nomis-user-roles-api:latest
     networks:
       - artillery
     environment:
