@@ -76,7 +76,7 @@ dependencies {
   testImplementation("org.testcontainers:testcontainers-localstack:2.0.5")
   testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.6")
+  testImplementation("io.github.hakky54:logcaptor:2.12.7")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
 }
 
