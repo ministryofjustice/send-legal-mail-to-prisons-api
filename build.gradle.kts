@@ -27,14 +27,14 @@ configurations {
 
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springframework.boot:spring-boot-starter-data-redis")
   implementation("org.springframework.boot:spring-boot-starter-mail")
@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.54.4")
-  implementation("software.amazon.awssdk:sts:2.54.4")
+  implementation("software.amazon.awssdk:s3:2.54.6")
+  implementation("software.amazon.awssdk:sts:2.54.6")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.0-RELEASE")
 
