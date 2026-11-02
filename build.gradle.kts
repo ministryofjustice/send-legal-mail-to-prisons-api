@@ -10,7 +10,7 @@ plugins {
 }
 
 jacoco {
-  toolVersion = "0.8.15"
+  toolVersion = "0.8.16"
 }
 
 testSets {
@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.57.3")
-  implementation("software.amazon.awssdk:sts:2.57.3")
+  implementation("software.amazon.awssdk:s3:2.57.8")
+  implementation("software.amazon.awssdk:sts:2.57.8")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
 
