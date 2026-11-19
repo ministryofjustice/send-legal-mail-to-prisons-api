@@ -8,7 +8,7 @@ import java.net.ServerSocket
 object PostgresContainer {
   val instance: PostgreSQLContainer<Nothing>? by lazy { startPostgresqlContainer() }
   private fun startPostgresqlContainer(): PostgreSQLContainer<Nothing>? = if (checkPostgresRunning().not()) {
-    PostgreSQLContainer<Nothing>("postgres:13.2").apply {
+    PostgreSQLContainer<Nothing>("postgres:18").apply {
       withEnv("HOSTNAME_EXTERNAL", "localhost")
       withExposedPorts(5432)
       withDatabaseName("send_legal_mail_api_db")
