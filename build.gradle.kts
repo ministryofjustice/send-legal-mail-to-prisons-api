@@ -48,8 +48,8 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt:0.13.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
 
-  implementation("software.amazon.awssdk:s3:2.59.8")
-  implementation("software.amazon.awssdk:sts:2.59.8")
+  implementation("software.amazon.awssdk:s3:2.59.10")
+  implementation("software.amazon.awssdk:sts:2.59.10")
   implementation("org.apache.commons:commons-csv:1.14.1")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
 
@@ -65,7 +65,7 @@ dependencies {
 
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.49")
-  testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.4.0")
   testImplementation("com.github.codemonstur:embedded-redis:1.4.4")
   testImplementation("com.github.tomakehurst:wiremock-standalone:3.0.1")
   testImplementation("com.microsoft.azure:applicationinsights-web:3.7.10")
